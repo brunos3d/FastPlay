@@ -1,0 +1,18 @@
+﻿Feature,Status,Complexity,Priority Level
+Node Selection,Ready,3. Normal,Done
+" Reflected Nodes",Ready,3. Normal,"Done,Otimizable"
+Create / Remove Nodes,Ready,7. Big,Done
+Create Ports,Ready,8. Hard,"Done,Otimizable"
+Workflow Visualization,Testing,3. Normal,"5. Important,Otimizable"
+Inspect Ports Values (Inspector),Testing,7. Big,"5. Important,Done,Otimizable"
+Macro Management,Testing,10. Complex,"10. Priority,Otimizable"
+OdinSerializer,Testing,10. Complex,"10. Priority,Otimizable"
+Variable System,Testing,10. Complex,"7. Very Important,Otimizable"
+Duplicate Nodes,Unstable,7. Big,"1. Not Important,Otimizable"
+Minimap,Planning,3. Normal,3. Little Important
+Copy / Paste Nodes,Planning,7. Big,5. Important
+Documentation,Planning,7. Big,10. Priority
+Visual Node and Runtime Node,Planning,10. Complex,7. Very Important
+" Inspect Ports Values (GraphEditor)",Planning,10. Complex,7. Very Important
+C# Code Generation,Planning,10. Complex,7. Very Important
+,,,
