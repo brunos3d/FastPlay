@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Equals")]
+	[Title("Equals")]
+	[Subtitle("String")]
 	[Path("Functions/Operation/String/Equals")]
-	[Body("Equals", "String")]
 	public class StringEquals : ValueNode<bool>, IRegisterPorts {
 
 		public InputValue<string> a, b;

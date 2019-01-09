@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("ForLoop")]
+	[Title("ForLoop")]
+	[Subtitle("Flow Control")]
 	[Path("Flow Control/ForLoop")]
-	[Body("ForLoop", "Flow Control")]
 	public class ForLoop : ActionNode, IRegisterPorts {
 
 		public int index;

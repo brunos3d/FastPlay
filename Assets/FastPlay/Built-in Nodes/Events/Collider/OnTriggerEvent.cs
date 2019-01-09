@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OnTrigger")]
+	[Title("OnTrigger")]
 	[Path("Events/Collider/OnTrigger")]
-	[Body("OnTrigger")]
 	public class OnTriggerEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public Collider collider;

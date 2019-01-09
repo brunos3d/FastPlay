@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Current.FindVariable")]
+	[Title("FindVariable")]
+	[Subtitle("Current")]
 	[Path("Actions/Current/FindVariable")]
-	[Body("FindVariable", "Current")]
 	public class CurrentFindVariable<T> : ValueNode<VariableObject<T>>, IRegisterPorts {
 
 		public InputValue<string> variable_name;

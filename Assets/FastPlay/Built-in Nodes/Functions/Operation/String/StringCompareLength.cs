@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Compare Length")]
+	[Title("Compare Length")]
+	[Subtitle("String")]
 	[Path("Functions/Operation/String/Compare Length")]
-	[Body("Compare Length", "String")]
 	public class StringCompareLength : ActionNode, IRegisterPorts {
 
 		public InputValue<string> input_value;

@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OnMouseOver")]
+	[Title("OnMouseOver")]
 	[Path("Events/Mouse/OnMouseOver")]
-	[Body("OnMouseOver")]
 	public class OnMouseOverEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

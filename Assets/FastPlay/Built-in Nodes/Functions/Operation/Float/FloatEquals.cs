@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Equals")]
+	[Title("Equals")]
+	[Subtitle("Float")]
 	[Path("Functions/Operation/Float/Equals")]
-	[Body("Equals", "Float")]
 	public class FloatEquals : ValueNode<bool>, IRegisterPorts {
 
 		public InputValue<float> a, b;

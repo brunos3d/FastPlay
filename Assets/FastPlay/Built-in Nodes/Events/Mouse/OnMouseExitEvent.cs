@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OnMouseExit")]
+	[Title("OnMouseExit")]
 	[Path("Events/Mouse/OnMouseExit")]
-	[Body("OnMouseExit")]
 	public class OnMouseExitEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

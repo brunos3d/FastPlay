@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Add")]
+	[Title("Add")]
+	[Subtitle("Float")]
 	[Path("Functions/Operation/Float/Add")]
-	[Body("Add", "Float")]
 	public class FloatAdd : ValueNode<float>, IRegisterPorts {
 
 		public InputValue<float> a, b;

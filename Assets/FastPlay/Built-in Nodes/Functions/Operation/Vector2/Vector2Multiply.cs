@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Multiply")]
+	[Title("Multiply")]
+	[Subtitle("Vector2")]
 	[Path("Functions/Operation/Vector2/Multiply")]
-	[Body("Multiply", "Vector2")]
 	public class Vector2Multiply : ValueNode<Vector2>, IRegisterPorts {
 
 		public InputValue<Vector2> vector;

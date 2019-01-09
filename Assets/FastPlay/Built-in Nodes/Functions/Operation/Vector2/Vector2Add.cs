@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Add")]
+	[Title("Add")]
+	[Subtitle("Vector2")]
 	[Path("Functions/Operation/Vector2/Add")]
-	[Body("Add", "Vector2")]
 	public class Vector2Add : ValueNode<Vector2>, IRegisterPorts {
 
 		public InputValue<Vector2> a, b;

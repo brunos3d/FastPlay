@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Subtract")]
+	[Title("Subtract")]
+	[Subtitle("Integer")]
 	[Path("Functions/Operation/Integer/Subtract")]
-	[Body("Subtract", "Integer")]
 	public class IntSubtract : ValueNode<int>, IRegisterPorts {
 
 		public InputValue<int> a, b;

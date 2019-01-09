@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("ContainsItem")]
+	[Title("ContainsItem")]
+	[Subtitle("List")]
 	[Path("Actions/List/ContainsItem")]
-	[Body("ContainsItem", "List")]
 	public class ListContainsItem<T> : ValueNode<bool>, IRegisterPorts {
 
 		public InputValue<List<T>> list;

@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("LogText")]
+	[Title("LogText")]
+	[Subtitle("Action")]
 	[Path("Utilities/Actions/LogText")]
-	[Body("LogText", "Action")]
 	public class LogText : ActionNode, IRegisterPorts {
 
 		public InputValue<string> text;

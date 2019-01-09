@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OnMouseUp")]
+	[Title("OnMouseUp")]
 	[Path("Events/Mouse/OnMouseUp")]
-	[Body("OnMouseUp")]
 	public class OnMouseUpEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

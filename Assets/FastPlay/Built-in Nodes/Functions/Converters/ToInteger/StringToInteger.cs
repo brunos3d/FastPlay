@@ -2,9 +2,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("ToInteger")]
+	[Title("ToInteger")]
 	[Path("Functions/Converters/ToInteger/String")]
-	[Body("ToInteger", "String")]
 	public class StringToInteger : ValueNode<int>, IRegisterPorts {
 
 		public InputValue<string> s;

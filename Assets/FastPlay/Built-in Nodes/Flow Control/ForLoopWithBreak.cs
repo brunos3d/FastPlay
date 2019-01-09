@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("ForLoopWithBreak")]
+	[Title("ForLoopWithBreak")]
+	[Subtitle("Flow Control")]
 	[Path("Flow Control/ForLoopWithBreak")]
-	[Body("ForLoopWithBreak", "Flow Control")]
 	public class ForLoopWithBreak : ActionNode, IRegisterPorts {
 
 		public int index;

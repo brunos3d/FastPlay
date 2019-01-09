@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Input")]
+	[Icon("InputNode Icon")]
+	[Title("Input")]
 	[Path("Graph/Input")]
-	[Body("Input", "", "event_node_icon")]
 	public class InputNode : Node, IRegisterDefaultPorts {
 
 		[NonSerialized]

@@ -14,6 +14,10 @@ namespace FastPlay.Runtime {
 		[SerializeField]
 		private SerializationData serialization_data;
 
+		public string title;
+
+		public string subtitle;
+
 		public Vector2 position;
 
 		[NonSerialized]

@@ -2,9 +2,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("ToFloat")]
+	[Title("ToFloat")] 
 	[Path("Functions/Converters/ToFloat/Integer")]
-	[Body("ToFloat", "Integer")]
 	public class IntegerToFloat : ValueNode<float>, IRegisterPorts {
 
 		public InputValue<int> i;

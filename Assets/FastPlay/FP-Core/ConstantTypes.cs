@@ -21,8 +21,6 @@ namespace FastPlay {
 		typeof(GraphAsset),
 		typeof(GraphController),
 		typeof(Node),
-		typeof(ActionNode),
-		typeof(EventNode),
 			// UnityEngine
 		typeof(Animation),
 		typeof(Animator),

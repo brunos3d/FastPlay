@@ -75,6 +75,8 @@ namespace FastPlay.Editor {
 				Rect last_rect = GUILayoutUtility.GetLastRect();
 				last_rect.y += offset_x;
 				last_rect.x += offset_y;
+				last_rect.width += offset_x;
+				last_rect.height += offset_y;
 				GUI.color = new Color(1, 1, 1, 0.35f);
 				GUI.Label(last_rect, string.Format("<i>{0}</i>", label), styles.label);
 				GUI.color = Color.white;

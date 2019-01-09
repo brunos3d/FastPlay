@@ -65,7 +65,8 @@ namespace FastPlay.Runtime {
 
 		public void OnRegisterDefaultPorts() {
 			if (reference) {
-				name = "{ " + string.Format("{0}", reference.name) + " }";
+				this.title = this.name = "{ " + string.Format("{0}", reference.title.IsNullOrEmpty() ? reference.name : reference.title) + " }";
+				this.subtitle = reference.subtitle;
 				macro = this;
 
 				input_node = (InputNode)reference.graph.nodes.FirstOrDefault(n => n is InputNode);

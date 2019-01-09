@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OnMouseInputEvent")]
+	[Icon("Mouse Icon")]
+	[Title("OnMouseInputEvent")]
 	[Path("Events/Utilities/OnMouseInput")]
-	[Body("OnMouseInput", "", "Mouse Icon")]
 	public class OnMouseInputEvent : EventNode, IUpdate, IRegisterPorts {
 
 		public InputValue<MouseButton> button;

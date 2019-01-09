@@ -111,6 +111,8 @@ namespace FastPlay.Runtime {
 
 		public static Color gui_content_color;
 
+		private bool invert_title;
+
 		private bool has_subtitle;
 
 		private Rect head_rect = new Rect();
@@ -583,13 +585,13 @@ namespace FastPlay.Runtime {
 			body_rect.position = new Vector2(pos.x, pos.y + head_height);
 			icon_rect.position = new Vector2(pos.x + 5.0f, pos.y + 5.0f);
 			if (has_subtitle) {
-				if (this is EventNode) {
-					title_rect.position = new Vector2(pos.x + 50.0f, pos.y + 6.0f);
-					subtitle_rect.position = new Vector2(pos.x + 50.0f, pos.y + 28.0f);
-				}
-				else {
+				if (invert_title) {
 					title_rect.position = new Vector2(pos.x + 50.0f, pos.y + 23.0f);
 					subtitle_rect.position = new Vector2(pos.x + 50.0f, pos.y + 8.0f);
+				}
+				else {
+					title_rect.position = new Vector2(pos.x + 50.0f, pos.y + 6.0f);
+					subtitle_rect.position = new Vector2(pos.x + 50.0f, pos.y + 28.0f);
 				}
 			}
 			else {
@@ -649,7 +651,7 @@ namespace FastPlay.Runtime {
 				}
 				else {
 					title_rect = new Rect(position.x + 50.0f, position.y + 23.0f, size.x - 50.0f, head_height - 23.0f);
-					subtitle_rect = new Rect(position.x + 50.0f, position.y + 8.0f, size.x - 50.0f, 20.0f);
+					subtitle_rect = new Rect(position.x + 50.0f, position.y + 8.0f, size.x - 50.0f, head_height - 28.0f);
 				}
 			}
 			else {
@@ -659,36 +661,36 @@ namespace FastPlay.Runtime {
 		}
 
 		public void GenerateContent() {
+			this.title = string.Empty;
+
 			if (this is ValueNode) {
 				node_color = GUIReferrer.GetTypeColor(((ValueNode)this).valueType);
 			}
 			else if (this is LiteralNode) {
 				node_color = GUIReferrer.GetTypeColor(((LiteralNode)this).valueType);
-				this.name = (this as LiteralNode).valueType.GetTypeName(false, true);
+				this.title = (this as LiteralNode).valueType.GetTypeName(false, true);
 			}
 			else if (!((this is ReflectedNode))) {
 				node_color = GUIReferrer.GetTypeColor(type);
 			}
 			if (this is IVariable) {
-				this.name = (this as IVariable).GetVariableName();
+				this.title = (this as IVariable).GetVariableName();
 			}
-			NameAttribute flag_name = type.GetAttribute<NameAttribute>(false);
-			if (flag_name != null) {
-				this.name = flag_name.name;
-			}
-			this.title = this.name;
 
-			BodyAttribute flag_body = type.GetAttribute<BodyAttribute>(true);
-			if (flag_body != null) {
-				this.slim = flag_body.slim;
-				if (!flag_body.title.IsNullOrEmpty()) {
-					this.title = flag_body.title;
-				}
-				if (!flag_body.description.IsNullOrEmpty()) {
-					this.subtitle = flag_body.description;
-				}
-				this.icon = flag_body.GetIcon();
+			TitleAttribute flag_title = type.GetAttribute<TitleAttribute>(false);
+			if (flag_title != null) {
+				this.title = flag_title.title;
 			}
+			SubtitleAttribute flag_subtitle = type.GetAttribute<SubtitleAttribute>(true);
+			if (flag_subtitle != null) {
+				this.subtitle = flag_subtitle.subtitle;
+			}
+			IconAttribute flag_icon = type.GetAttribute<IconAttribute>(false);
+			if (flag_icon != null) {
+				this.icon = flag_icon.GetIcon();
+			}
+			SlimAttribute flag_slim = type.GetAttribute<SlimAttribute>(false);
+			this.slim = flag_slim != null && flag_slim.is_slim;
 
 			if (this is EventNode) {
 				if (this.subtitle.IsNullOrEmpty()) {
@@ -697,6 +699,7 @@ namespace FastPlay.Runtime {
 				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(typeof(EventNode));
 			}
 			else if (this is ReflectedNode) {
+				invert_title = true;
 				Type refected_type = ((ReflectedNode)this).method_info.ReflectedType;
 				if (this.subtitle.IsNullOrEmpty()) {
 					this.subtitle = refected_type.GetTypeName();
@@ -709,6 +712,7 @@ namespace FastPlay.Runtime {
 			else if (this is LiteralNode) {
 				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(((LiteralNode)this).valueType);
 			}
+			this.title = this.title.IsNullOrEmpty() ? this.name : this.title;
 			this.icon = this.icon ?? GUIReferrer.GetTypeIcon(type);
 			has_subtitle = !subtitle.IsNullOrEmpty();
 		}
@@ -817,6 +821,7 @@ namespace FastPlay.Runtime {
 				float subtitle_width = 50.0f + GUIUtils.GetTextWidth(this.subtitle, styles.subtitle_head);
 				if (subtitle_width > 240.0f) {
 					head_height += (FPMath.SnapValue(subtitle_width) / 240.0f) * 15.0f;
+					head_height += this.subtitle.Split('\n').Length * 11.0f;
 					subtitle_width = 240.0f;
 				}
 

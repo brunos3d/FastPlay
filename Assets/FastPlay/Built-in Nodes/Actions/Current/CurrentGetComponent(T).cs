@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Current.GetComponent")] 
+	[Title("GetComponent")] 
+	[Subtitle("Current")]
 	[Path("Actions/Current/GetComponent")]
-	[Body("GetComponent", "Current", slim = true)]
 	public class CurrentGetComponent<T> : ValueNode<T> where T : Component {
 
 		public override T OnGetValue() {

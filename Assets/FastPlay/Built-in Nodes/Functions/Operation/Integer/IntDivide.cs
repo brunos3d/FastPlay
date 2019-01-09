@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Divide")]
+	[Title("Divide")]
+	[Subtitle("Integer")]
 	[Path("Functions/Operation/Integer/Divide")]
-	[Body("Divide", "Integer")]
 	public class IntDivide : ValueNode<int>, IRegisterPorts {
 
 		public InputValue<int> a, b;

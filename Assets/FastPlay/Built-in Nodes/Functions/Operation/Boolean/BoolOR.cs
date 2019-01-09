@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OR")]
+	[Title("OR")]
+	[Subtitle("Boolean")]
 	[Path("Functions/Operation/Boolean/OR")]
-	[Body("OR", "Boolean")]
 	public class BoolOR : ValueNode<bool>, IRegisterPorts {
 
 		public InputValue<bool> a, b;

@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Compare Int")]
+	[Title("Compare")]
+	[Subtitle("Integer")]
 	[Path("Functions/Operation/Integer/Compare")]
-	[Body("Compare", "Integer")]
 	public class IntCompare : ActionNode, IRegisterPorts {
 
 		public InputValue<int> input_value;

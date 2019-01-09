@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Negative")]
+	[Title("Negative")]
+	[Subtitle("Boolean")]
 	[Path("Functions/Operation/Boolean/Negative")]
-	[Body("Negative", "Boolean")]
 	public class BoolNegative : ValueNode<bool>, IRegisterPorts {
 
 		public InputValue<bool> value;

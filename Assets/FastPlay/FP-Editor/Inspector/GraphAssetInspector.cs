@@ -26,13 +26,22 @@ namespace FastPlay.Editor {
 
 		private GraphAsset m_asset;
 
-		private int current_menu;
-
 		private ReorderableList variable_list;
 
 		private ReorderableList input_list;
 
 		private ReorderableList output_list;
+
+		private const string PREFS_CURRENT_MENU_ACTIVE = "FastPlay Inspector: Current Menu Active";
+
+		private int currentMenu {
+			get {
+				return EditorPrefs.GetInt(PREFS_CURRENT_MENU_ACTIVE, 0);
+			}
+			set {
+				EditorPrefs.SetInt(PREFS_CURRENT_MENU_ACTIVE, value);
+			}
+		}
 
 		private static Styles styles {
 			get {
@@ -69,9 +78,28 @@ namespace FastPlay.Editor {
 				GraphEditorWindow.OpenEditor(asset);
 			}
 			try {
-				switch (MenuMode()) {
+				DrawMenuMode();
+
+				GUILayout.Space(5.0f);
+
+				switch (currentMenu) {
 					//Graph
 					case 0:
+						string title = EditorGUILayout.TextField(asset.title);
+						GUIDraw.GhostLabel(title, "Title...", -2.0f, 5.0f);
+						if (title != asset.title) {
+							UndoManager.RecordObject(target, "Title Change");
+							asset.title = title;
+							GraphEditor.current_validate = true;
+						}
+						GUILayout.Space(3.0f);
+						string subtitle = EditorGUILayout.TextArea(asset.subtitle, GUILayout.MinHeight(50.0f));
+						GUIDraw.GhostLabel(subtitle, "Subtitle...", -2.0f, 5.0f);
+						if (subtitle != asset.subtitle) {
+							UndoManager.RecordObject(target, "Subtitle Change");
+							asset.subtitle = subtitle;
+							GraphEditor.current_validate = true;
+						}
 						GUILayout.Label(string.Format("Nodes: {0}", asset.graph.nodes.Count.ToString()));
 						break;
 					//Parameters
@@ -91,8 +119,8 @@ namespace FastPlay.Editor {
 			}
 			catch {
 				CreateReorderableLists();
+				GraphEditor.current_validate = true;
 			}
-
 
 			if (GUI.changed) {
 				UndoManager.SetDirty(target);
@@ -102,18 +130,18 @@ namespace FastPlay.Editor {
 			EditorGUIUtility.wideMode = restore_wide_mode;
 		}
 
-		private int MenuMode() {
+		private void DrawMenuMode() {
 			GUILayout.BeginHorizontal();
 
 			GUILayout.FlexibleSpace();
 
-			current_menu = GUILayout.Toolbar(current_menu, Styles.MENUS, styles.menu_button, GUI.ToolbarButtonSize.FitToContents);
+			currentMenu = GUILayout.Toolbar(currentMenu, Styles.MENUS, styles.menu_button, GUI.ToolbarButtonSize.FitToContents);
 
 			GUILayout.FlexibleSpace();
 
 			GUILayout.EndHorizontal();
 
-			return current_menu;
+			GUILayout.Space(5.0f);
 		}
 
 		private void DrawNodeInspector() {
@@ -121,18 +149,20 @@ namespace FastPlay.Editor {
 				GUILayout.Space(20.0f);
 				foreach (Node node in GraphEditor.selection) {
 					//GUILayout.Label(string.Format("{0} : {1}", GraphEditor.scroll, node.position));
-					GUILayout.BeginVertical(node.name, "window");
+					GUILayout.BeginVertical(node.title, "window");
 					if (node is IListPort) {
 						GUILayout.BeginHorizontal();
 						if (GUILayout.Button("Add Port")) {
 							UndoManager.RecordObject(asset, "Add Port");
 							((IListPort)node).AddPort();
 							node.Validate();
+							//GraphEditor.current_validate = true;
 						}
 						if (GUILayout.Button("Remove Port")) {
 							UndoManager.RecordObject(asset, "Remove Node");
 							((IListPort)node).RemovePort();
 							node.Validate();
+							//GraphEditor.current_validate = true;
 						}
 						GUILayout.EndHorizontal();
 					}
@@ -221,13 +251,13 @@ namespace FastPlay.Editor {
 			};
 
 			variable_list.onReorderCallback = list => {
-				asset.Validate();
+				GraphEditor.current_validate = true;
 			};
 			input_list.onReorderCallback = list => {
-				asset.Validate();
+				GraphEditor.current_validate = true;
 			};
 			output_list.onReorderCallback = list => {
-				asset.Validate();
+				GraphEditor.current_validate = true;
 			};
 
 			variable_list.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) => {
@@ -239,12 +269,12 @@ namespace FastPlay.Editor {
 				string new_name = EditorGUI.TextField(rect_name, asset.graph.variableParameters[index].name);
 				bool new_declaring_value = EditorGUI.Toggle(rect_declaring, asset.graph.variableParameters[index].is_public);
 				if (new_name != asset.graph.variableParameters[index].name) {
-					UndoManager.RecordObject(asset, "VariableObject name change");
+					UndoManager.RecordObject(asset, "Variable Name Change");
 					asset.graph.variableParameters[index].name = new_name;
 					GraphEditor.current_validate = true;
 				}
 				if (new_declaring_value != asset.graph.variableParameters[index].is_public) {
-					UndoManager.RecordObject(asset, "VariableObject declaring type change");
+					UndoManager.RecordObject(asset, "Variable Declaring Type Change");
 					asset.graph.variableParameters[index].is_public = new_declaring_value;
 					GraphEditor.current_validate = true;
 				}
@@ -259,12 +289,12 @@ namespace FastPlay.Editor {
 				string new_name = EditorGUI.TextField(rect_name, asset.graph.inputParameters[index].name);
 				bool new_declaring_value = EditorGUI.Toggle(rect_declaring, asset.graph.inputParameters[index].is_public);
 				if (new_name != asset.graph.inputParameters[index].name) {
-					UndoManager.RecordObject(asset, "VariableObject name change");
+					UndoManager.RecordObject(asset, "Input Parameter Name Change");
 					asset.graph.inputParameters[index].name = new_name;
 					GraphEditor.current_validate = true;
 				}
 				if (new_declaring_value != asset.graph.inputParameters[index].is_public) {
-					UndoManager.RecordObject(asset, "VariableObject declaring type change");
+					UndoManager.RecordObject(asset, "Input Parameter Declaring Type Change");
 					asset.graph.inputParameters[index].is_public = new_declaring_value;
 					GraphEditor.current_validate = true;
 				}
@@ -279,12 +309,12 @@ namespace FastPlay.Editor {
 				string new_name = EditorGUI.TextField(rect_name, asset.graph.outputParameters[index].name);
 				bool new_declaring_value = EditorGUI.Toggle(rect_declaring, asset.graph.outputParameters[index].is_public);
 				if (new_name != asset.graph.outputParameters[index].name) {
-					UndoManager.RecordObject(asset, "VariableObject name change");
+					UndoManager.RecordObject(asset, "Output Parameter Name Change");
 					asset.graph.outputParameters[index].name = new_name;
 					GraphEditor.current_validate = true;
 				}
 				if (new_declaring_value != asset.graph.outputParameters[index].is_public) {
-					UndoManager.RecordObject(asset, "VariableObject declaring type change");
+					UndoManager.RecordObject(asset, "Output Parameter Declaring Type Change");
 					asset.graph.outputParameters[index].is_public = new_declaring_value;
 					GraphEditor.current_validate = true;
 				}
@@ -334,7 +364,7 @@ namespace FastPlay.Editor {
 				});
 			}
 			if (parameter_type == ParameterType.Output) {
-					generic_menu.AddItem(new GUIContent("Output"), false, () => {
+				generic_menu.AddItem(new GUIContent("Output"), false, () => {
 					UndoManager.RecordObject(target, "Add new parameter");
 					asset.graph.AddCustomParameter("new OutputPort", typeof(ParameterOutput), parameter_type);
 					GraphEditor.current_validate = true;

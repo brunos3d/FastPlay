@@ -2,9 +2,10 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Branch")]
+	[Icon("branch_node_icon")]
+	[Title("Branch")]
+	[Subtitle("Flow Control")]
 	[Path("Flow Control/Branch")]
-	[Body("Branch", "Flow Control", "branch_node_icon")]
 	public class Branch : ActionNode, IRegisterPorts {
 
 		public OutputAction on_true;

@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Clear")]
+	[Title("Clear")]
+	[Subtitle("List")]
 	[Path("Actions/List/Clear")]
-	[Body("Clear", "List")]
 	public class ListClear<T> : ActionNode, IRegisterPorts {
 
 		public InputValue<List<T>> list;

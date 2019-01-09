@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("ForEach")]
+	[Title("ForEach")]
+	[Subtitle("Flow Control")]
 	[Path("Flow Control/ForEach")]
-	[Body("ForEach", "Flow Control")]
 	public class ForEach : ActionNode, IRegisterPorts {
 
 		public object current;

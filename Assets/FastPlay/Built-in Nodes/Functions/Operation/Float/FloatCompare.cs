@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Compare Float")]
+	[Title("Compare")]
+	[Subtitle("Float")]
 	[Path("Functions/Operation/Float/Compare")]
-	[Body("Compare", "Float")]
 	public class FloatCompare : ActionNode, IRegisterPorts {
 
 		public InputValue<float> input_value;

@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("AND")]
+	[Title("AND")]
+	[Subtitle("Boolean")]
 	[Path("Functions/Operation/Boolean/AND")]
-	[Body("AND", "Boolean")]
 	public class BoolAND : ValueNode<bool>, IRegisterPorts {
 
 		public InputValue<bool> a, b;

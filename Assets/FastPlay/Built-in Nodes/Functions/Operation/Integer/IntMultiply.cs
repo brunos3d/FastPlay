@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Multiply")]
+	[Title("Multiply")]
+	[Subtitle("Integer")]
 	[Path("Functions/Operation/Integer/Multiply")]
-	[Body("Multiply", "Integer")]
 	public class IntMultiply : ValueNode<int>, IRegisterPorts {
 
 		public InputValue<int> a, b;

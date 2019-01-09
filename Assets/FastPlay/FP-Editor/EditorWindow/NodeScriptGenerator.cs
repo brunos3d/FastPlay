@@ -17,7 +17,7 @@ namespace FastPlay.Editor {
 using UnityEngine;
 using FastPlay.Runtime;
 
-[Name(""#NODEDISPLAYNAME#"")]
+[Title(""#NODEDISPLAYNAME#"")]
 [Path(""Generated/#NODETYPE#/#NODEDISPLAYNAME#"")]
 public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 	

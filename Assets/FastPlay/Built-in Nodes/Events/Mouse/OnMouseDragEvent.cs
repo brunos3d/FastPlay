@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OnMouseDrag")]
+	[Title("OnMouseDrag")]
 	[Path("Events/Mouse/OnMouseDrag")]
-	[Body("OnMouseDrag")]
 	public class OnMouseDragEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

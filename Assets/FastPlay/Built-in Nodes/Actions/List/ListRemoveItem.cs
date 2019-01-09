@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("RemoveItem")]
+	[Title("RemoveItem")]
+	[Subtitle("List")]
 	[Path("Actions/List/RemoveItem")]
-	[Body("RemoveItem", "List")]
 	public class ListRemoveItem<T> : ActionNode, IRegisterPorts {
 
 		public InputValue<List<T>> list;

@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Current.controller")]
-	[Body("Controller", "Current")]
+	[Title("Controller")]
+	[Subtitle("Current")]
 	[Path("Actions/Current/Controller")]
 	public class CurrentController : ValueNode<GraphController> {
 

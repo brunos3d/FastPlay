@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OnMouseDown")]
+	[Title("OnMouseDown")]
 	[Path("Events/Mouse/OnMouseDown")]
-	[Body("OnMouseDown")]
 	public class OnMouseDownEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

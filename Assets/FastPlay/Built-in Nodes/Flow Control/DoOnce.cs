@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("DoOnce")]
+	[Title("DoOnce")]
+	[Subtitle("Flow Control")]
 	[Path("Flow Control/DoOnce")]
-	[Body("DoOnce", "Flow Control")]
 	public class DoOnce : ActionNode, IRegisterPorts {
 
 		public bool completed;

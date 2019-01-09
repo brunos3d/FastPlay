@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("FindVariable")]
-	[Body("FindVariable", "GraphController")]
+	[Title("FindVariable")]
+	[Subtitle("GraphController")]
 	[Path("Actions/GraphController/FindVariable")]
 	public class ControllerFindVariable<T> : ValueNode<VariableObject<T>>, IRegisterPorts {
 

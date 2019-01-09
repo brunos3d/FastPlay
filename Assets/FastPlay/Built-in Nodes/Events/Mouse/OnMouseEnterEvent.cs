@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OnMouseEnter")]
+	[Title("OnMouseEnter")]
 	[Path("Events/Mouse/OnMouseEnter")]
-	[Body("OnMouseEnter")]
 	public class OnMouseEnterEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

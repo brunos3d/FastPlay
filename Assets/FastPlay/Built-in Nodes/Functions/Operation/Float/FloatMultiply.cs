@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Multiply")]
+	[Title("Multiply")]
+	[Subtitle("Float")]
 	[Path("Functions/Operation/Float/Multiply")]
-	[Body("Multiply", "Float")]
 	public class FloatMultiply : ValueNode<float>, IRegisterPorts {
 
 		public InputValue<float> a, b;

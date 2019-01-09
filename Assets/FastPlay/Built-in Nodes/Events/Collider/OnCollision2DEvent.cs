@@ -3,9 +3,8 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("OnCollision2D")]
+	[Title("OnCollision2D")]
 	[Path("Events/Collider/OnCollision2D")]
-	[Body("OnCollision2D")]
 	public class OnCollision2DEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public Collision2D collision;

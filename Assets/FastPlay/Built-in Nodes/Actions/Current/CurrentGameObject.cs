@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Current.gameObject")]
+	[Title("gameObject")]
+	[Subtitle("Current")]
 	[Path("Actions/Current/GameObject")]
-	[Body("GameObject", "Current", slim = true)]
 	public class CurrentGameObject : ValueNode<GameObject> {
 
 		public override GameObject OnGetValue() {

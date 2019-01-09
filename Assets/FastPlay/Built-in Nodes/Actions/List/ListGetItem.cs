@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("GetItem")]
+	[Title("GetItem")]
+	[Subtitle("List")]
 	[Path("Actions/List/GetItem")]
-	[Body("GetItem", "List")]
 	public class ListGetItem<T> : ValueNode<T>, IRegisterPorts {
 
 		public InputValue<List<T>> list;

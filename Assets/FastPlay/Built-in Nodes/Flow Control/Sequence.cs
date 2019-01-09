@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Sequence")]
+	[Title("Sequence")]
+	[Subtitle("Flow Control")]
 	[Path("Flow Control/Sequence")]
-	[Body("Sequence", "Flow Control")]
 	public class Sequence : ActionNode, IRegisterPorts, IListPort {
 
 		public List<OutputAction> m_outputs = new List<OutputAction>();

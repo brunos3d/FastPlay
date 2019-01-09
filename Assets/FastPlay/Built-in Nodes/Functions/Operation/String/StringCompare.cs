@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("Compare String")]
+	[Title("Compare")]
+	[Subtitle("String")]
 	[Path("Functions/Operation/String/Compare")]
-	[Body("Compare", "String")]
 	public class StringCompare : ActionNode, IRegisterPorts {
 
 		public InputValue<string> input_value;

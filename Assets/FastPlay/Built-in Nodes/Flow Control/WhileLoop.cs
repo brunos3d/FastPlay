@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Name("WhileLoop")]
+	[Title("WhileLoop")]
+	[Subtitle("Flow Control")]
 	[Path("Flow Control/WhileLoop")]
-	[Body("WhileLoop", "Flow Control")]
 	public class WhileLoop : ActionNode, IRegisterPorts {
 
 		public OutputAction on_loop;

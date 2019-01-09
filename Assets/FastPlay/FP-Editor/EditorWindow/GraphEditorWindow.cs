@@ -949,11 +949,12 @@ namespace FastPlay.Editor {
 			Rect title_rect = new Rect(0.0f, 17.0f, position.width, 40.0f);
 			EditorGUI.DrawRect(title_rect, new Color(0.0f, 0.0f, 0.0f, 0.5f));
 			if (GraphEditor.graph && GraphEditor.asset) {
+				string title = GraphEditor.asset.title.IsNullOrEmpty() ? GraphEditor.asset.name : GraphEditor.asset.title;
 				if (GraphEditor.asset.isInstance) {
-					GUI.Label(title_rect, new GUIContent(string.Format("{0} <size=12><color=#00FF56FF>(Instance)</color></size>", GraphEditor.asset.name)), styles.header);
+					GUI.Label(title_rect, new GUIContent(string.Format("{0} <size=12><color=#00FF56FF>(Instance)</color></size>", title)), styles.header);
 				}
 				else {
-					GUI.Label(title_rect, new GUIContent(string.Format("{0} <size=12><color=#FF4C4CFF>(Asset)</color></size>", GraphEditor.asset.name)), styles.header);
+					GUI.Label(title_rect, new GUIContent(string.Format("{0} <size=12><color=#FF4C4CFF>(Asset)</color></size>", title)), styles.header);
 				}
 				if (GraphEditor.graph.graph != GraphEditor.graph) {
 					Rect back_rect = new Rect(0.0f, 17.0f, 40.0f, 40.0f);
