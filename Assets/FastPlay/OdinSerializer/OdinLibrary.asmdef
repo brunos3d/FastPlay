@@ -1,0 +1,8 @@
+{
+    "name": "UnsafeFiles",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true
+}
