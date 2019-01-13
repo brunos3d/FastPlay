@@ -373,68 +373,22 @@ namespace FastPlay.Editor {
 			}
 
 			foreach (Type type in EditorHandler.GetConstantTypesCurrentInstance().current_types) {
-				if (!(type.IsAbstract & type.IsSealed) && !type.IsGenericType) {
-					string type_name = type.GetTypeName(true);
-					if (type_name.Contains("System")) {
-						//List
-						generic_menu.AddItem(new GUIContent("List/System/" + type.GetTypeName()), false, (object obj) => {
-							UndoManager.RecordObject(target, "Add new parameter");
-							asset.graph.AddParameter("new " + type.GetTypeName(), typeof(List<>).MakeGenericType(type), parameter_type);
-							GraphEditor.current_validate = true;
-							CreateReorderableLists();
-						}, type);
-						generic_menu.AddItem(new GUIContent("System/" + type.GetTypeName()), false, (object obj) => {
-							UndoManager.RecordObject(target, "Add new parameter");
-							asset.graph.AddParameter("new " + type.GetTypeName(), type, parameter_type);
-							GraphEditor.current_validate = true;
-							CreateReorderableLists();
-						}, type);
-					}
-					else if (type_name.Contains("FastPlay")) {
-						//List
-						generic_menu.AddItem(new GUIContent("List/FastPlay/" + type.GetTypeName()), false, (object obj) => {
-							UndoManager.RecordObject(target, "Add new parameter");
-							asset.graph.AddParameter("new " + type.GetTypeName(), typeof(List<>).MakeGenericType(type), parameter_type);
-							GraphEditor.current_validate = true;
-							CreateReorderableLists();
-						}, type);
-						generic_menu.AddItem(new GUIContent("FastPlay/" + type.GetTypeName()), false, (object obj) => {
-							UndoManager.RecordObject(target, "Add new parameter");
-							asset.graph.AddParameter("new " + type.GetTypeName(), type, parameter_type);
-							GraphEditor.current_validate = true;
-							CreateReorderableLists();
-						}, type);
-					}
-					else if (type_name.Contains("UnityEngine")) {
-						//List
-						generic_menu.AddItem(new GUIContent("List/UnityEngine/" + type.GetTypeName()), false, (object obj) => {
-							UndoManager.RecordObject(target, "Add new parameter");
-							asset.graph.AddParameter("new " + type.GetTypeName(), typeof(List<>).MakeGenericType(type), parameter_type);
-							GraphEditor.current_validate = true;
-							CreateReorderableLists();
-						}, type);
-						generic_menu.AddItem(new GUIContent("UnityEngine/" + type.GetTypeName()), false, (object obj) => {
-							UndoManager.RecordObject(target, "Add new parameter");
-							asset.graph.AddParameter("new " + type.GetTypeName(), type, parameter_type);
-							GraphEditor.current_validate = true;
-							CreateReorderableLists();
-						}, type);
-					}
-					else {
-						//List
-						generic_menu.AddItem(new GUIContent("List/References/" + type.GetTypeName(true).Replace(".", "/")), false, (object obj) => {
-							UndoManager.RecordObject(target, "Add new parameter");
-							asset.graph.AddParameter("new " + type.GetTypeName(), typeof(List<>).MakeGenericType(type), parameter_type);
-							GraphEditor.current_validate = true;
-							CreateReorderableLists();
-						}, type);
-						generic_menu.AddItem(new GUIContent("References/" + type.GetTypeName(true).Replace(".", "/")), false, (object obj) => {
-							UndoManager.RecordObject(target, "Add new parameter");
-							asset.graph.AddParameter("new " + type.GetTypeName(), type, parameter_type);
-							GraphEditor.current_validate = true;
-							CreateReorderableLists();
-						}, type);
-					}
+				if (!type.IsStatic() && !type.IsGenericType) {
+					string type_path = type.GetTypePath(true);
+
+					//List
+					generic_menu.AddItem(new GUIContent("List/" + type_path), false, (object obj) => {
+						UndoManager.RecordObject(target, "Add new parameter");
+						asset.graph.AddParameter(string.Format("new {0}", type.GetTypeName()), typeof(List<>).MakeGenericType(type), parameter_type);
+						GraphEditor.current_validate = true;
+						CreateReorderableLists();
+					}, type);
+					generic_menu.AddItem(new GUIContent(type_path), false, (object obj) => {
+						UndoManager.RecordObject(target, "Add new parameter");
+						asset.graph.AddParameter(string.Format("new {0}", type.GetTypeName()), type, parameter_type);
+						GraphEditor.current_validate = true;
+						CreateReorderableLists();
+					}, type);
 				}
 			}
 			generic_menu.ShowAsContext();

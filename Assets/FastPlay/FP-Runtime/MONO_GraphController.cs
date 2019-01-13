@@ -45,8 +45,6 @@ namespace FastPlay.Runtime {
 
 		#endregion
 
-		public Dictionary<string, Action> events = new Dictionary<string, Action>();
-
 		#region Functions
 
 		public void SetThisCurrent() {
@@ -56,12 +54,7 @@ namespace FastPlay.Runtime {
 			Current.SetCurrent(this);
 		}
 
-		public void NULLCALL() {
-			Current.SetCurrent(this);
-		}
-
 		public void ClearEvents() {
-			events = new Dictionary<string, Action>();
 			DoAnimatorIK = null;
 			DoAnimatorMove = null;
 			DoApplicationFocus = null;

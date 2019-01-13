@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using FastPlay.Editor;
-using System.Collections;
 
 namespace FastPlay.Runtime {
 	// Editor Node 
@@ -127,19 +126,8 @@ namespace FastPlay.Runtime {
 
 		public Vector2 position = Vector2.zero;
 
-		public Vector2 size = new Vector2(120.0f, 60.0f);
-
 		[NonSerialized]
-		public string title;
-
-		[NonSerialized]
-		public string subtitle;
-
-		[NonSerialized]
-		public Texture icon;
-
-		[NonSerialized]
-		public Color node_color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+		public Vector2 size;
 
 		[NonSerialized]
 		public bool slim;
@@ -661,8 +649,6 @@ namespace FastPlay.Runtime {
 		}
 
 		public void GenerateContent() {
-			this.title = string.Empty;
-
 			if (this is ValueNode) {
 				node_color = GUIReferrer.GetTypeColor(((ValueNode)this).valueType);
 			}
@@ -700,11 +686,20 @@ namespace FastPlay.Runtime {
 			}
 			else if (this is ReflectedNode) {
 				invert_title = true;
-				Type refected_type = ((ReflectedNode)this).method_info.ReflectedType;
+				Type refected_type = ((ReflectedNode)this).cached_method.ReflectedType;
 				if (this.subtitle.IsNullOrEmpty()) {
 					this.subtitle = refected_type.GetTypeName();
 				}
 				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(refected_type);
+			}
+			if (this is ReflectedObjectNode) {
+				invert_title = true;
+				Type refected_type = ((ReflectedObjectNode)this).cached_type;
+				if (this.subtitle.IsNullOrEmpty()) {
+					this.subtitle = "Reflected";
+				}
+				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(refected_type, false) ?? GUIReferrer.GetTypeIcon(typeof(MonoScript));
+
 			}
 			else if (this is ValueNode) {
 				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(((ValueNode)this).valueType);

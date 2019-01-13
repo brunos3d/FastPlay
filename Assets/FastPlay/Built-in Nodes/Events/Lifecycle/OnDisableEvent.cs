@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("DisableEvent Icon")]
 	[Title("OnDisable")]
 	[Path("Events/Lifecycle/OnDisable")]
 	public class OnDisableEvent : EventNode {

@@ -64,7 +64,7 @@ namespace FastPlay.Editor {
 			{ typeof(Texture), new Color(0.0f / 255.0f, 232.0f / 255.0f, 87.0f / 255.0f) },
 	};
 
-		public static Texture GetTypeIcon(Type type) {
+		public static Texture GetTypeIcon(Type type, bool return_default_icon = true) {
 			Texture t;
 			if (icons.TryGetValue(type, out t)) {
 				return t;
@@ -73,10 +73,19 @@ namespace FastPlay.Editor {
 			if (paths.TryGetValue(type, out path)) {
 				return icons[type] = EditorUtils.FindAssetByName<Texture>(path);
 			}
+			IconAttribute icon_flag = type.GetAttribute<IconAttribute>(false);
+			if (icon_flag != null) {
+				return icons[type] = icon_flag.GetIcon();
+			}
 			if (typeof(UnityEngine.Object).IsAssignableFrom(type)) {
 				return icons[type] = EditorGUIUtility.ObjectContent(null, type).image;
 			}
-			return icons[type] = EditorUtils.FindAssetByName<Texture>("404_icon_not_found");
+			if (return_default_icon) {
+				return icons[type] = EditorUtils.FindAssetByName<Texture>("404_icon_not_found");
+			}
+			else {
+				return null;
+			}
 		}
 
 		public static Color GetTypeColor(Type type) {

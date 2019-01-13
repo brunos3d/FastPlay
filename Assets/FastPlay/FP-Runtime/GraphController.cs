@@ -197,7 +197,6 @@ namespace FastPlay.Runtime {
 		}
 
 		public void OnControllerDestroy() {
-			OnControllerDisable();
 			if (graph) {
 				graph.Finish();
 				if (graph.isInstance) {

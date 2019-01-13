@@ -201,6 +201,9 @@ namespace FastPlay.Editor {
 					Texture icon = icons[type];
 					string type_name = type.GetTypeName();
 					thread_info = string.Format("{0} ({1}%)", type_name, Mathf.CeilToInt(((float)loop_index / loop_length) * 100));
+
+					string type_path = type.GetTypePath(true);
+
 					if (type.IsGenericType) {
 						foreach (Type t in current_types) {
 							Type type_gen = type.MakeGenericType(t);
@@ -212,20 +215,20 @@ namespace FastPlay.Editor {
 							//methods.Where(m => m.IsSpecialName)
 							//methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)
 							foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type_gen)) {
-								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/Inherited/{2}", type_name, type_gen_name, method.GetSignName()), icon), AddReflectedNode, method);
+								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/Inherited/{2}", type_path, type_gen_name, method.GetSignName()), icon), AddReflectedNode, method);
 							}
 							foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
-								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/Properties/{2}", type_name, type_gen_name, method.GetSignName()), icon), AddReflectedNode, method);
+								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/Properties/{2}", type_path, type_gen_name, method.GetSignName()), icon), AddReflectedNode, method);
 							}
 
 							//Literal Nodes
-							if (!(type_gen.IsAbstract && type_gen.IsSealed)) {
+							if (!type_gen.IsStatic()) {
 								Type literal_node_type = typeof(LiteralNode<>).MakeGenericType(type_gen);
-								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/Literal {1}", type_name, type_gen_name), icon), AddNode, literal_node_type);
+								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/Literal {1}", type_path, type_gen_name), icon), AddNode, literal_node_type);
 							}
 
 							foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type_gen)) {
-								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/{2}", type_name, type_gen_name, method.GetSignName()), icon), AddReflectedNode, method);
+								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/{2}", type_path, type_gen_name, method.GetSignName()), icon), AddReflectedNode, method);
 							}
 						}
 					}
@@ -239,11 +242,11 @@ namespace FastPlay.Editor {
 								foreach (Type t in current_types) {
 									MethodInfo method_gen = method.MakeGenericMethod(t);
 									object[] args = new object[] { method_gen, t };
-									context.AddItem(new GUIContent(string.Format("Codebase/{0}/Inherited/{1}/{2}", type_name, method.GetSignName(), method_gen.GetSignName()), icon), AddReflectedGenericNode, args);
+									context.AddItem(new GUIContent(string.Format("Codebase/{0}/Inherited/{1}/{2}", type_path, method.GetSignName(), method_gen.GetSignName()), icon), AddReflectedGenericNode, args);
 								}
 							}
 							else {
-								context.AddItem(new GUIContent(string.Format("Codebase/{0}/Inherited/{1}", type_name, method.GetSignName()), icon), AddReflectedNode, method);
+								context.AddItem(new GUIContent(string.Format("Codebase/{0}/Inherited/{1}", type_path, method.GetSignName()), icon), AddReflectedNode, method);
 							}
 						}
 						foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
@@ -251,18 +254,18 @@ namespace FastPlay.Editor {
 								foreach (Type t in current_types) {
 									MethodInfo method_gen = method.MakeGenericMethod(t);
 									object[] args = new object[] { method_gen, t };
-									context.AddItem(new GUIContent(string.Format("Codebase/{0}/Properties/{1}/{2}", type_name, method.GetSignName(), method_gen.GetSignName()), icon), AddReflectedGenericNode, args);
+									context.AddItem(new GUIContent(string.Format("Codebase/{0}/Properties/{1}/{2}", type_path, method.GetSignName(), method_gen.GetSignName()), icon), AddReflectedGenericNode, args);
 								}
 							}
 							else {
-								context.AddItem(new GUIContent(string.Format("Codebase/{0}/Properties/{1}", type_name, method.GetSignName()), icon), AddReflectedNode, method);
+								context.AddItem(new GUIContent(string.Format("Codebase/{0}/Properties/{1}", type_path, method.GetSignName()), icon), AddReflectedNode, method);
 							}
 						}
 
 						//Literal Nodes
-						if (!(type.IsAbstract && type.IsSealed)) {
+						if (!type.IsStatic()) {
 							Type literal_node_type = typeof(LiteralNode<>).MakeGenericType(type);
-							context.AddItem(new GUIContent(string.Format("Codebase/{0}/Literal {0}", type_name), icon), AddNode, literal_node_type);
+							context.AddItem(new GUIContent(string.Format("Codebase/{0}/Literal {0}", type_path), icon), AddNode, literal_node_type);
 						}
 
 						foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)) {
@@ -270,11 +273,11 @@ namespace FastPlay.Editor {
 								foreach (Type t in current_types) {
 									MethodInfo method_gen = method.MakeGenericMethod(t);
 									object[] args = new object[] { method_gen, t };
-									context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/{2}", type_name, method.GetSignName(), method_gen.GetSignName()), icon), AddReflectedGenericNode, args);
+									context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}/{2}", type_path, method.GetSignName(), method_gen.GetSignName()), icon), AddReflectedGenericNode, args);
 								}
 							}
 							else {
-								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}", type_name, method.GetSignName()), icon), AddReflectedNode, method);
+								context.AddItem(new GUIContent(string.Format("Codebase/{0}/{1}", type_path, method.GetSignName()), icon), AddReflectedNode, method);
 							}
 						}
 					}

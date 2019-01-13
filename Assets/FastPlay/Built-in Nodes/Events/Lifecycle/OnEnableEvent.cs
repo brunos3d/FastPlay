@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("StartEvent Icon")]
 	[Title("OnEnable")]
 	[Path("Events/Lifecycle/OnEnable")]
 	public class OnEnableEvent : EventNode {

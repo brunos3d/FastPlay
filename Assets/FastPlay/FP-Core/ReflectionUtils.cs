@@ -116,6 +116,10 @@ namespace FastPlay {
 
 		// Extensions
 
+		public static bool IsStatic(this Type type) {
+			return type.IsAbstract && type.IsSealed;
+		}
+
 		public static T GetAttribute<T>(this Type type, bool inherit) where T : Attribute {
 			object[] attributes = type.GetCustomAttributes(typeof(T), inherit);
 			if (attributes.Length > 0) {
@@ -143,6 +147,17 @@ namespace FastPlay {
 			}
 		}
 
+		public static string GetTypePath(this Type type, bool standard_types_prevail = false) {
+			string namespace_path = type.Namespace;
+			if (namespace_path.IsNullOrEmpty()) {
+				namespace_path = "Global";
+			}
+			else {
+				namespace_path = namespace_path.Replace(".", "/");
+			}
+			return string.Format("{0}/{1}", namespace_path, type.GetTypeName(false, standard_types_prevail));
+		}
+
 		public static string GetTypeName(this Type type, bool full_name = false, bool standard_types_prevail = false) {
 			if (type == null) return null;
 			string s;
@@ -152,7 +167,7 @@ namespace FastPlay {
 			if (cache_type_names.TryGetValue(string.Format("{0}, {1} & {2}", type, full_name, standard_types_prevail), out s)) {
 				return s;
 			}
-			
+
 			if (type.IsGenericType) {
 				string value = type.Name;
 				List<Type> generic_args = type.GetGenericArguments().ToList();

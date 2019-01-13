@@ -43,15 +43,35 @@ namespace FastPlay.Editor {
 
 		private static object cached_value;
 
-		private static Color backgroundColor;
+		public static Color gui_color;
+		public static Color content_color;
+		public static Color background_color;
 
-		public static void BeginNewColor(Color background) {
-			GUIDraw.backgroundColor = GUI.backgroundColor;
+		public static void BeginNewGUIColor(Color color) {
+			GUIDraw.gui_color = GUI.color;
+			GUI.color = color;
+		}
+
+		public static void EndGUIColor() {
+			GUI.color = GUIDraw.gui_color;
+		}
+
+		public static void BeginNewContentColor(Color content) {
+			GUIDraw.content_color = GUI.contentColor;
+			GUI.contentColor = content;
+		}
+
+		public static void EndContentColor() {
+			GUI.contentColor = GUIDraw.content_color;
+		}
+
+		public static void BeginNewBackgroundColor(Color background) {
+			GUIDraw.background_color = GUI.backgroundColor;
 			GUI.backgroundColor = background;
 		}
 
-		public static void EndNewColor() {
-			GUI.backgroundColor = GUIDraw.backgroundColor;
+		public static void EndBackgroundColor() {
+			GUI.backgroundColor = GUIDraw.background_color;
 		}
 
 		public static string SearchBar(string search) {
@@ -480,14 +500,8 @@ namespace FastPlay.Editor {
 			GenericMenu menu = new GenericMenu();
 			foreach (Type type in ReflectionUtils.GetFullTypes()) {
 				if (type == null) continue;
-				string namespace_path = type.Namespace;
-				if (namespace_path.IsNullOrEmpty()) {
-					namespace_path = "Global";
-				}
-				else {
-					namespace_path = namespace_path.Replace(".", "/");
-				}
-				string type_path = string.Format("{0}/{1}", namespace_path, type.GetTypeName(false, true));
+
+				string type_path = type.GetTypePath(true);
 
 				menu.AddItem(new GUIContent(type_path), false, () => {
 					cached_value = type;

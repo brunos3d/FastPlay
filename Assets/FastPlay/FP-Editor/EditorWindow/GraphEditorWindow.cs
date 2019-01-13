@@ -872,6 +872,25 @@ namespace FastPlay.Editor {
 								DragAndDrop.PrepareStartDrag();
 							}
 						}
+						else if (DragAndDrop.objectReferences[0] is MonoScript) {
+							DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+							if (current.type == EventType.DragPerform) {
+								DragAndDrop.AcceptDrag();
+								MonoScript script = DragAndDrop.objectReferences.FirstOrDefault(r => r is MonoScript) as MonoScript;
+								if (script) {
+									Type s_type = script.GetClass();
+									GenericMenu generic_menu = new GenericMenu();
+									generic_menu.AddItem(new GUIContent(string.Format("Add {0} as Node", s_type.GetTypeName())), false, (obj) => {
+										ReflectedObjectNode instance = AddNode<ReflectedObjectNode>((Vector2)obj, false);
+										instance.SetObject(s_type);
+										instance.Validate();
+										instance.OnGraphAdd();
+									}, GraphEditor.mouse_position - GraphEditor.scroll);
+									generic_menu.ShowAsContext();
+								}
+								DragAndDrop.PrepareStartDrag();
+							}
+						}
 						else {
 							DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
 						}

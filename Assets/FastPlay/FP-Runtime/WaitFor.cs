@@ -7,9 +7,9 @@ namespace FastPlay.Runtime {
 			return Frames(1);
 		}
 
-		public static IEnumerator Frames(int frameCount) {
-			while (frameCount > 0) {
-				frameCount--;
+		public static IEnumerator Frames(int frame_count) {
+			while (frame_count > 0) {
+				frame_count--;
 				yield return null;
 			}
 		}

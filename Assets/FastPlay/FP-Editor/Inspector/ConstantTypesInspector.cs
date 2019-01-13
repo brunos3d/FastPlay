@@ -73,14 +73,8 @@ namespace FastPlay.Editor {
 					generic_menu = new GenericMenu();
 					foreach (Type type in ReflectionUtils.GetFullTypes()) {
 						if (type == null) continue;
-						string namespace_path = type.Namespace;
-						if (namespace_path.IsNullOrEmpty()) {
-							namespace_path = "Global";
-						}
-						else {
-							namespace_path = namespace_path.Replace(".", "/");
-						}
-						string type_path = string.Format("{0}/{1}", namespace_path, type.GetTypeName(false, true));
+
+						string type_path = type.GetTypePath(true);
 
 						generic_menu.AddItem(new GUIContent(type_path), false, () => {
 							UndoManager.RecordObject(target, "Add new type");

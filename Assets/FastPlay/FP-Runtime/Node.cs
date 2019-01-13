@@ -1,13 +1,28 @@
 using OdinSerializer;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[HideInList]
 	public abstract partial class Node : ObjectBase {
+
+		#region Editor
+
+		[NonSerialized]
+		public string title;
+
+		[NonSerialized]
+		public string subtitle;
+
+		[NonSerialized]
+		public Texture icon;
+
+		[NonSerialized]
+		public Color node_color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+		#endregion
 
 		public Graph graph;
 
@@ -272,12 +287,27 @@ namespace FastPlay.Runtime {
 			}
 		}
 
+		int pass = 0;
 		private T RegisterInputPort<T>(string name, T port, bool display_port = true) where T : Port {
-			return (T)(inputs[name] = RegisterPort(name, port, display_port));
+			Port p;
+			if (outputs.TryGetValue(name, out p)) {
+				return RegisterInputPort<T>(string.Format("{0} ({1})", name, pass++), port, display_port);
+			}
+			else {
+				pass = 0;
+				return (T)(inputs[name] = RegisterPort(name, port, display_port));
+			}
 		}
 
 		private T RegisterOutputPort<T>(string name, T port, bool display_port = true) where T : Port {
-			return (T)(outputs[name] = RegisterPort(name, port, display_port));
+			Port p;
+			if (inputs.TryGetValue(name, out p)) {
+				return RegisterOutputPort<T>(string.Format("{0} ({1})", name, pass++), port, display_port);
+			}
+			else {
+				pass = 0;
+				return (T)(outputs[name] = RegisterPort(name, port, display_port));
+			}
 		}
 
 		protected InputAction RegisterEntryPort(string name, Act action, bool display_port = true) {

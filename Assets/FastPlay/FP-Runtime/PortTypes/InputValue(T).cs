@@ -70,7 +70,7 @@ namespace FastPlay.Runtime {
 
 		public bool CanPlug(IPlugOut plug, bool overwrite = true) {
 			Port port = plug as Port;
-			return (overwrite ? true : !IsPlugged()) && port && port.node != node && port is IOutputValue && typeof(T).IsAssignableFrom(((IOutputValue)port).valueType);
+			return this.display_port && ((overwrite & (port && port.display_port) ? true : !IsPlugged()) && port && port.display_port && port.node != node && port is IOutputValue && typeof(T).IsAssignableFrom(((IOutputValue)port).valueType));
 		}
 
 		public void PlugTo(IPlugOut port) {

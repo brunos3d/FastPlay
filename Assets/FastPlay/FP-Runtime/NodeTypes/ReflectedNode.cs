@@ -1,82 +1,88 @@
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Reflection;
+using System.Collections.Generic;
 using FastPlay.Editor;
+using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[HideInList]
 	public class ReflectedNode : Node, IRegisterDefaultPorts {
 
-		public bool is_generic;
+		public SerializedMethod serialized_method;
 
-		public SerializedMethod method;
+		[NonSerialized]
+		public MethodInfo cached_method;
+
+		[NonSerialized]
+		public IInputValue target;
 
 		[NonSerialized]
 		public OutputAction output;
 
 		[NonSerialized]
-		public MethodInfo method_info;
-
-		[NonSerialized]
-		public IInputValue target;
-
 		List<IInputValue> parameters = new List<IInputValue>();
 
 		public ReflectedNode() { }
 
 		public void OnRegisterDefaultPorts() {
-			if (method == null) return;
-			SetMethod(method.Deserialize());
+			if (serialized_method == null) return;
+			SetMethod(serialized_method.Deserialize());
 		}
 
-		public void SetMethod(MethodInfo method, params Type[] type_args) {
-			if (method == null) return;
-			this.method_info = method;
+		public void SetMethod(MethodInfo method_info, params Type[] type_args) {
+			if (method_info == null) {
+				Debug.LogError("type method_info is null!");
+				return;
+			}
+
+			this.cached_method = method_info;
+
 			if (type_args.IsNullOrEmpty()) {
-				this.method = this.method ?? new SerializedMethod(method);
+				this.serialized_method = this.serialized_method ?? new SerializedMethod(method_info);
 			}
 			else {
-				this.method = this.method ?? new SerializedMethod(method, type_args);
+				this.serialized_method = this.serialized_method ?? new SerializedMethod(method_info, type_args);
 			}
+
+			string method_name = cached_method.Name;
+			this.name = method_name;
 
 			RegisterEntryPort("In", Execute);
 			this.output = RegisterExitPort("Out");
 
-			if (method.ReturnType != typeof(void)) {
-				RegisterOutputValue(method.ReturnType, "Get", Invoke);
+			if (method_info.ReturnType != typeof(void)) {
+				RegisterOutputValue(method_info.ReturnType, "Get", Invoke);
 			}
 #if UNITY_EDITOR
-			node_color = GUIReferrer.GetTypeColor(method.ReturnType);
+			node_color = GUIReferrer.GetTypeColor(method_info.ReturnType);
 #endif
 
-			if (method.IsStatic) {
+			if (method_info.IsStatic) {
 				this.target = null;
-				string new_name = method.Name;
-				if (new_name.Contains("get_")) {
-					new_name = new_name.Replace("get_", string.Empty);
-					//this.name = string.Format("[Get] {0}.{1}", method.DeclaringType.GetTypeName(), new_name);
+				string title = method_name;
+				if (title.Contains("get_")) {
+					title = title.Replace("get_", string.Empty);
 				}
-				else if (new_name.Contains("set_")) {
-					new_name = new_name.Replace("set_", string.Empty);
-					//this.name = string.Format("[Set] {0}.{1}", method.DeclaringType.GetTypeName(), new_name);
+				else if (title.Contains("set_")) {
+					title = title.Replace("set_", string.Empty);
 				}
-				this.name = new_name;
+				this.title = title;
 			}
 			else {
-				this.target = (IInputValue)RegisterInputValue(method.ReflectedType, "Target");
-				string new_name = method.Name;
-				if (new_name.Contains("get_")) {
-					new_name = /*"[Get] " + */new_name.Replace("get_", string.Empty).AddSpacesToSentence();
+				this.target = (IInputValue)RegisterInputValue(method_info.ReflectedType, "Target");
+				string title = method_name;
+				if (title.Contains("get_")) {
+					title = /*"[Get] " + */title.Replace("get_", string.Empty).AddSpacesToSentence();
 				}
-				else if (new_name.Contains("set_")) {
-					new_name = /*"[Set] " + */new_name.Replace("set_", string.Empty).AddSpacesToSentence();
+				else if (title.Contains("set_")) {
+					title = /*"[Set] " + */title.Replace("set_", string.Empty).AddSpacesToSentence();
 				}
-				this.name = new_name;
+				this.title = title;
 			}
 
 			parameters = new List<IInputValue>();
-			foreach (ParameterInfo parameter in method.GetParameters()) {
+			foreach (ParameterInfo parameter in method_info.GetParameters()) {
 				parameters.Add((IInputValue)RegisterInputValue(parameter.ParameterType, parameter.Name.AddSpacesToSentence()));
 			}
 		}
@@ -88,11 +94,11 @@ namespace FastPlay.Runtime {
 
 		public object Invoke() {
 			object[] args = parameters.Select(i => i.GetValue()).ToArray();
-			if (method_info.IsStatic) {
-				return method_info.Invoke(null, args);
+			if (cached_method.IsStatic) {
+				return cached_method.Invoke(null, args);
 			}
 			else {
-				return method_info.Invoke(target.GetValue(), args);
+				return cached_method.Invoke(target.GetValue(), args);
 			}
 		}
 	}

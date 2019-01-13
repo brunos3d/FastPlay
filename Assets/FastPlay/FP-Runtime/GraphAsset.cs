@@ -12,6 +12,9 @@ namespace FastPlay.Runtime {
 	public class GraphAsset : ScriptableObject, ISerializationCallbackReceiver {
 
 		[SerializeField]
+		private bool is_ready;
+
+		[SerializeField]
 		private SerializationData serialization_data;
 
 		public string title;
@@ -32,10 +35,7 @@ namespace FastPlay.Runtime {
 
 		public Graph graph {
 			get {
-				if (!m_graph) {
-					m_graph = ObjectBase.CreateInstance<Graph>();
-					m_graph.OnGraphAdd();
-				}
+				FixNullGraphInstace();
 				return m_graph;
 			}
 			private set {
@@ -60,29 +60,31 @@ namespace FastPlay.Runtime {
 		}
 
 		public void Validate() {
-			if (!m_graph) {
-				m_graph = ObjectBase.CreateInstance<Graph>();
-				m_graph.OnGraphAdd();
-			}
+			FixNullGraphInstace();
 			m_graph.Validate();
 		}
 
 		public void LoadData() {
-			//m_graph = SerializationUtility.DeserializeValue<Graph>(Encoding.ASCII.GetBytes(m_data), DataFormat.JSON);
 			UnitySerializationUtility.DeserializeUnityObject(this, ref this.serialization_data);
-			if (!m_graph) {
-				m_graph = ObjectBase.CreateInstance<Graph>();
-				m_graph.OnGraphAdd();
-			}
+			FixNullGraphInstace(!is_ready);
+			is_ready = true;
 		}
 
 		public void SaveData() {
 			if (Application.isPlaying || isInstance) return;
+			FixNullGraphInstace();
+			UnitySerializationUtility.SerializeUnityObject(this, ref this.serialization_data, true);
+		}
+
+		public void FixNullGraphInstace(bool add_default_nodes = false) {
 			if (!m_graph) {
 				m_graph = ObjectBase.CreateInstance<Graph>();
+				if (add_default_nodes) {
+					m_graph.AddNode<StartEvent>();
+					m_graph.AddNode<UpdateEvent>(new Vector2(0.0f, 240.0f));
+				}
 				m_graph.OnGraphAdd();
 			}
-			UnitySerializationUtility.SerializeUnityObject(this, ref this.serialization_data, true);
 		}
 
 		public List<Node> GetAllNodes() {
