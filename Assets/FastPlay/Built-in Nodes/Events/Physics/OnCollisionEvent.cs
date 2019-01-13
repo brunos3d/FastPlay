@@ -4,7 +4,7 @@ using UnityEngine;
 namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnCollision")]
-	[Path("Events/Collider/OnCollision")]
+	[Path("Events/Physics/OnCollision")]
 	public class OnCollisionEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public Collision collision;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("DisableEvent Icon")]
+	[Icon("DisableEventNode Icon")]
 	[Title("OnDestroy")]
 	[Path("Events/Lifecycle/OnDestroy")]
 	public class OnDestroyEvent : EventNode {

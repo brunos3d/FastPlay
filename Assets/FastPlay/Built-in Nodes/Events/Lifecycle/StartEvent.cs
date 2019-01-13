@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("StartEvent Icon")]
+	[Icon("StartEventNode Icon")]
 	[Title("Start")]
 	[Path("Events/Lifecycle/Start")]
 	public class StartEvent : EventNode {

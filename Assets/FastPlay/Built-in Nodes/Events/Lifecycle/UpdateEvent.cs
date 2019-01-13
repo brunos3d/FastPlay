@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("UpdateEvent Icon")]
+	[Icon("UpdateEventNode Icon")]
 	[Title("Update")]
 	[Path("Events/Lifecycle/Update")]
 	public class UpdateEvent : EventNode, IUpdate {

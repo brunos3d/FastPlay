@@ -4,7 +4,7 @@ using UnityEngine;
 namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnTrigger2D")]
-	[Path("Events/Collider/OnTrigger2D")]
+	[Path("Events/Physics/OnTrigger2D")]
 	public class OnTrigger2DEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public Collider2D collider;
