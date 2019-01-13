@@ -612,6 +612,7 @@ namespace FastPlay.Editor {
 							DragAndDrop.AcceptDrag();
 							GenericMenu generic_menu = new GenericMenu();
 							Type type;
+							string type_name;
 							foreach (UnityObject drag_obj in DragAndDrop.objectReferences) {
 								if (drag_obj is GraphAsset) {
 									GraphAsset m_asset = (GraphAsset)drag_obj;
@@ -625,11 +626,13 @@ namespace FastPlay.Editor {
 									MonoScript script = (MonoScript)drag_obj;
 									if (script) {
 										type = script.GetClass();
-										string type_name = type.GetTypeName();
+										type_name = type.GetTypeName();
+
 										generic_menu.AddItem(new GUIContent(string.Format("{0}/Add {0} as Node", type_name)), false, (obj) => {
 											AddCustomNode<ReflectedObjectNode>((Vector2)obj, true, type);
 										}, GraphEditor.mouse_position - GraphEditor.scroll);
 										generic_menu.AddSeparator(string.Format("{0}/", type_name));
+
 										AddTypeMethodsToMenu(generic_menu, type, type_name);
 									}
 								}
@@ -639,12 +642,13 @@ namespace FastPlay.Editor {
 								}
 
 								type = drag_obj.GetType();
+								type_name = type.GetTypeName();
 
-								generic_menu.AddItem(new GUIContent(string.Format("Add {0} as Node", type.GetTypeName())), false, (obj) => {
+								generic_menu.AddItem(new GUIContent(string.Format("Add {0} as Node", type_name)), false, (obj) => {
 									AddCustomNode<ReflectedObjectNode>((Vector2)obj, true, type);
 								}, GraphEditor.mouse_position - GraphEditor.scroll);
 
-								AddTypeMethodsToMenu(generic_menu, type);
+								AddTypeMethodsToMenu(generic_menu, type, type_name);
 							}
 							DragAndDrop.PrepareStartDrag();
 							generic_menu.ShowAsContext();
