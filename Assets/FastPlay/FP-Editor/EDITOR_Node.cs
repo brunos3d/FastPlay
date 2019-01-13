@@ -686,19 +686,19 @@ namespace FastPlay.Runtime {
 			}
 			else if (this is ReflectedNode) {
 				invert_title = true;
-				Type refected_type = ((ReflectedNode)this).cached_method.ReflectedType;
+				Type reflected_type = ((ReflectedNode)this).cached_method.ReflectedType;
 				if (this.subtitle.IsNullOrEmpty()) {
-					this.subtitle = refected_type.GetTypeName();
+					this.subtitle = reflected_type.GetTypeName();
 				}
-				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(refected_type);
+				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(reflected_type);
 			}
 			if (this is ReflectedObjectNode) {
 				invert_title = true;
-				Type refected_type = ((ReflectedObjectNode)this).cached_type;
+				Type reflected_type = ((ReflectedObjectNode)this).cached_type;
 				if (this.subtitle.IsNullOrEmpty()) {
 					this.subtitle = "Reflected";
 				}
-				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(refected_type, false) ?? GUIReferrer.GetTypeIcon(typeof(MonoScript));
+				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(reflected_type, false) ?? GUIReferrer.GetTypeIcon(typeof(MonoScript));
 
 			}
 			else if (this is ValueNode) {

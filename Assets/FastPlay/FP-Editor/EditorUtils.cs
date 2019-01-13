@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Collections;
 using UnityEngine;
 using UnityEditor;
+using UnityObject = UnityEngine.Object;
 using FastPlay.Runtime;
 
 namespace FastPlay.Editor {
@@ -19,7 +20,7 @@ namespace FastPlay.Editor {
 		public static void RepaintInspector() {
 			Type InspWindow = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.InspectorWindow");
 			MethodInfo RepaintWindow = InspWindow.GetMethod("Repaint", BindingFlags.Public | BindingFlags.Instance);
-			UnityEngine.Object InspWindowInstance = null;
+			UnityObject InspWindowInstance = null;
 			if (Resources.FindObjectsOfTypeAll(InspWindow).Length == 0) {
 				return;
 				//ShowWindow.Invoke(null, null);
@@ -41,7 +42,7 @@ namespace FastPlay.Editor {
 			FieldInfo Sections = PrefsWindow.GetField("m_Sections", BindingFlags.NonPublic | BindingFlags.Instance);
 			FieldInfo RefreshCustomPreferences = PrefsWindow.GetField("m_RefreshCustomPreferences", BindingFlags.NonPublic | BindingFlags.Instance);
 			int index = 0;
-			UnityEngine.Object PrefsWindowInstance = null;
+			UnityObject PrefsWindowInstance = null;
 			if (Sections != null) {
 				if (Resources.FindObjectsOfTypeAll(PrefsWindow).Length == 0) {
 					ShowPreferencesWindow.Invoke(null, null);
@@ -71,7 +72,7 @@ namespace FastPlay.Editor {
 			}
 		}
 
-		public static T FindAssetByName<T>(string name) where T : UnityEngine.Object {
+		public static T FindAssetByName<T>(string name) where T : UnityObject {
 			if (name.IsNullOrEmpty()) return null;
 			if (Resources.Load<T>(name)) {
 				return Resources.Load<T>(name);
@@ -93,7 +94,7 @@ namespace FastPlay.Editor {
 		}
 
 		public static bool OpenScriptByType(Type type) {
-			UnityEngine.Object search = FindScriptByType(type);
+			UnityObject search = FindScriptByType(type);
 			if (search != null) {
 				AssetDatabase.OpenAsset(search);
 				return true;

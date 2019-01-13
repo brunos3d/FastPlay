@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityObject = UnityEngine.Object;
 using FastPlay.Runtime;
 
 namespace FastPlay.Editor {
@@ -120,6 +121,13 @@ namespace FastPlay.Editor {
 			return GraphEditor.graph.AddNode<T>(position, validate);
 		}
 
+		public static T AddCustomNode<T>(Vector2 position = default(Vector2), bool validate = true, params object[] args) where T : Node {
+			if (!GraphEditor.graph) return null;
+			UndoManager.RecordObject(GraphEditor.asset, string.Format("{0} Add Node", GraphEditor.asset.name));
+			set_dirty = true;
+			return GraphEditor.graph.AddCustomNode<T>(position, validate, args);
+		}
+
 		public static MacroNode AddMacro(GraphAsset reference, Vector2 position = default(Vector2)) {
 			if (!GraphEditor.graph) return null;
 			UndoManager.RecordObject(GraphEditor.asset, string.Format("{0} Add Graph", GraphEditor.asset.name));
@@ -127,18 +135,18 @@ namespace FastPlay.Editor {
 			return GraphEditor.graph.AddMacro(reference, position);
 		}
 
-		public static Node AddNode(Type type, Vector2 position = default(Vector2)) {
+		public static Node AddNode(Type type, Vector2 position = default(Vector2), bool validate = true) {
 			if (!GraphEditor.graph) return null;
 			UndoManager.RecordObject(GraphEditor.asset, string.Format("{0} Add Node", GraphEditor.asset.name));
 			set_dirty = true;
-			return GraphEditor.graph.AddNode(type, position);
+			return GraphEditor.graph.AddNode(type, position, validate);
 		}
 
-		public static Node AddCustomNode(Type type, Vector2 position = default(Vector2), params object[] args) {
+		public static Node AddCustomNode(Type type, Vector2 position = default(Vector2), bool validate = true, params object[] args) {
 			if (!GraphEditor.graph) return null;
 			UndoManager.RecordObject(GraphEditor.asset, string.Format("{0} Add Node", GraphEditor.asset.name));
 			set_dirty = true;
-			return GraphEditor.graph.AddCustomNode(type, position, args);
+			return GraphEditor.graph.AddCustomNode(type, position, validate, args);
 		}
 
 		private void OnEnable() {
@@ -304,7 +312,6 @@ namespace FastPlay.Editor {
 				if (dragging || bkp_zoom != GraphEditor.zoom || bkp_scroll != GraphEditor.scroll) {
 					bkp_zoom = GraphEditor.zoom;
 					bkp_scroll = GraphEditor.scroll;
-					RepaintInfo();
 				}
 				Repaint();
 			}
@@ -512,264 +519,7 @@ namespace FastPlay.Editor {
 						case 1:
 							if (!GraphEditor.is_drag) {
 								SearchWindow.Init(EditorGUIUtility.GUIToScreenPoint(GraphEditor.mouse_position), GraphEditor.mouse_position);
-								/*generic_menu = new GenericMenu();
-								foreach (Parameter param in GraphEditor.graph.inputParameters) {
-									generic_menu.AddItem(new GUIContent(string.Format("Local Variables/{0} : {1}", param.name, param.valueType.GetTypeName())), false, (object obj) => {
-										AddCustomNode(typeof(VariableNode<>).MakeGenericType(param.valueType), (Vector2)obj, param);
-									}, GraphEditor.mouse_position - GraphEditor.scroll);
-								}
-								generic_menu.AddSeparator("Local Variables/");
-								foreach (Type type in EditorHandler.GetConstantTypesCurrentInstance().current_types) {
-									if (typeof(Component).IsAssignableFrom(type) && !(type.IsAbstract & type.IsGenericType)) {
-										string typeName = type.GetTypeName(true);
-										if (typeName.Contains("UnityEngine")) {
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/GameObject/GetComponent<T>/UnityEngine/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(GameObjectGetComponent<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/Current/GetComponent<T>/UnityEngine/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(CurrentGetComponent<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-										}
-										else if (typeName.Contains("FastPlay")) {
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/GameObject/GetComponent<T>/FastPlay/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(GameObjectGetComponent<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/Current/GetComponent<T>/FastPlay/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(CurrentGetComponent<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-										}
-									}
-								}
-								//generic_menu.AddSeparator("Utilities/Actions/GetOwner<T>/");
-								//generic_menu.AddSeparator("Actions/GameObject/GetComponent<T>/");
-								foreach (Type type in typeof(Node).Assembly.GetTypes()) {
-									if (typeof(Component).IsAssignableFrom(type) && !(type.IsAbstract & type.IsGenericType)) {
-										generic_menu.AddItem(new GUIContent(string.Format("Actions/GameObject/GetComponent<T>/References/{0}", type.GetTypeName())), false, (object obj) => {
-											AddNode(typeof(GameObjectGetComponent<>).MakeGenericType(type), (Vector2)obj);
-										}, GraphEditor.mouse_position - GraphEditor.scroll);
-
-										generic_menu.AddItem(new GUIContent(string.Format("Actions/Current/GetComponent<T>/References/{0}", type.GetTypeName())), false, (object obj) => {
-											AddNode(typeof(CurrentGetComponent<>).MakeGenericType(type), (Vector2)obj);
-										}, GraphEditor.mouse_position - GraphEditor.scroll);
-									}
-								}
-								foreach (Type type in EditorHandler.GetConstantTypesCurrentInstance().current_types) {
-									if (typeof(Component).IsAssignableFrom(type) || !(type.IsAbstract & type.IsGenericType)) {
-										string typeName = type.GetTypeName(true);
-										if (typeName.Contains("System")) {
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/VariableObject/GetSet<T>/System/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(VariableGetSet<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/Current/FindVariable<T>/System/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(CurrentFindVariable<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-										}
-										else if (typeName.Contains("FastPlay")) {
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/VariableObject/GetSet<T>/FastPlay/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(VariableGetSet<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/Current/FindVariable<T>/FastPlay/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(CurrentFindVariable<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-										}
-										else if (typeName.Contains("UnityEngine")) {
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/VariableObject/GetSet<T>/UnityEngine/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(VariableGetSet<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/Current/FindVariable<T>/UnityEngine/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(CurrentFindVariable<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-										}
-										else {
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/VariableObject/GetSet<T>/References/{0}", type.GetTypeName())), false, (object obj) => {
-												AddNode(typeof(VariableGetSet<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-											generic_menu.AddItem(new GUIContent(string.Format("Actions/Current/FindVariable<T>/References/{0}", type.GetTypeName(true).Replace(".", "/"))), false, (object obj) => {
-												AddNode(typeof(CurrentFindVariable<>).MakeGenericType(type), (Vector2)obj);
-											}, GraphEditor.mouse_position - GraphEditor.scroll);
-										}
-									}
-								}
-								foreach (Type type in typeof(Node).Assembly.GetTypes()) {
-									if (typeof(Node).IsAssignableFrom(type) && !type.IsAbstract) {
-										if (type.HasAttribute<HideInListAttribute>(false)) continue;
-										string path = type.GetTypeName();
-										PathAttribute path_attribute = type.GetAttribute<PathAttribute>(false);
-
-										if (type.IsGenericType) {
-											foreach (Type t in EditorHandler.GetConstantTypesCurrentInstance().current_types) {
-												Type type_gen = type.MakeGenericType(t);
-												if (path_attribute == null) {
-													if (typeof(ActionNode).IsAssignableFrom(type_gen) || typeof(ValueNode).IsAssignableFrom(type_gen)) {
-														path = "Actions/" + type_gen.GetTypeName();
-													}
-													else if (typeof(EventNode).IsAssignableFrom(type_gen)) {
-														path = "Events/" + type_gen.GetTypeName();
-													}
-													else {
-														path = "Others/" + type_gen.GetTypeName();
-													}
-												}
-												else {
-													path = string.Format("{0}/{1}", path_attribute.path, type_gen.GetTypeName(false, true));
-												}
-												if (type_gen.HasAttribute<BuiltInNodeAttribute>(false)) {
-													generic_menu.AddItem(new GUIContent(path), false, (object obj) => {
-														AddNode(type_gen, (Vector2)obj);
-													}, GraphEditor.mouse_position - GraphEditor.scroll);
-												}
-												else {
-													generic_menu.AddItem(new GUIContent("References/" + path), false, (object obj) => {
-														AddNode(type_gen, (Vector2)obj);
-													}, GraphEditor.mouse_position - GraphEditor.scroll);
-												}
-											}
-										}
-										else {
-											if (path_attribute == null) {
-												if (typeof(ActionNode).IsAssignableFrom(type) || typeof(ValueNode).IsAssignableFrom(type)) {
-													path = "Actions/" + type.GetTypeName();
-												}
-												else if (typeof(EventNode).IsAssignableFrom(type)) {
-													path = "Events/" + type.GetTypeName();
-												}
-												else {
-													path = "Others/" + type.GetTypeName();
-												}
-											}
-											else {
-												path = path_attribute.path;
-											}
-											if (type.HasAttribute<BuiltInNodeAttribute>(false)) {
-												generic_menu.AddItem(new GUIContent(path), false, (object obj) => {
-													AddNode(type, (Vector2)obj);
-												}, GraphEditor.mouse_position - GraphEditor.scroll);
-											}
-											else {
-												generic_menu.AddItem(new GUIContent("References/" + path), false, (object obj) => {
-													AddNode(type, (Vector2)obj);
-												}, GraphEditor.mouse_position - GraphEditor.scroll);
-											}
-										}
-									}
-								}
-								foreach (Type type in EditorHandler.GetConstantTypesCurrentInstance().current_types) {
-									bool separated = false;
-									if (type.IsGenericType) {
-										foreach (Type t in EditorHandler.GetConstantTypesCurrentInstance().current_types) {
-											Type type_gen = type.MakeGenericType(t);
-											MethodInfo[] methods = type_gen.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
-											//methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type)
-											//methods.Where(m => m.IsSpecialName)
-											//methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)
-											foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type_gen)) {
-												generic_menu.AddItem(new GUIContent(string.Format("Functions/Reflected/{0}/{1}/Inherited/{2}", type.GetTypeName(), type_gen.GetTypeName(), method.GetSignName())), false, (object obj) => {
-													ReflectedNode instance = AddNode<ReflectedNode>((Vector2)obj, false);
-													instance.SetMethod(method);
-													instance.Validate();
-													instance.OnGraphAdd();
-												}, GraphEditor.mouse_position - GraphEditor.scroll);
-											}
-											foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
-												generic_menu.AddItem(new GUIContent(string.Format("Functions/Reflected/{0}/{1}/Properties/{2}", type.GetTypeName(), type_gen.GetTypeName(), method.GetSignName())), false, (object obj) => {
-													ReflectedNode instance = AddNode<ReflectedNode>((Vector2)obj, false);
-													instance.SetMethod(method);
-													instance.Validate();
-													instance.OnGraphAdd();
-												}, GraphEditor.mouse_position - GraphEditor.scroll);
-											}
-											if (!separated) {
-												generic_menu.AddSeparator(string.Format("Functions/Reflected/{0}/{1}/", type.GetTypeName(), type_gen.GetTypeName()));
-												separated = true;
-											}
-											foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type_gen)) {
-												generic_menu.AddItem(new GUIContent(string.Format("Functions/Reflected/{0}/{1}/{2}", type.GetTypeName(), type_gen.GetTypeName(), method.GetSignName())), false, (object obj) => {
-													ReflectedNode instance = AddNode<ReflectedNode>((Vector2)obj, false);
-													instance.SetMethod(method);
-													instance.Validate();
-													instance.OnGraphAdd();
-												}, GraphEditor.mouse_position - GraphEditor.scroll);
-											}
-										}
-									}
-									else {
-										MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
-										//methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type)
-										//methods.Where(m => m.IsSpecialName)
-										//methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)
-										foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type)) {
-											if (method.IsGenericMethod) {
-												foreach (Type t in EditorHandler.GetConstantTypesCurrentInstance().current_types) {
-													MethodInfo method_gen = method.MakeGenericMethod(t);
-													generic_menu.AddItem(new GUIContent(string.Format("Functions/Reflected/{0}/Inherited/{1}/{2}", type.GetTypeName(), method.GetSignName(), method_gen.GetSignName())), false, (object obj) => {
-														ReflectedNode instance = AddNode<ReflectedNode>((Vector2)obj, false);
-														instance.SetMethod(method_gen);
-														instance.Validate();
-														instance.OnGraphAdd();
-													}, GraphEditor.mouse_position - GraphEditor.scroll);
-												}
-											}
-											else {
-												generic_menu.AddItem(new GUIContent(string.Format("Functions/Reflected/{0}/Inherited/{1}", type.GetTypeName(), method.GetSignName())), false, (object obj) => {
-													ReflectedNode instance = AddNode<ReflectedNode>((Vector2)obj, false);
-													instance.SetMethod(method);
-													instance.Validate();
-													instance.OnGraphAdd();
-												}, GraphEditor.mouse_position - GraphEditor.scroll);
-											}
-										}
-										foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
-											if (method.IsGenericMethod) {
-												foreach (Type t in EditorHandler.GetConstantTypesCurrentInstance().current_types) {
-													MethodInfo method_gen = method.MakeGenericMethod(t);
-													generic_menu.AddItem(new GUIContent(string.Format("Functions/Reflected/{0}/Properties/{1}/{2}", type.GetTypeName(), method.GetSignName(), method_gen.GetSignName())), false, (object obj) => {
-														ReflectedNode instance = AddNode<ReflectedNode>((Vector2)obj, false);
-														instance.SetMethod(method_gen);
-														instance.Validate();
-														instance.OnGraphAdd();
-													}, GraphEditor.mouse_position - GraphEditor.scroll);
-												}
-											}
-											else {
-												generic_menu.AddItem(new GUIContent(string.Format("Functions/Reflected/{0}/Properties/{1}", type.GetTypeName(), method.GetSignName())), false, (object obj) => {
-													ReflectedNode instance = AddNode<ReflectedNode>((Vector2)obj, false);
-													instance.SetMethod(method);
-													instance.Validate();
-													instance.OnGraphAdd();
-												}, GraphEditor.mouse_position - GraphEditor.scroll);
-											}
-										}
-										if (!separated) {
-											generic_menu.AddSeparator(string.Format("Functions/Reflected/{0}/", type.GetTypeName()));
-											separated = true;
-										}
-										foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)) {
-											if (method.IsGenericMethod) {
-												foreach (Type t in EditorHandler.GetConstantTypesCurrentInstance().current_types) {
-													MethodInfo method_gen = method.MakeGenericMethod(t);
-													generic_menu.AddItem(new GUIContent(string.Format("Functions/Reflected/{0}/{1}/{2}", type.GetTypeName(), method.GetSignName(), method_gen.GetSignName())), false, (object obj) => {
-														ReflectedNode instance = AddNode<ReflectedNode>((Vector2)obj, false);
-														instance.SetMethod(method_gen);
-														instance.Validate();
-														instance.OnGraphAdd();
-													}, GraphEditor.mouse_position - GraphEditor.scroll);
-												}
-											}
-											else {
-												generic_menu.AddItem(new GUIContent(string.Format("Functions/Reflected/{0}/{1}", type.GetTypeName(), method.GetSignName())), false, (object obj) => {
-													ReflectedNode instance = AddNode<ReflectedNode>((Vector2)obj, false);
-													instance.SetMethod(method);
-													instance.Validate();
-													instance.OnGraphAdd();
-												}, GraphEditor.mouse_position - GraphEditor.scroll);
-											}
-										}
-									}
-								}
-								generic_menu.DropDown(GraphEditor.UnZoomedRect(new Rect(GraphEditor.mouse_position, Vector2.zero)));
-								current.Use();*/
+								current.Use();
 							}
 							GraphEditor.is_drag = false;
 							break;
@@ -857,42 +607,47 @@ namespace FastPlay.Editor {
 				case EventType.DragUpdated:
 				case EventType.DragPerform:
 					if (DragAndDrop.objectReferences.Length > 0) {
-						if (DragAndDrop.objectReferences[0] is GraphAsset) {
-							DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-							if (current.type == EventType.DragPerform) {
-								DragAndDrop.AcceptDrag();
-								GraphAsset m_asset = DragAndDrop.objectReferences.FirstOrDefault(r => r is GraphAsset) as GraphAsset;
-								if (m_asset) {
-									GenericMenu generic_menu = new GenericMenu();
-									generic_menu.AddItem(new GUIContent("Add Graph"), false, (obj) => {
-										AddMacro(m_asset, (Vector2)obj);
-									}, GraphEditor.mouse_position - GraphEditor.scroll);
-									generic_menu.ShowAsContext();
+						DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+						if (current.type == EventType.DragPerform) {
+							DragAndDrop.AcceptDrag();
+							GenericMenu generic_menu = new GenericMenu();
+							Type type;
+							foreach (UnityObject drag_obj in DragAndDrop.objectReferences) {
+								if (drag_obj is GraphAsset) {
+									GraphAsset m_asset = (GraphAsset)drag_obj;
+									if (m_asset) {
+										generic_menu.AddItem(new GUIContent(string.Format("Add {0} as Macro", m_asset.title.IsNullOrEmpty() ? m_asset.name : m_asset.title)), false, (obj) => {
+											AddMacro(m_asset, (Vector2)obj);
+										}, GraphEditor.mouse_position - GraphEditor.scroll);
+									}
 								}
-								DragAndDrop.PrepareStartDrag();
-							}
-						}
-						else if (DragAndDrop.objectReferences[0] is MonoScript) {
-							DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-							if (current.type == EventType.DragPerform) {
-								DragAndDrop.AcceptDrag();
-								MonoScript script = DragAndDrop.objectReferences.FirstOrDefault(r => r is MonoScript) as MonoScript;
-								if (script) {
-									Type s_type = script.GetClass();
-									GenericMenu generic_menu = new GenericMenu();
-									generic_menu.AddItem(new GUIContent(string.Format("Add {0} as Node", s_type.GetTypeName())), false, (obj) => {
-										ReflectedObjectNode instance = AddNode<ReflectedObjectNode>((Vector2)obj, false);
-										instance.SetObject(s_type);
-										instance.Validate();
-										instance.OnGraphAdd();
-									}, GraphEditor.mouse_position - GraphEditor.scroll);
-									generic_menu.ShowAsContext();
+								else if (drag_obj is MonoScript) {
+									MonoScript script = (MonoScript)drag_obj;
+									if (script) {
+										type = script.GetClass();
+										string type_name = type.GetTypeName();
+										generic_menu.AddItem(new GUIContent(string.Format("{0}/Add {0} as Node", type_name)), false, (obj) => {
+											AddCustomNode<ReflectedObjectNode>((Vector2)obj, true, type);
+										}, GraphEditor.mouse_position - GraphEditor.scroll);
+										generic_menu.AddSeparator(string.Format("{0}/", type_name));
+										AddTypeMethodsToMenu(generic_menu, type, type_name);
+									}
 								}
-								DragAndDrop.PrepareStartDrag();
+
+								if (drag_obj is GraphAsset || drag_obj is MonoScript) {
+									generic_menu.AddSeparator("");
+								}
+
+								type = drag_obj.GetType();
+
+								generic_menu.AddItem(new GUIContent(string.Format("Add {0} as Node", type.GetTypeName())), false, (obj) => {
+									AddCustomNode<ReflectedObjectNode>((Vector2)obj, true, type);
+								}, GraphEditor.mouse_position - GraphEditor.scroll);
+
+								AddTypeMethodsToMenu(generic_menu, type);
 							}
-						}
-						else {
-							DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
+							DragAndDrop.PrepareStartDrag();
+							generic_menu.ShowAsContext();
 						}
 					}
 					break;
@@ -920,7 +675,68 @@ namespace FastPlay.Editor {
 			}
 		}
 
-		public void RepaintInfo() {
+		public void AddTypeMethodsToMenu(GenericMenu menu, Type type, string path = "Reflected") {
+			string type_name = type.GetTypeName();
+			List<Type> current_types = EditorHandler.GetConstantTypesCurrentInstance().current_types;
+			MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
+
+			//methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type)
+			//methods.Where(m => m.IsSpecialName)
+			//methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)
+			foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type)) {
+				if (method.IsGenericMethod) {
+					foreach (Type t in current_types) {
+						MethodInfo method_gen = method.MakeGenericMethod(t);
+						menu.AddItem(new GUIContent(new GUIContent(string.Format("{0}/Inherited/{1}/{2}", path, method.GetSignName(), method_gen.GetSignName()))), false, (obj) => {
+							AddCustomNode<ReflectedNode>((Vector2)obj, true, method_gen, new Type[] { t });
+						}, GraphEditor.mouse_position - GraphEditor.scroll);
+					}
+				}
+				else {
+					menu.AddItem(new GUIContent(new GUIContent(string.Format("{0}/Inherited/{1}", path, method.GetSignName()))), false, (obj) => {
+						AddCustomNode<ReflectedNode>((Vector2)obj, true, method);
+					}, GraphEditor.mouse_position - GraphEditor.scroll);
+				}
+			}
+			foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
+				if (method.IsGenericMethod) {
+					foreach (Type t in current_types) {
+						MethodInfo method_gen = method.MakeGenericMethod(t);
+						menu.AddItem(new GUIContent(new GUIContent(string.Format("{0}/Properties/{1}/{2}", path, method.GetSignName(), method_gen.GetSignName()))), false, (obj) => {
+							AddCustomNode<ReflectedNode>((Vector2)obj, true, method_gen, new Type[] { t });
+						}, GraphEditor.mouse_position - GraphEditor.scroll);
+					}
+				}
+				else {
+					menu.AddItem(new GUIContent(new GUIContent(string.Format("{0}/Properties/{1}", path, method.GetSignName()))), false, (obj) => {
+						AddCustomNode<ReflectedNode>((Vector2)obj, true, method);
+					}, GraphEditor.mouse_position - GraphEditor.scroll);
+				}
+			}
+
+			//Literal Nodes
+			if (!type.IsStatic()) {
+				Type literal_node_type = typeof(LiteralNode<>).MakeGenericType(type);
+				menu.AddItem(new GUIContent(new GUIContent(string.Format("{0}/Literal {1}", path, type_name))), false, (obj) => {
+					AddNode(literal_node_type, (Vector2)obj);
+				}, GraphEditor.mouse_position - GraphEditor.scroll);
+			}
+
+			foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)) {
+				if (method.IsGenericMethod) {
+					foreach (Type t in current_types) {
+						MethodInfo method_gen = method.MakeGenericMethod(t);
+						menu.AddItem(new GUIContent(new GUIContent(string.Format("{0}/{1}/{2}", path, method.GetSignName(), method_gen.GetSignName()))), false, (obj) => {
+							AddCustomNode<ReflectedNode>((Vector2)obj, true, method_gen, new Type[] { t });
+						}, GraphEditor.mouse_position - GraphEditor.scroll);
+					}
+				}
+				else {
+					menu.AddItem(new GUIContent(new GUIContent(string.Format("{0}/{1}", path, method.GetSignName()))), false, (obj) => {
+						AddCustomNode<ReflectedNode>((Vector2)obj, true, method);
+					}, GraphEditor.mouse_position - GraphEditor.scroll);
+				}
+			}
 		}
 
 		private void DrawNodes() {

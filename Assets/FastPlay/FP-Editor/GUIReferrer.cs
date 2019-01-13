@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityObject = UnityEngine.Object;
 using FastPlay.Runtime;
 
 namespace FastPlay.Editor {
@@ -28,7 +29,7 @@ namespace FastPlay.Editor {
 			{ typeof(Vector3), "Vector3 Icon" },
 			{ typeof(Vector4), "Vector4 Icon" },
 			{ typeof(Quaternion), "Quaternion Icon" },
-			{ typeof(UnityEngine.Object), "UnityObject Icon" },
+			{ typeof(UnityObject), "UnityObject Icon" },
 			{ typeof(UnityEngine.ScriptableObject), "UnityScriptableObject Icon" },
 			{ typeof(Time), "Time Icon" },
 			{ typeof(Physics), "Physics Icon" },
@@ -60,11 +61,17 @@ namespace FastPlay.Editor {
 			{ typeof(Vector3), new Color(1.0f, 193.0f / 255.0f, 64.0f / 255.0f) },
 			{ typeof(Vector4), new Color(1.0f, 193.0f / 255.0f, 64.0f / 255.0f) },
 			{ typeof(Quaternion), new Color(85.0f / 255.0f, 90.0f / 255.0f, 232.0f / 255.0f) },
-			{ typeof(UnityEngine.Object), Color.gray },
+			{ typeof(UnityObject), Color.gray },
 			{ typeof(Texture), new Color(0.0f / 255.0f, 232.0f / 255.0f, 87.0f / 255.0f) },
 	};
 
 		public static Texture GetTypeIcon(Type type, bool return_default_icon = true) {
+			if (type == null) {
+				if (return_default_icon) {
+					return icons[typeof(Nullable)] = EditorUtils.FindAssetByName<Texture>("404_icon_not_found");
+				}
+				return null;
+			}
 			Texture t;
 			if (icons.TryGetValue(type, out t)) {
 				return t;
@@ -77,7 +84,7 @@ namespace FastPlay.Editor {
 			if (icon_flag != null) {
 				return icons[type] = icon_flag.GetIcon();
 			}
-			if (typeof(UnityEngine.Object).IsAssignableFrom(type)) {
+			if (typeof(UnityObject).IsAssignableFrom(type)) {
 				return icons[type] = EditorGUIUtility.ObjectContent(null, type).image;
 			}
 			if (return_default_icon) {
@@ -88,12 +95,18 @@ namespace FastPlay.Editor {
 			}
 		}
 
-		public static Color GetTypeColor(Type type) {
+		public static Color GetTypeColor(Type type, bool return_default_color = true) {
+			if (type == null) {
+				if (return_default_color) {
+					return colors[type] = new Color(56.0f / 255.0f, 56.0f / 255.0f, 56.0f / 255.0f);
+				}
+				return Color.magenta;
+			}
 			Color c;
 			if (colors.TryGetValue(type, out c)) {
 				return colors[type];
 			}
-			if (typeof(UnityEngine.Object).IsAssignableFrom(type)) {
+			if (typeof(UnityObject).IsAssignableFrom(type)) {
 				return colors[type.BaseType] = Color.gray;
 			}
 			if (type.BaseType != null && colors.TryGetValue(type.BaseType, out c)) {
@@ -103,7 +116,12 @@ namespace FastPlay.Editor {
 			//float g = UnityEngine.Random.Range(0.0f, 1.0f);
 			//float b = UnityEngine.Random.Range(0.0f, 1.0f);
 			//return colors[type] = new Color(r, g, b, 1.0f);
-			return colors[type] = new Color(56.0f / 255.0f, 56.0f / 255.0f, 56.0f / 255.0f);
+			if (return_default_color) {
+				return colors[type] = new Color(56.0f / 255.0f, 56.0f / 255.0f, 56.0f / 255.0f);
+			}
+			else {
+				return Color.magenta;
+			}
 		}
 	}
 }

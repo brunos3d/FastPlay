@@ -288,31 +288,21 @@ namespace FastPlay.Editor {
 		}
 
 		public void AddNode(object obj) {
-			Node instance = GraphEditorWindow.AddNode((Type)obj, this.spawn_pos - GraphEditor.scroll);
-			instance.Validate();
-			instance.OnGraphAdd();
+			GraphEditorWindow.AddNode((Type)obj, this.spawn_pos - GraphEditor.scroll);
 		}
 
 		public void AddCustomNode(object obj) {
 			object[] args = (object[])obj;
-			Node instance = GraphEditorWindow.AddCustomNode((Type)args[0], this.spawn_pos - GraphEditor.scroll, args[1]);
-			instance.Validate();
-			instance.OnGraphAdd();
+			GraphEditorWindow.AddCustomNode((Type)args[0], this.spawn_pos - GraphEditor.scroll, true, args[1]);
 		}
 
 		public void AddReflectedNode(object obj) {
-			ReflectedNode instance = GraphEditorWindow.AddNode<ReflectedNode>(this.spawn_pos - GraphEditor.scroll, false);
-			instance.SetMethod((MethodInfo)obj);
-			instance.Validate();
-			instance.OnGraphAdd();
+			GraphEditorWindow.AddCustomNode<ReflectedNode>(this.spawn_pos - GraphEditor.scroll, true, (MethodInfo)obj);
 		}
 
 		public void AddReflectedGenericNode(object obj) {
-			ReflectedNode instance = GraphEditorWindow.AddNode<ReflectedNode>(this.spawn_pos - GraphEditor.scroll, false);
 			object[] args = (object[])obj;
-			instance.SetMethod((MethodInfo)args[0], (Type)args[1]);
-			instance.Validate();
-			instance.OnGraphAdd();
+			GraphEditorWindow.AddCustomNode<ReflectedNode>(this.spawn_pos - GraphEditor.scroll, true, (MethodInfo)args[0], new Type[] { (Type)args[1] });
 		}
 	}
 }

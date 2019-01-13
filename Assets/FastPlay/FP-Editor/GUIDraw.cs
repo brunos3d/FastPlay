@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
-using FastPlay.Runtime;
+using UnityObject = UnityEngine.Object;
 using System;
 using System.Collections.Generic;
 using System.Collections;
@@ -212,8 +212,8 @@ namespace FastPlay.Editor {
 					}
 				}
 			}
-			else if (typeof(UnityEngine.Object).IsAssignableFrom(type)) {
-				return EditorGUI.ObjectField(rect, content, (UnityEngine.Object)value, type, true);
+			else if (typeof(UnityObject).IsAssignableFrom(type)) {
+				return EditorGUI.ObjectField(rect, content, (UnityObject)value, type, true);
 			}
 			else if (typeof(IList).IsAssignableFrom(type) && !typeof(Array).IsAssignableFrom(type)) {
 				Rect area = new Rect(rect);
@@ -345,8 +345,8 @@ namespace FastPlay.Editor {
 					}
 				}
 			}
-			else if (typeof(UnityEngine.Object).IsAssignableFrom(type)) {
-				return EditorGUILayout.ObjectField(content, (UnityEngine.Object)value, type, true, options);
+			else if (typeof(UnityObject).IsAssignableFrom(type)) {
+				return EditorGUILayout.ObjectField(content, (UnityObject)value, type, true, options);
 			}
 			else if (typeof(Array).IsAssignableFrom(type)) {
 				Array array = (Array)value;
@@ -461,7 +461,7 @@ namespace FastPlay.Editor {
 
 									GUILayout.FlexibleSpace();
 									if (GUILayout.Button("+", "minibutton")) {
-										if (list_type.IsAbstract || typeof(UnityEngine.Object).IsAssignableFrom(list_type)) {
+										if (list_type.IsAbstract || typeof(UnityObject).IsAssignableFrom(list_type)) {
 											collection.Add(null);
 										}
 										else {

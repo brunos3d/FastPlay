@@ -25,6 +25,14 @@ namespace FastPlay.Runtime {
 
 		public ReflectedNode() { }
 
+		public ReflectedNode(MethodInfo method_info) {
+			SetMethod(method_info);
+		}
+
+		public ReflectedNode(MethodInfo method_info, params Type[] type_args) {
+			SetMethod(method_info, type_args);
+		}
+
 		public void OnRegisterDefaultPorts() {
 			if (serialized_method == null) return;
 			SetMethod(serialized_method.Deserialize());

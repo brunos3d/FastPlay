@@ -284,7 +284,11 @@ namespace FastPlay.Runtime {
 			return (T)AddNode(typeof(T), position, validate);
 		}
 
-		public Node AddCustomNode(Type type, Vector2 position = default(Vector2), params object[] args) {
+		public T AddCustomNode<T>(Vector2 position = default(Vector2), bool validate = true, params object[] args) where T : Node {
+			return (T)AddCustomNode(typeof(T), position, validate, args);
+		}
+
+		public Node AddCustomNode(Type type, Vector2 position = default(Vector2), bool validate = true, params object[] args) {
 			if (!typeof(Node).IsAssignableFrom(type)) return null;
 			Node instance = (Node)CreateInstance(type, args);
 			nodes.Add(instance);
@@ -292,8 +296,10 @@ namespace FastPlay.Runtime {
 #if UNITY_EDITOR
 			instance.position = position;
 #endif
-			instance.Validate();
-			instance.OnGraphAdd();
+			if (validate) {
+				instance.Validate();
+				instance.OnGraphAdd();
+			}
 			return instance;
 		}
 

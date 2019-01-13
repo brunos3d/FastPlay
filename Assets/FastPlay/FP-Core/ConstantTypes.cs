@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityObject = UnityEngine.Object;
 using FastPlay.Runtime;
 using OdinSerializer;
 
@@ -52,7 +53,7 @@ namespace FastPlay {
 		typeof(MeshFilter),
 		typeof(MeshRenderer),
 		typeof(MonoBehaviour),
-		typeof(UnityEngine.Object),
+		typeof(UnityObject),
 		typeof(PlayerPrefs),
 		typeof(Physics),
 		typeof(Physics2D),

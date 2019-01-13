@@ -65,17 +65,14 @@ namespace FastPlay.Runtime {
 			BindingFlags flags = BindingFlags.Public | BindingFlags.Instance | (use_inherit ? BindingFlags.Default : BindingFlags.DeclaredOnly) | (use_private ? BindingFlags.NonPublic : BindingFlags.Default) | (use_static ? BindingFlags.Static : BindingFlags.Default);
 			int index = 0;
 			foreach (MethodInfo method_info in type.GetMethods(flags)) {
+				if (method_info.IsGenericMethod && method_info.IsGenericMethodDefinition) continue;
 				string key = method_info.GetSignName();
 				string method_name = method_info.Name;
+				Type[] method_args = method_info.GetGenericArguments();
 
 				SerializedMethod sm;
 				if (!this.serialized_methods.TryGetValue(key, out sm)) {
-					if (type_args.IsNullOrEmpty()) {
-						this.serialized_methods[key] = new SerializedMethod(method_info);
-					}
-					else {
-						this.serialized_methods[key] = new SerializedMethod(method_info, type_args);
-					}
+					this.serialized_methods[key] = new SerializedMethod(method_info, method_args);
 				}
 
 				if (method_info.ReturnType == typeof(void)) {
