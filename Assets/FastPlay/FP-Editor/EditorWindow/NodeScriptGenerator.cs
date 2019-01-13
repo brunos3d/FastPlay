@@ -17,7 +17,8 @@ namespace FastPlay.Editor {
 using UnityEngine;
 using FastPlay.Runtime;
 
-[Title(""#NODEDISPLAYNAME#"")]
+[Title(""#NODETITLE#"")]
+[Subtitle(""#NODESUBTITLE#"")]
 [Path(""Generated/#NODETYPE#/#NODEDISPLAYNAME#"")]
 public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 	
@@ -80,7 +81,9 @@ public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 					bool is_value_node = method.ReturnType != typeof(void);
 					string node_type = "NODETYPE";
 					string node_name = "NODENAME";
-					string display_name = "DISPLAYNAME";
+					string title = "NODETITLE";
+					string subtitle = "NODESUBTITLE";
+					string display_name = "NODESUBTITLE";
 					string method_invoke = "//METHOD NOT IMPLEMENTED";
 
 					string variables = "//#VARIABLES#";
@@ -116,9 +119,10 @@ public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 						}
 
 
+						title = method.Name;
+						subtitle = node_type;
+						display_name = method.GetSignName();
 						if (method.IsStatic) {
-							display_name = string.Format("{0}.{1}", base_type, method.Name.NicifyPropertyName());
-
 							if (method.IsSpecialName) {
 								method_invoke = string.Format("{0}.{1}", method.ReflectedType.GetTypeName(true), method.Name);
 								method_invoke = method_invoke.NicifyPropertyName();
@@ -128,7 +132,6 @@ public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 							}
 						}
 						else {
-							display_name = method.Name.NicifyPropertyName();
 							string target = VARIABLE_FORMAT.Replace("#PARAMETERNAME#", "_target");
 							target = target.Replace("#PARAMETERTYPE#", base_type.GetTypeName(true, true));
 							variables += "\n\t" + target;
@@ -151,6 +154,8 @@ public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 					code = code.Replace("#NODETYPE#", node_type);
 					code = code.Replace("#NODENAME#", node_name);
 					code = code.Replace("#NODEDISPLAYNAME#", display_name);
+					code = code.Replace("#NODETITLE#", title);
+					code = code.Replace("#NODESUBTITLE#", subtitle);
 
 					code = code.Replace("//#VARIABLES#", variables);
 					code = code.Replace("//#REGISTERPORTS#", ports);
