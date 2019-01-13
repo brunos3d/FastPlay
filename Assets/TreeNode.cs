@@ -12,12 +12,12 @@ namespace CSharpTree
         public TreeNode<T> Parent { get; set; }
         public ICollection<TreeNode<T>> Children { get; set; }
 
-        public Boolean IsRoot
+        public bool IsRoot
         {
             get { return Parent == null; }
         }
 
-        public Boolean IsLeaf
+        public bool IsLeaf
         {
             get { return Children.Count == 0; }
         }
