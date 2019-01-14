@@ -58,7 +58,7 @@ namespace FastPlay.Editor {
 				//first pass "Events" or "Mono" of Start register
 				else {
 					ContextItem instance = new ContextItem();
-					instance.content = new GUIContent(root_path, content.image, content.tooltip);
+					instance.content = new GUIContent(root_path, null, content.tooltip);
 					instance.root = root;
 					instance.parent = this;
 					instance.AddItem(new GUIContent(subpath, content.image, content.tooltip), root, act, data);

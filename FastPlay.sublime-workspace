@@ -8,11 +8,13 @@
 	"buffers":
 	[
 		{
-			"file": "Assets/FastPlay/FP-Editor/EditorWindow/NodeScriptGenerator.cs",
+			"contents": "#if UNITY_EDITOR\nusing UnityEngine;\nusing UnityEditor;\n\nnamespace FastPlay.Editor {\n\tpublic class AdvancedSearchWindow : EditorWindow {\n\n\t\tpublic static string search;\n\n\t\tprivate static Vector2 scroll = Vector2.zero;\n\n\t\t\tget {\n\t\tpublic static bool hasSearch {\n\t\t\t\treturn !search.IsNullOrEmpty();\n\t\t\t}\n\t\t}\n\n\t\tpublic static void Init() {\n\t\t}\n\n\t\t}\n\t}\n}\n#endif\n",
+			"file": "Assets/FastPlay/FP-Editor/EditorWindow/AdvancedSearchWindow.cs",
+			"file_size": 1725,
+			"file_write_time": 131919221000307090,
 			"settings":
 			{
-				"buffer_size": 6003,
-				"encoding": "UTF-8 with BOM",
+				"buffer_size": 357,
 				"line_ending": "Windows"
 			}
 		}
@@ -28,6 +30,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"Snippet: ",
+				"Snippet: doc_params"
+			]
 		],
 		"width": 0.0
 	},
@@ -51,14 +57,20 @@
 	[
 		"/C/Users/bruno/Desktop/FastPlay/Assets",
 		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay",
-		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/FP-Editor"
+		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/FP-Editor",
+		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/FP-Editor/EditorWindow"
 	],
 	"file_history":
 	[
+		"/C/Users/bruno/Desktop/FastPlay/Assets/MathfLerp.cs",
+		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/FP-Editor/EditorWindow/SearchWindow.cs",
+		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/FP-Editor/ContextItem.cs",
+		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/FP-Editor/EditorWindow/NodeScriptGenerator.cs",
+		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/Built-in Nodes/Actions/List/ListGetItem.cs"
 	],
 	"find":
 	{
-		"height": 0.0
+		"height": 28.0
 	},
 	"find_in_files":
 	{
@@ -72,6 +84,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"}\n"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -89,24 +102,23 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Assets/FastPlay/FP-Editor/EditorWindow/NodeScriptGenerator.cs",
+					"file": "Assets/FastPlay/FP-Editor/EditorWindow/AdvancedSearchWindow.cs",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6003,
+						"buffer_size": 357,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								171,
-								171
+								110,
+								110
 							]
 						],
 						"settings":
@@ -126,7 +138,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 0.0
+		"height": 28.0
 	},
 	"input":
 	{
@@ -163,7 +175,7 @@
 	"project": "FastPlay.sublime-project",
 	"replace":
 	{
-		"height": 0.0
+		"height": 52.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -172,6 +184,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"",
+				"MathfLerp.cs"
+			],
+			[
+				"Get",
+				"FastPlay\\Built-in Nodes\\Actions\\List\\ListGetItem.cs"
+			]
 		],
 		"width": 0.0
 	},
