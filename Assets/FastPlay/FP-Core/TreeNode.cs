@@ -36,9 +36,9 @@ namespace FastPlay {
 		public string path {
 			get {
 				if (this.isRoot) {
-					return content.text;
+					return content.text + ":" + content.tooltip;
 				}
-				return parent.path + "/" + content.text;
+				return parent.path + "/" + content.text + ":" + content.tooltip;
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace FastPlay {
 
 		public TreeNode<T> AddChild(GUIContent content, T child) {
 			TreeNode<T> child_node = new TreeNode<T>(content, child) { parent = this };
-			this.children[content.text] = child_node;
+			this.children[child_node.path] = child_node;
 			this.RegisterChildForSearch(child_node);
 			return child_node;
 		}
@@ -80,7 +80,8 @@ namespace FastPlay {
 			int path_count = paths.Count();
 			//string end_path = paths[paths.Count - 1];
 			if (path_count == 1 && root_path == paths.ElementAt(path_count - 1)) {
-				return this.children[root_path] = AddChild(content, data);
+				TreeNode<T> child_node = AddChild(content, data);
+				return this.children[child_node.path] = child_node;
 			}
 			else {
 				//1/2/3
@@ -92,7 +93,8 @@ namespace FastPlay {
 					return t.AddChildByPath(subcontent, data);
 				}
 				else {
-					TreeNode<T> instance = this.children[root_path] = AddChild(new GUIContent(root_path), default(T));
+					TreeNode<T> instance = AddChild(new GUIContent(root_path), default(T));
+					this.children[instance.path] = instance;
 					return instance.AddChildByPath(subcontent, data);
 				}
 			}

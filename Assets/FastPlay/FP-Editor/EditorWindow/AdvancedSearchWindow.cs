@@ -54,8 +54,6 @@ namespace FastPlay.Editor {
 
 		public TreeNode<Act> root_tree;
 
-		public TreeNode<Act> search_tree;
-
 		public TreeNode<Act> current_tree;
 
 		public static bool hasSearch {
@@ -105,6 +103,7 @@ namespace FastPlay.Editor {
 			string new_search = EditorGUI.TextField(styles.search_rect, search, styles.search_bar);
 
 			if (new_search != search) {
+				search = new_search;
 				if (new_search.IsNullOrEmpty()) {
 					GoToNode(root_tree, false);
 				}
