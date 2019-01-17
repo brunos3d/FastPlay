@@ -2,6 +2,9 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Xml;
+using System.IO;
+using FastPlay.Runtime;
 
 namespace FastPlay {
 	public static class ReflectionUtils {
@@ -120,30 +123,31 @@ namespace FastPlay {
 			return type.IsAbstract && type.IsSealed;
 		}
 
-		public static T GetAttribute<T>(this Type type, bool inherit) where T : Attribute {
-			object[] attributes = type.GetCustomAttributes(typeof(T), inherit);
+		public static T GetAttribute<T>(this MemberInfo member, bool inherit) where T : Attribute {
+			object[] attributes = member.GetCustomAttributes(typeof(T), inherit);
 			if (attributes.Length > 0) {
 				return (T)attributes[0];
 			}
 			return null;
 		}
 
-		public static bool HasAttribute<T>(this Type type, bool inherit) where T : Attribute {
-			return GetAttribute<T>(type, inherit) != null;
+		public static bool HasAttribute<T>(this MemberInfo member, bool inherit) where T : Attribute {
+			return GetAttribute<T>(member, inherit) != null;
 		}
 
-		public static string GetSignName(this MethodInfo method, bool full_path = false, bool fullName = false) {
+		public static string GetSignName(this MethodInfo method, bool full_path = false, bool full_name = false) {
 			if (method == null) return null;
-			string[] parameters = method.GetParameters().Select(p => p.ParameterType.GetTypeName(fullName)).ToArray();
+			string p_name;
+			string[] parameters = method.GetParameters().Select(p => (p_name = p.ParameterType.GetTypeName(full_name)).Contains("&") ? string.Format("ref {0}", p_name.Replace("&", string.Empty)) : p_name).ToArray();
 			string full_args = string.Empty;
 			if (!parameters.IsNullOrEmpty()) {
 				full_args = string.Join(", ", parameters);
 			}
 			if (full_path) {
-				return string.Format("{0}.{1}({2}) : {3}", method.DeclaringType.GetTypeName(fullName), method.Name, full_args, method.ReturnType.GetTypeName(fullName));
+				return string.Format("{0}.{1}({2}) : {3}", method.DeclaringType.GetTypeName(full_name), method.Name, full_args, method.ReturnType.GetTypeName(full_name));
 			}
 			else {
-				return string.Format("{0}({1}) : {2}", method.Name, full_args, method.ReturnType.GetTypeName(fullName));
+				return string.Format("{0}({1}) : {2}", method.Name, full_args, method.ReturnType.GetTypeName(full_name));
 			}
 		}
 
@@ -202,6 +206,28 @@ namespace FastPlay {
 		public static object CreateGenericInstance(this Type generic, Type[] type_args, params object[] constructor_args) {
 			if (generic == null) return null;
 			return Activator.CreateInstance(generic.MakeGenericType(type_args), constructor_args);
+		}
+
+		//Description
+
+		public static Dictionary<MemberInfo, string> cached_summary = new Dictionary<MemberInfo, string>();
+
+		public static string GetDescription(this MemberInfo member) {
+			string s;
+			if (cached_summary.TryGetValue(member, out s)) {
+				return s;
+			}
+			SummaryAttribute summary_flag = member.GetAttribute<SummaryAttribute>(false);
+			if (summary_flag != null) {
+				return cached_summary[member] = summary_flag.summary;
+			}
+			if (member is Type) {
+				return cached_summary[member] = ((Type)member).GetTypeName();
+			}
+			if (member is MethodInfo) {
+				return cached_summary[member] = ((MethodInfo)member).GetSignName();
+			}
+			return string.Empty;
 		}
 	}
 }

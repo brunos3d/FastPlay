@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnApplicationPause")]
 	[Path("Events/Application/OnApplicationPause")]
+	[Summary("Sent to all GameObjects when the application pauses.")]
 	public class OnApplicationPauseEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public bool pause;

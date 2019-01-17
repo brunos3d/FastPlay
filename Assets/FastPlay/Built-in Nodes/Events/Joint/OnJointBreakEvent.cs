@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnJointBreak")]
 	[Path("Events/Joint/OnJointBreak")]
+	[Summary("Called when a joint attached to the same game object broke.")]
 	public class OnJointBreakEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public float breakForce;

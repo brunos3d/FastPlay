@@ -11,39 +11,48 @@ namespace FastPlay.Runtime {
 	public abstract partial class Node {
 
 		public class Styles {
-			public GUIStyle label;
-			public GUIStyle unplug_button;
-			public GUIStyle unit;
+			public readonly GUIStyle label;
+			public readonly GUIStyle unplug_button;
+			public readonly GUIStyle unit;
 
-			public GUIStyle head_node;
-			public GUIStyle body_node;
-			public GUIStyle body_back_node;
+			public readonly GUIStyle head_node;
+			public readonly GUIStyle body_node;
+			public readonly GUIStyle body_back_node;
 
-			public GUIStyle title_head;
-			public GUIStyle subtitle_head;
+			public readonly GUIStyle title_head;
+			public readonly GUIStyle subtitle_head;
+			public readonly GUIStyle node_message;
 
-			public GUIStyle slim_node;
-			public GUIStyle event_node;
-			public GUIStyle action_node;
-			public GUIStyle value_node;
-			public GUIStyle other_node;
-			public GUIStyle icon_node;
-			public GUIStyle highlight_node;
+			public readonly GUIStyle slim_node;
+			public readonly GUIStyle event_node;
+			public readonly GUIStyle action_node;
+			public readonly GUIStyle value_node;
+			public readonly GUIStyle other_node;
+			public readonly GUIStyle icon_node;
+			public readonly GUIStyle highlight_node;
 
-			public GUIStyle input_port;
-			public GUIStyle output_port;
-			public GUIStyle input_action;
-			public GUIStyle output_action;
+			public readonly GUIStyle input_port;
+			public readonly GUIStyle output_port;
+			public readonly GUIStyle input_action;
+			public readonly GUIStyle output_action;
 
-			public GUIStyle on_input_port;
-			public GUIStyle on_output_port;
-			public GUIStyle on_input_action;
-			public GUIStyle on_output_action;
+			public readonly GUIStyle on_input_port;
+			public readonly GUIStyle on_output_port;
+			public readonly GUIStyle on_input_action;
+			public readonly GUIStyle on_output_action;
 
-			public GUIStyle input_label;
-			public GUIStyle output_label;
+			public readonly GUIStyle input_label;
+			public readonly GUIStyle output_label;
+
+			public readonly Texture info_icon;
+			public readonly Texture warning_icon;
+			public readonly Texture error_icon;
 
 			public Styles() {
+				info_icon = EditorUtils.FindAssetByName<Texture>("console.infoicon");
+				warning_icon = EditorUtils.FindAssetByName<Texture>("console.warnicon");
+				error_icon = EditorUtils.FindAssetByName<Texture>("console.erroricon");
+
 				label = FPSkin.skin.label;
 				unplug_button = FPSkin.unplugButton;
 				unit = FPSkin.unit;
@@ -54,6 +63,7 @@ namespace FastPlay.Runtime {
 
 				title_head = FPSkin.titleHead;
 				subtitle_head = FPSkin.subtitleHead;
+				node_message = FPSkin.GetStyle("Node Message");
 
 				slim_node = FPSkin.slimNode;
 				event_node = FPSkin.eventNode;
@@ -88,7 +98,13 @@ namespace FastPlay.Runtime {
 			}
 		}
 
-		public static Styles styles;
+		private static Styles m_styles;
+
+		public static Styles styles {
+			get {
+				return m_styles ?? (m_styles = new Styles());
+			}
+		}
 
 		public static readonly float MIN_SIZE_X = 100.0f;
 
@@ -109,6 +125,12 @@ namespace FastPlay.Runtime {
 		public static Color gui_back_color;
 
 		public static Color gui_content_color;
+
+		private bool has_message;
+
+		private GUIContent node_message;
+
+		private Vector2 node_message_size = Vector2.zero;
 
 		private bool invert_title;
 
@@ -187,6 +209,11 @@ namespace FastPlay.Runtime {
 				GUI.Label(subtitle_rect, subtitle, styles.subtitle_head);
 			}
 			GUI.contentColor = gui_content_color;
+			GUI.backgroundColor = gui_back_color;
+
+			if (has_message) {
+				GUI.Box(new Rect(head_rect.x, head_rect.y - node_message_size.y - 5.0f, node_message_size.x, node_message_size.y), node_message, styles.node_message);
+			}
 		}
 
 		void DrawSlimNode() {
@@ -442,112 +469,20 @@ namespace FastPlay.Runtime {
 
 		}
 
-		public static Vector2 LerpUnit(Vector2 start, Vector2 end, float t) {
-			float delta = Mathf.Abs(start.x - end.x) * 0.5f;
-			Vector2 right = new Vector2(delta, 0.0f);
-			Vector2 left = new Vector2(-delta, 0.0f);
-			Vector2 p1 = new Vector2(start.x, start.y);
-			Vector2 p2 = new Vector2(end.x, end.y);
-			Vector2 t1 = p1 + left;
-			Vector2 t2 = p2 + right;
-
-			bool inverted = p1.x < p2.x;
-			float time = (t % 0.333333f) * 3.0f;
-			switch (GraphEditor.connectorType) {
-				case ConnectorType.Bezier:
-					if (inverted) {
-						float center_y = FPMath.CenterOfPoints(p1, p2).y;
-						Vector2 p1_center = new Vector2(p1.x, center_y);
-						Vector2 p2_center = new Vector2(p2.x, center_y);
-
-						float tangent = Mathf.Min(Vector2.Distance(p1, p1_center) * 0.5f, delta);
-
-						Vector2 p1_tan = new Vector2(p1.x - tangent, p1.y);
-						Vector2 p1c_tan = new Vector2(p1_tan.x, center_y);
-
-						Vector2 p2_tan = new Vector2(p2.x + tangent, p2.y);
-						Vector2 p2c_tan = new Vector2(p2_tan.x, center_y);
-
-						Vector2 l1 = Vector2.zero;
-						Vector2 l2 = Vector2.zero;
-						Vector2 l3 = Vector2.zero;
-
-						Vector2 l4 = Vector2.zero;
-						Vector2 l5 = Vector2.zero;
-
-						if (t <= 0.333333f) {
-							l1 = Vector2.Lerp(p1, p1_tan, time);
-							l2 = Vector2.Lerp(p1_tan, p1c_tan, time);
-							l3 = Vector2.Lerp(p1c_tan, p1_center, time);
-
-							l4 = Vector2.Lerp(l1, l2, time);
-							l5 = Vector2.Lerp(l2, l3, time);
-						}
-						else if (t <= 0.666666f) {
-							return Vector2.Lerp(p1_center, p2_center, time);
-						}
-						else {
-							l1 = Vector2.Lerp(p2_center, p2c_tan, time);
-							l2 = Vector2.Lerp(p2c_tan, p2_tan, time);
-							l3 = Vector2.Lerp(p2_tan, p2, time);
-
-							l4 = Vector2.Lerp(l1, l2, time);
-							l5 = Vector2.Lerp(l2, l3, time);
-						}
-						return Vector2.Lerp(l4, l5, time);
-					}
-					else {
-						Vector2 l1 = Vector2.Lerp(p1, t1, t);
-						Vector2 l2 = Vector2.Lerp(t1, t2, t);
-						Vector2 l3 = Vector2.Lerp(t2, p2, t);
-
-						Vector2 l4 = Vector2.Lerp(l1, l2, t);
-						Vector2 l5 = Vector2.Lerp(l2, l3, t);
-
-						return Vector2.Lerp(l4, l5, t);
-					}
-				case ConnectorType.Line:
-					return Vector2.Lerp(p1, p2, t);
-				case ConnectorType.Circuit:
-					if (inverted) {
-						time = (t % 0.2f) * 5.0f;
-						float center_y = FPMath.CenterOfPoints(p1, p2).y;
-						delta = Mathf.Min(Mathf.Abs(p1.x - p2.x) * 0.5f, 40.0f);
-						Vector2 t1_pos = new Vector2(p1.x - delta, p1.y);
-						Vector2 t2_pos = new Vector2(p2.x + delta, p2.y);
-						Vector2 t1_center = new Vector2(t1_pos.x, center_y);
-						Vector2 t2_center = new Vector2(t2_pos.x, center_y);
-						//p1, t1_pos, t1_center, t2_center, t2_pos, p2
-						if (t <= 0.2f) {
-							return Vector2.Lerp(p1, t1_pos, time);
-						}
-						else if (t <= 0.4f) {
-							return Vector2.Lerp(t1_pos, t1_center, time);
-						}
-						else if (t <= 0.6f) {
-							return Vector2.Lerp(t1_center, t2_center, time);
-						}
-						else if (t <= 0.8f) {
-							return Vector2.Lerp(t2_center, t2_pos, time);
-						}
-						else {
-							return Vector2.Lerp(t2_pos, p2, time);
-						}
-					}
-					else {
-						if (t <= 0.333333f) {
-							return Vector2.Lerp(p1, t1, time);
-						}
-						else if (t <= 0.666666f) {
-							return Vector2.Lerp(t1, t2, time);
-						}
-						else {
-							return Vector2.Lerp(t2, p2, time);
-						}
-					}
+		public void DisplayMessage(string message, MessageType type) {
+			this.has_message = true;
+			switch (type) {
+				case MessageType.Warning:
+					this.node_message = new GUIContent(message, styles.warning_icon);
+					break;
+				case MessageType.Error:
+					this.node_message = new GUIContent(message, styles.error_icon);
+					break;
 				default:
-					goto case ConnectorType.Line;
+					this.node_message = new GUIContent(message, styles.info_icon);
+					break;
 			}
+			this.node_message_size = GUIUtils.GetTextSize(this.node_message, styles.node_message);
 		}
 
 		public void EDITOR_Update() {
@@ -589,9 +524,6 @@ namespace FastPlay.Runtime {
 
 		// Prepare Node for editing
 		public void EDITOR_Prepare() {
-			if (styles == null) {
-				styles = new Styles();
-			}
 			RegisterPorts();
 
 			GenerateBody();
@@ -962,6 +894,114 @@ namespace FastPlay.Runtime {
 			}
 			else {
 				Handles.DrawAAPolyLine(width, 4, p1, t1, t2, p2);
+			}
+		}
+
+		public static Vector2 LerpUnit(Vector2 start, Vector2 end, float t) {
+			float delta = Mathf.Abs(start.x - end.x) * 0.5f;
+			Vector2 right = new Vector2(delta, 0.0f);
+			Vector2 left = new Vector2(-delta, 0.0f);
+			Vector2 p1 = new Vector2(start.x, start.y);
+			Vector2 p2 = new Vector2(end.x, end.y);
+			Vector2 t1 = p1 + left;
+			Vector2 t2 = p2 + right;
+
+			bool inverted = p1.x < p2.x;
+			float time = (t % 0.333333f) * 3.0f;
+			switch (GraphEditor.connectorType) {
+				case ConnectorType.Bezier:
+					if (inverted) {
+						float center_y = FPMath.CenterOfPoints(p1, p2).y;
+						Vector2 p1_center = new Vector2(p1.x, center_y);
+						Vector2 p2_center = new Vector2(p2.x, center_y);
+
+						float tangent = Mathf.Min(Vector2.Distance(p1, p1_center) * 0.5f, delta);
+
+						Vector2 p1_tan = new Vector2(p1.x - tangent, p1.y);
+						Vector2 p1c_tan = new Vector2(p1_tan.x, center_y);
+
+						Vector2 p2_tan = new Vector2(p2.x + tangent, p2.y);
+						Vector2 p2c_tan = new Vector2(p2_tan.x, center_y);
+
+						Vector2 l1 = Vector2.zero;
+						Vector2 l2 = Vector2.zero;
+						Vector2 l3 = Vector2.zero;
+
+						Vector2 l4 = Vector2.zero;
+						Vector2 l5 = Vector2.zero;
+
+						if (t <= 0.333333f) {
+							l1 = Vector2.Lerp(p1, p1_tan, time);
+							l2 = Vector2.Lerp(p1_tan, p1c_tan, time);
+							l3 = Vector2.Lerp(p1c_tan, p1_center, time);
+
+							l4 = Vector2.Lerp(l1, l2, time);
+							l5 = Vector2.Lerp(l2, l3, time);
+						}
+						else if (t <= 0.666666f) {
+							return Vector2.Lerp(p1_center, p2_center, time);
+						}
+						else {
+							l1 = Vector2.Lerp(p2_center, p2c_tan, time);
+							l2 = Vector2.Lerp(p2c_tan, p2_tan, time);
+							l3 = Vector2.Lerp(p2_tan, p2, time);
+
+							l4 = Vector2.Lerp(l1, l2, time);
+							l5 = Vector2.Lerp(l2, l3, time);
+						}
+						return Vector2.Lerp(l4, l5, time);
+					}
+					else {
+						Vector2 l1 = Vector2.Lerp(p1, t1, t);
+						Vector2 l2 = Vector2.Lerp(t1, t2, t);
+						Vector2 l3 = Vector2.Lerp(t2, p2, t);
+
+						Vector2 l4 = Vector2.Lerp(l1, l2, t);
+						Vector2 l5 = Vector2.Lerp(l2, l3, t);
+
+						return Vector2.Lerp(l4, l5, t);
+					}
+				case ConnectorType.Line:
+					return Vector2.Lerp(p1, p2, t);
+				case ConnectorType.Circuit:
+					if (inverted) {
+						time = (t % 0.2f) * 5.0f;
+						float center_y = FPMath.CenterOfPoints(p1, p2).y;
+						delta = Mathf.Min(Mathf.Abs(p1.x - p2.x) * 0.5f, 40.0f);
+						Vector2 t1_pos = new Vector2(p1.x - delta, p1.y);
+						Vector2 t2_pos = new Vector2(p2.x + delta, p2.y);
+						Vector2 t1_center = new Vector2(t1_pos.x, center_y);
+						Vector2 t2_center = new Vector2(t2_pos.x, center_y);
+						//p1, t1_pos, t1_center, t2_center, t2_pos, p2
+						if (t <= 0.2f) {
+							return Vector2.Lerp(p1, t1_pos, time);
+						}
+						else if (t <= 0.4f) {
+							return Vector2.Lerp(t1_pos, t1_center, time);
+						}
+						else if (t <= 0.6f) {
+							return Vector2.Lerp(t1_center, t2_center, time);
+						}
+						else if (t <= 0.8f) {
+							return Vector2.Lerp(t2_center, t2_pos, time);
+						}
+						else {
+							return Vector2.Lerp(t2_pos, p2, time);
+						}
+					}
+					else {
+						if (t <= 0.333333f) {
+							return Vector2.Lerp(p1, t1, time);
+						}
+						else if (t <= 0.666666f) {
+							return Vector2.Lerp(t1, t2, time);
+						}
+						else {
+							return Vector2.Lerp(t2, p2, time);
+						}
+					}
+				default:
+					goto case ConnectorType.Line;
 			}
 		}
 	}

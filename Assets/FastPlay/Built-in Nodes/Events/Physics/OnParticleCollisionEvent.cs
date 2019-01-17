@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnParticleCollision")]
 	[Path("Events/Physics/OnParticleCollision")]
+	[Summary("OnParticleCollision is called when a particle hits a Collider.")]
 	public class OnParticleCollisionEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public GameObject other;

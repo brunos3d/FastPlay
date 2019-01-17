@@ -4,7 +4,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("FindVariable")]
 	[Subtitle("GraphController")]
-	[Path("Actions/GraphController/FindVariable")]
+	[Path("Actions/GraphController/FindVariable<T>")]
 	public class ControllerFindVariable<T> : ValueNode<VariableObject<T>>, IRegisterPorts {
 
 		private VariableObject<T> variable_cache;

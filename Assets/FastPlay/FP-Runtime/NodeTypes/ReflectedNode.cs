@@ -9,6 +9,8 @@ namespace FastPlay.Runtime {
 	[HideInList]
 	public class ReflectedNode : Node, IRegisterDefaultPorts {
 
+		public bool is_obsolete;
+
 		public SerializedMethod serialized_method;
 
 		[NonSerialized]
@@ -40,6 +42,10 @@ namespace FastPlay.Runtime {
 
 		public void SetMethod(MethodInfo method_info, params Type[] type_args) {
 			if (method_info == null) {
+#if UNITY_EDITOR
+				node_color = Color.red;
+				DisplayMessage("Missing Method", UnityEditor.MessageType.Error);
+#endif
 				Debug.LogError("type method_info is null!");
 				return;
 			}
@@ -64,6 +70,11 @@ namespace FastPlay.Runtime {
 			}
 #if UNITY_EDITOR
 			node_color = GUIReferrer.GetTypeColor(method_info.ReturnType);
+
+			ObsoleteAttribute obsolete_flag = method_info.GetAttribute<ObsoleteAttribute>(false);
+			if (obsolete_flag != null) {
+				DisplayMessage(obsolete_flag.Message, UnityEditor.MessageType.Warning);
+			}
 #endif
 
 			if (method_info.IsStatic) {

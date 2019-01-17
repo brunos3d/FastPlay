@@ -6,7 +6,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("Clear")]
 	[Subtitle("List")]
-	[Path("Actions/List/Clear")]
+	[Path("Actions/List/Clear<T>")]
 	public class ListClear<T> : ActionNode, IRegisterPorts {
 
 		public InputValue<List<T>> list;

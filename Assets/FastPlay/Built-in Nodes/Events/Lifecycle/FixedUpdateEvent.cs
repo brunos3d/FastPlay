@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("FixedUpdate")]
 	[Path("Events/Lifecycle/FixedUpdate")]
+	[Summary("Frame-rate independent MonoBehaviour.FixedUpdate message for physics calculations.")]
 	public class FixedUpdateEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

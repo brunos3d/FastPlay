@@ -7,17 +7,6 @@
 	},
 	"buffers":
 	[
-		{
-			"contents": "#if UNITY_EDITOR\nusing UnityEngine;\nusing UnityEditor;\n\nnamespace FastPlay.Editor {\n\tpublic class AdvancedSearchWindow : EditorWindow {\n\n\t\tpublic static string search;\n\n\t\tprivate static Vector2 scroll = Vector2.zero;\n\n\t\t\tget {\n\t\tpublic static bool hasSearch {\n\t\t\t\treturn !search.IsNullOrEmpty();\n\t\t\t}\n\t\t}\n\n\t\tpublic static void Init() {\n\t\t}\n\n\t\t}\n\t}\n}\n#endif\n",
-			"file": "Assets/FastPlay/FP-Editor/EditorWindow/AdvancedSearchWindow.cs",
-			"file_size": 1725,
-			"file_write_time": 131919221000307090,
-			"settings":
-			{
-				"buffer_size": 357,
-				"line_ending": "Windows"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -62,6 +51,8 @@
 	],
 	"file_history":
 	[
+		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/Built-in Nodes/Functions/Converters/ToInteger/FloatToInteger.cs",
+		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/FP-Editor/EditorWindow/AdvancedSearchWindow.cs",
 		"/C/Users/bruno/Desktop/FastPlay/Assets/MathfLerp.cs",
 		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/FP-Editor/EditorWindow/SearchWindow.cs",
 		"/C/Users/bruno/Desktop/FastPlay/Assets/FastPlay/FP-Editor/ContextItem.cs",
@@ -104,35 +95,6 @@
 		{
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "Assets/FastPlay/FP-Editor/EditorWindow/AdvancedSearchWindow.cs",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 357,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								110,
-								110
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C#/C#.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -186,7 +148,7 @@
 		[
 			[
 				"",
-				"MathfLerp.cs"
+				"FastPlay\\Built-in Nodes\\Functions\\Converters\\ToInteger\\FloatToInteger.cs"
 			],
 			[
 				"Get",

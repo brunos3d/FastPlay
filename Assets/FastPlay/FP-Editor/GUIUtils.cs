@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
 using UnityEngine;
-using UnityEditor;
 
 namespace FastPlay.Editor {
 	public static class GUIUtils {
@@ -15,6 +14,10 @@ namespace FastPlay.Editor {
 
 		public static Vector2 GetTextSize(string text, GUIStyle style) {
 			GUIContent content = new GUIContent(text);
+			return style.CalcSize(content);
+		}
+
+		public static Vector2 GetTextSize(GUIContent content, GUIStyle style) {
 			return style.CalcSize(content);
 		}
 	}

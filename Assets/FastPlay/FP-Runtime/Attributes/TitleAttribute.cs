@@ -1,7 +1,4 @@
-using FastPlay.Editor;
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[AttributeUsage(AttributeTargets.Class)]

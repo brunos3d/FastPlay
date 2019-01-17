@@ -614,6 +614,7 @@ namespace FastPlay.Editor {
 							Type type;
 							string type_name;
 							foreach (UnityObject drag_obj in DragAndDrop.objectReferences) {
+								if (drag_obj == null) continue;
 								if (drag_obj is GraphAsset) {
 									GraphAsset m_asset = (GraphAsset)drag_obj;
 									if (m_asset) {
@@ -628,12 +629,18 @@ namespace FastPlay.Editor {
 										type = script.GetClass();
 										type_name = type.GetTypeName();
 
-										generic_menu.AddItem(new GUIContent(string.Format("{0}/Add {0} as Node", type_name)), false, (obj) => {
+										generic_menu.AddItem(new GUIContent(string.Format("{0}/Expose {0} members", type_name)), false, (obj) => {
 											AddCustomNode<ReflectedObjectNode>((Vector2)obj, true, type);
 										}, GraphEditor.mouse_position - GraphEditor.scroll);
 										generic_menu.AddSeparator(string.Format("{0}/", type_name));
 
 										AddTypeMethodsToMenu(generic_menu, type, type_name);
+
+										if (type.IsSubclassOf(typeof(Node)) && !type.IsAbstract && !type.IsGenericType) {
+											generic_menu.AddItem(new GUIContent(string.Format("Add {0} as Node", type_name)), false, (obj) => {
+												AddNode(type, (Vector2)obj);
+											}, GraphEditor.mouse_position - GraphEditor.scroll);
+										}
 									}
 								}
 
@@ -644,7 +651,7 @@ namespace FastPlay.Editor {
 								type = drag_obj.GetType();
 								type_name = type.GetTypeName();
 
-								generic_menu.AddItem(new GUIContent(string.Format("Add {0} as Node", type_name)), false, (obj) => {
+								generic_menu.AddItem(new GUIContent(string.Format("Expose {0} members", type_name)), false, (obj) => {
 									AddCustomNode<ReflectedObjectNode>((Vector2)obj, true, type);
 								}, GraphEditor.mouse_position - GraphEditor.scroll);
 
@@ -680,6 +687,7 @@ namespace FastPlay.Editor {
 		}
 
 		public void AddTypeMethodsToMenu(GenericMenu menu, Type type, string path = "Reflected") {
+			if (type == null) return;
 			string type_name = type.GetTypeName();
 			List<Type> current_types = EditorHandler.GetConstantTypesCurrentInstance().current_types;
 			MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(m => m.GetGenericArguments().Length <= 1).ToArray();

@@ -6,6 +6,7 @@ namespace FastPlay.Runtime {
 	[Icon("UpdateEventNode Icon")]
 	[Title("Update")]
 	[Path("Events/Lifecycle/Update")]
+	[Summary("Update is called every frame, if the MonoBehaviour is enabled.")]
 	public class UpdateEvent : EventNode, IUpdate {
 
 		public void Update() {

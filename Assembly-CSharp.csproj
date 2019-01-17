@@ -71,7 +71,7 @@
      <Compile Include="Assets\FastPlay\Built-in Nodes\Events\Application\OnApplicationFocusEvent.cs" />
      <Compile Include="Assets\FastPlay\Built-in Nodes\Events\Application\OnApplicationPauseEvent.cs" />
      <Compile Include="Assets\FastPlay\Built-in Nodes\Events\Application\OnApplicationQuitEvent.cs" />
-     <Compile Include="Assets\FastPlay\Built-in Nodes\Events\Audio\OnApplicationFocusEvent.cs" />
+     <Compile Include="Assets\FastPlay\Built-in Nodes\Events\Audio\OnAudioFilterReadEvent.cs" />
      <Compile Include="Assets\FastPlay\Built-in Nodes\Events\Joint\OnJointBreak2DEvent.cs" />
      <Compile Include="Assets\FastPlay\Built-in Nodes\Events\Joint\OnJointBreakEvent.cs" />
      <Compile Include="Assets\FastPlay\Built-in Nodes\Events\Lifecycle\FixedUpdateEvent.cs" />
@@ -170,6 +170,7 @@
      <Compile Include="Assets\FastPlay\FP-Core\ObjectBase.cs" />
      <Compile Include="Assets\FastPlay\FP-Core\OdinHelp.cs" />
      <Compile Include="Assets\FastPlay\FP-Core\ReflectionUtils.cs" />
+     <Compile Include="Assets\FastPlay\FP-Core\TreeNode.cs" />
      <Compile Include="Assets\FastPlay\FP-Editor\ContextItem.cs" />
      <Compile Include="Assets\FastPlay\FP-Editor\EDITOR_Graph.cs" />
      <Compile Include="Assets\FastPlay\FP-Editor\EDITOR_Node.cs" />
@@ -202,6 +203,7 @@
      <Compile Include="Assets\FastPlay\FP-Runtime\Attributes\PathAttribute.cs" />
      <Compile Include="Assets\FastPlay\FP-Runtime\Attributes\SlimAttribute.cs" />
      <Compile Include="Assets\FastPlay\FP-Runtime\Attributes\SubtitleAttribute.cs" />
+     <Compile Include="Assets\FastPlay\FP-Runtime\Attributes\SummaryAttribute.cs" />
      <Compile Include="Assets\FastPlay\FP-Runtime\Attributes\TitleAttribute.cs" />
      <Compile Include="Assets\FastPlay\FP-Runtime\Current.cs" />
      <Compile Include="Assets\FastPlay\FP-Runtime\Enumerators\FlowState.cs" />
@@ -271,7 +273,6 @@
      <Compile Include="Assets\FastPlay\log.cs" />
      <Compile Include="Assets\MathfLerp.cs" />
      <Compile Include="Assets\stylesviewer.cs" />
-     <Compile Include="Assets\TreeNode.cs" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/bruno/Desktop/FastPlay/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>

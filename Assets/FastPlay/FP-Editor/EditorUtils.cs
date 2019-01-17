@@ -6,9 +6,12 @@ using UnityEngine;
 using UnityEditor;
 using UnityObject = UnityEngine.Object;
 using FastPlay.Runtime;
+using System.Collections.Generic;
 
 namespace FastPlay.Editor {
 	public static class EditorUtils {
+
+		public static Dictionary<string, object> cached_assets = new Dictionary<string, object>();
 
 		public static void CopyText(string text) {
 			TextEditor editor = new TextEditor();
@@ -74,20 +77,29 @@ namespace FastPlay.Editor {
 
 		public static T FindAssetByName<T>(string name) where T : UnityObject {
 			if (name.IsNullOrEmpty()) return null;
-			if (Resources.Load<T>(name)) {
-				return Resources.Load<T>(name);
+			object o;
+			if (cached_assets.TryGetValue(name, out o)) {
+				return (T)o;
+			}
+			T result = Resources.Load<T>(name);
+			if (result) {
+				cached_assets[name] = result;
+				return result;
 			}
 
 			T[] assets = (T[])Resources.FindObjectsOfTypeAll<T>();
 			foreach (T asset in assets) {
 				if (asset.name == name) {
+					cached_assets[name] = asset;
 					return asset;
 				}
 			}
 			string[] GUIDs = AssetDatabase.FindAssets(name);
 			foreach (string GUID in GUIDs) {
 				if (AssetDatabase.GUIDToAssetPath(GUID).Contains(name)) {
-					return (T)AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(GUID));
+					T asset = AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(GUID));
+					cached_assets[name] = asset;
+					return asset;
 				}
 			}
 			return null;
@@ -96,8 +108,7 @@ namespace FastPlay.Editor {
 		public static bool OpenScriptByType(Type type) {
 			UnityObject search = FindScriptByType(type);
 			if (search != null) {
-				AssetDatabase.OpenAsset(search);
-				return true;
+				return AssetDatabase.OpenAsset(search);
 			}
 			return false;
 		}
@@ -112,20 +123,15 @@ namespace FastPlay.Editor {
 		}
 
 		public static GraphAsset CreateGraphAsset() {
-			GraphAsset assetData = null;
-			var path = EditorUtility.SaveFilePanelInProject("Create GraphAsset", "New GraphAsset.asset", "asset", string.Empty);
-			assetData = CreateGraphAsset(path);
-			return assetData;
+			return CreateGraphAsset(EditorUtility.SaveFilePanelInProject("Create GraphAsset", "New GraphAsset.asset", "asset", string.Empty));
 		}
 
 		public static GraphAsset CreateGraphAsset(string path) {
-			if (path.IsNullOrEmpty() == false) {
-				ScriptableObject assetData = ScriptableObject.CreateInstance(typeof(GraphAsset));
-				AssetDatabase.CreateAsset(assetData, path);
-				AssetDatabase.SaveAssets();
-				return (GraphAsset)assetData;
-			}
-			return null;
+			if (path.IsNullOrEmpty()) return null;
+			ScriptableObject asset_data = ScriptableObject.CreateInstance(typeof(GraphAsset));
+			AssetDatabase.CreateAsset(asset_data, path);
+			AssetDatabase.SaveAssets();
+			return (GraphAsset)asset_data;
 		}
 	}
 }

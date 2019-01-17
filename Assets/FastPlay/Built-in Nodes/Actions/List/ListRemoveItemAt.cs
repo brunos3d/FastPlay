@@ -6,7 +6,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("RemoveAt")]
 	[Subtitle("List")]
-	[Path("Actions/List/RemoveAt")]
+	[Path("Actions/List/RemoveAt<T>")]
 	public class ListRemoveItemAt<T> : ActionNode, IRegisterPorts {
 
 		public InputValue<List<T>> list;

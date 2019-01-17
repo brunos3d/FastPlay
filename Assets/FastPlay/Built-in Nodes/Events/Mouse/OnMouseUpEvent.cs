@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnMouseUp")]
 	[Path("Events/Mouse/OnMouseUp")]
+	[Summary("OnMouseUp is called when the user has released the mouse button.")]
 	public class OnMouseUpEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

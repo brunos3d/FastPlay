@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnRenderImage")]
 	[Path("Events/Rendering/OnRenderImage")]
+	[Summary("OnRenderImage is called after all rendering is complete to render image.")]
 	public class OnRenderImageEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public RenderTexture source;

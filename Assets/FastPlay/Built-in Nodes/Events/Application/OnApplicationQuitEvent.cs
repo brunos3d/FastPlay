@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnApplicationQuit")]
 	[Path("Events/Application/OnApplicationQuit")]
+	[Summary("Sent to all game objects before the application quits.")]
 	public class OnApplicationQuitEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

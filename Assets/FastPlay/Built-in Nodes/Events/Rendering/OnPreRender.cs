@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnPreRender")]
 	[Path("Events/Rendering/OnPreRender")]
+	[Summary("OnPreRender is called before a camera starts rendering the Scene.")]
 	public class OnPreRenderEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

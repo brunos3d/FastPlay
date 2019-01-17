@@ -3,6 +3,9 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Xml;
+using System.Reflection;
+using System.IO;
 
 namespace FastPlay {
 	public static class Extensions {

@@ -4,7 +4,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("FindVariable")]
 	[Subtitle("Current")]
-	[Path("Actions/Current/FindVariable")]
+	[Path("Actions/Current/FindVariable<T>")]
 	public class CurrentFindVariable<T> : ValueNode<VariableObject<T>>, IRegisterPorts {
 
 		public InputValue<string> variable_name;

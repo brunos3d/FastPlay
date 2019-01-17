@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnControllerColliderHit")]
 	[Path("Events/Physics/OnControllerColliderHit")]
+	[Summary("OnControllerColliderHit is called when the controller hits a collider while performing a Move.")]
 	public class OnControllerColliderHitEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public ControllerColliderHit hit;

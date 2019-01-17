@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("LateUpdate")]
 	[Path("Events/Lifecycle/LateUpdate")]
+	[Summary("LateUpdate is called every frame, if the Behaviour is enabled.")]
 	public class LateUpdateEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnJointBreak2D")]
 	[Path("Events/Joint/OnJointBreak2D")]
+	[Summary("Called when a Joint2D attached to the same game object breaks.")]
 	public class OnJointBreak2DEvent : EventNode, IRegisterEvents, IRegisterPorts {
 
 		public Joint2D joint;

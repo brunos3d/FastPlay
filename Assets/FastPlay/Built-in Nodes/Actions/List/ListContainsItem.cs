@@ -6,7 +6,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("ContainsItem")]
 	[Subtitle("List")]
-	[Path("Actions/List/ContainsItem")]
+	[Path("Actions/List/ContainsItem<T>")]
 	public class ListContainsItem<T> : ValueNode<bool>, IRegisterPorts {
 
 		public InputValue<List<T>> list;

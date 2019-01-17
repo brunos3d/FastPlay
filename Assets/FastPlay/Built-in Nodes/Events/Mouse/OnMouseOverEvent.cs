@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnMouseOver")]
 	[Path("Events/Mouse/OnMouseOver")]
+	[Summary("Called every frame while the mouse is over the GUIElement or Collider.")]
 	public class OnMouseOverEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

@@ -6,7 +6,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("GetItem")]
 	[Subtitle("List")]
-	[Path("Actions/List/GetItem")]
+	[Path("Actions/List/GetItem<T>")]
 	public class ListGetItem<T> : ValueNode<T>, IRegisterPorts {
 
 		public InputValue<List<T>> list;

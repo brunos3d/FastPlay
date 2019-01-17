@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnMouseDrag")]
 	[Path("Events/Mouse/OnMouseDrag")]
+	[Summary("OnMouseDrag is called when the user has clicked on a GUIElement or Collider and is still holding down the mouse.")]
 	public class OnMouseDragEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

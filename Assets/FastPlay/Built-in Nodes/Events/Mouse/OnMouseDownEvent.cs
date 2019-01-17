@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnMouseDown")]
 	[Path("Events/Mouse/OnMouseDown")]
+	[Summary("OnMouseDown is called when the user has pressed the mouse button while over the GUIElement or Collider.")]
 	public class OnMouseDownEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {

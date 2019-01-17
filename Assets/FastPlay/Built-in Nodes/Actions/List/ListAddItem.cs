@@ -4,7 +4,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("AddItem")]
 	[Subtitle("List")]
-	[Path("Actions/List/AddItem")]
+	[Path("Actions/List/AddItem<T>")]
 	public class ListAddItem<T> : ActionNode, IRegisterPorts {
 
 		public InputValue<List<T>> list;

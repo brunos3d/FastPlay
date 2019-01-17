@@ -5,6 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Title("OnWillRenderObject")]
 	[Path("Events/Rendering/OnWillRenderObject")]
+	[Summary("OnWillRenderObject is called for each camera if the object is visible and not a UI element.")]
 	public class OnWillRenderObjectEvent : EventNode, IRegisterEvents {
 
 		public void OnRegisterEvents() {
