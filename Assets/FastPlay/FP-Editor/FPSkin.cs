@@ -8,7 +8,7 @@ namespace FastPlay.Editor {
 
 		public static GUISkin skin {
 			get {
-				if (!m_skin) return m_skin = EditorUtils.FindAssetByName<GUISkin>("FPSkin 1");
+				if (!m_skin) return m_skin = EditorUtils.FindAssetByName<GUISkin>("FPSkin");
 				return m_skin;
 			}
 		}

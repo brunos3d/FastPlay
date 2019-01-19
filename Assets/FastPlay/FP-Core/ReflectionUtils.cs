@@ -67,6 +67,7 @@ namespace FastPlay {
 		}
 
 		public static MethodInfo GetMethodInfoByKey(Type type, string key) {
+			if (type == null || key.IsNullOrEmpty()) return null;
 			MethodInfo m1;
 			if (cache_methods.TryGetValue(key, out m1)) {
 				return m1;
@@ -213,6 +214,7 @@ namespace FastPlay {
 		public static Dictionary<MemberInfo, string> cached_summary = new Dictionary<MemberInfo, string>();
 
 		public static string GetDescription(this MemberInfo member) {
+			if (member == null) return string.Empty;
 			string s;
 			if (cached_summary.TryGetValue(member, out s)) {
 				return s;
@@ -222,10 +224,10 @@ namespace FastPlay {
 				return cached_summary[member] = summary_flag.summary;
 			}
 			if (member is Type) {
-				return cached_summary[member] = ((Type)member).GetTypeName();
+				return cached_summary[member] = ((Type)member).GetTypeName(true);
 			}
 			if (member is MethodInfo) {
-				return cached_summary[member] = ((MethodInfo)member).GetSignName();
+				return cached_summary[member] = ((MethodInfo)member).GetSignName(true);
 			}
 			return string.Empty;
 		}

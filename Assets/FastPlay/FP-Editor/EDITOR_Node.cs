@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using FastPlay.Editor;
+using System.Reflection;
 
 namespace FastPlay.Runtime {
 	// Editor Node 
@@ -618,11 +619,18 @@ namespace FastPlay.Runtime {
 			}
 			else if (this is ReflectedNode) {
 				invert_title = true;
-				Type reflected_type = ((ReflectedNode)this).cached_method.ReflectedType;
-				if (this.subtitle.IsNullOrEmpty()) {
-					this.subtitle = reflected_type.GetTypeName();
+				MethodInfo method = ((ReflectedNode)this).cached_method;
+				if (method != null) {
+					Type reflected_type = ((ReflectedNode)this).cached_method.ReflectedType;
+					if (this.subtitle.IsNullOrEmpty()) {
+						this.subtitle = reflected_type.GetTypeName();
+					}
+					this.icon = this.icon ?? GUIReferrer.GetTypeIcon(reflected_type);
 				}
-				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(reflected_type);
+				else {
+					this.title = "Missing Method";
+					this.icon = styles.error_icon;
+				}
 			}
 			if (this is ReflectedObjectNode) {
 				invert_title = true;

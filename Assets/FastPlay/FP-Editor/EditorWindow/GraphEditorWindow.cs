@@ -518,7 +518,7 @@ namespace FastPlay.Editor {
 							break;
 						case 1:
 							if (!GraphEditor.is_drag) {
-								SearchWindow.Init(EditorGUIUtility.GUIToScreenPoint(GraphEditor.mouse_position), GraphEditor.mouse_position);
+								AdvancedSearchWindow.Init();
 								current.Use();
 							}
 							GraphEditor.is_drag = false;
@@ -664,6 +664,10 @@ namespace FastPlay.Editor {
 					break;
 				case (EventType.KeyDown):
 					switch (current.keyCode) {
+						case KeyCode.Space:
+							AdvancedSearchWindow.Init();
+							current.Use();
+							break;
 						case KeyCode.Delete:
 							DeleteSelectedNodes();
 							current.Use();

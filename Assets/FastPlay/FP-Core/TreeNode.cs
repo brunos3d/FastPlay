@@ -12,9 +12,9 @@ namespace FastPlay {
 
 		public TreeNode<T> parent;
 
-		private ICollection<TreeNode<T>> children_index;
+		public ICollection<TreeNode<T>> children_index;
 
-		private Dictionary<string, TreeNode<T>> children;
+		public Dictionary<string, TreeNode<T>> children;
 
 		public bool isRoot {
 			get { return parent == null; }
@@ -36,9 +36,15 @@ namespace FastPlay {
 		public string path {
 			get {
 				if (this.isRoot) {
-					return content.text + ":" + content.tooltip;
+					return contentName;
 				}
-				return parent.path + "/" + content.text + ":" + content.tooltip;
+				return parent.path + "/" + contentName;
+			}
+		}
+
+		public string contentName {
+			get {
+				return content.text + ":" + content.tooltip;
 			}
 		}
 
@@ -62,13 +68,17 @@ namespace FastPlay {
 		}
 
 		public void AddAnExistingTreeNode(TreeNode<T> tree) {
-			this.children[tree.path] = tree;
+			this.children[tree.contentName] = tree;
 			this.RegisterChildForSearch(tree);
 		}
 
 		public TreeNode<T> AddChild(GUIContent content, T child) {
-			TreeNode<T> child_node = new TreeNode<T>(content, child) { parent = this };
-			this.children[child_node.path] = child_node;
+			TreeNode<T> child_node;
+			if (this.children.TryGetValue(content.text + ":" + content.tooltip, out child_node)) {
+				return child_node;
+			}
+			child_node = new TreeNode<T>(content, child) { parent = this };
+			this.children[child_node.contentName] = child_node;
 			this.RegisterChildForSearch(child_node);
 			return child_node;
 		}
@@ -77,25 +87,25 @@ namespace FastPlay {
 			string path = content.text;
 			var paths = path.Split('/').Where(s => !s.IsNullOrWhiteSpace());
 			string root_path = paths.ElementAt(0);
-			int path_count = paths.Count();
 			//string end_path = paths[paths.Count - 1];
-			if (path_count == 1 && root_path == paths.ElementAt(path_count - 1)) {
-				TreeNode<T> child_node = AddChild(content, data);
-				return this.children[child_node.path] = child_node;
+			// root_path == paths.ElementAt(path_count - 1)
+			TreeNode<T> child_node;
+			if (paths.Count() == 1) {
+				child_node = AddChild(content, data);
+				return this.children[child_node.contentName] = child_node;
 			}
 			else {
 				//1/2/3
 				//1/2/3/4/5
 				string subpath = path.Replace(string.Format("{0}/", root_path), string.Empty);
 				GUIContent subcontent = new GUIContent(subpath, content.image, content.tooltip);
-				TreeNode<T> t;
-				if (children.TryGetValue(root_path, out t)) {
-					return t.AddChildByPath(subcontent, data);
+				if (children.TryGetValue(root_path + ":" + content.tooltip, out child_node)) {
+					return child_node.AddChildByPath(subcontent, data);
 				}
 				else {
-					TreeNode<T> instance = AddChild(new GUIContent(root_path), default(T));
-					this.children[instance.path] = instance;
-					return instance.AddChildByPath(subcontent, data);
+					child_node = AddChild(new GUIContent(root_path, content.image), default(T));
+					this.children[child_node.contentName] = child_node;
+					return child_node.AddChildByPath(subcontent, data);
 				}
 			}
 		}
@@ -109,6 +119,14 @@ namespace FastPlay {
 
 		public TreeNode<T> FindTreeNode(Func<TreeNode<T>, bool> predicate) {
 			return this.children_index.FirstOrDefault(predicate);
+		}
+
+		public TreeNode<T> GetAllTreeNodeInChildren() {
+			TreeNode<T> result_tree = new TreeNode<T>(new GUIContent("Search"), default(T));
+			foreach (TreeNode<T> node in this.children_index) {
+				result_tree.AddAnExistingTreeNode(node);
+			}
+			return result_tree;
 		}
 
 		public TreeNode<T> GetTreeNodeInChildren(Func<TreeNode<T>, bool> predicate) {

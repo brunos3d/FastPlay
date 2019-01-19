@@ -113,12 +113,7 @@ namespace FastPlay.Runtime {
 
 		public object Invoke() {
 			object[] args = parameters.Select(i => i.GetValue()).ToArray();
-			if (cached_method.IsStatic) {
-				return cached_method.Invoke(null, args);
-			}
-			else {
-				return cached_method.Invoke(target.GetValue(), args);
-			}
+			return cached_method.Invoke(cached_method.IsStatic ? null : target.GetValue(), args);
 		}
 	}
 }
