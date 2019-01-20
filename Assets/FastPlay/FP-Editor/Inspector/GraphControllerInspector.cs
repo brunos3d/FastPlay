@@ -9,7 +9,7 @@ namespace FastPlay.Editor {
 	[CustomEditor(typeof(GraphController), true)]
 	public class GraphControllerInspector : UnityEditor.Editor {
 
-		private const string PREFS_INSPECTOR_FOLDOUT  = "FastPlay: GraphControllerInspector foldout";
+		private const string PREFS_INSPECTOR_FOLDOUT = "FastPlay: GraphControllerInspector foldout";
 
 		private const string PREFS_INSPECTOR_DEBUG = "FastPlay: GraphControllerInspector debug";
 
@@ -89,6 +89,15 @@ namespace FastPlay.Editor {
 						break;
 				}
 				on_disable = (OnDisableAction)EditorGUILayout.EnumPopup(new GUIContent("OnDisable"), controller.on_disable);
+
+				GUILayout.BeginHorizontal();
+				if (GUILayout.Button("Ping to Asset")) {
+					EditorGUIUtility.PingObject(controller.graph);
+				}
+				if (GUILayout.Button("Open in Editor")) {
+					GraphEditorWindow.OpenEditor(controller.graph);
+				}
+				GUILayout.EndHorizontal();
 			}
 
 			GUILayout.BeginHorizontal("RL Header");

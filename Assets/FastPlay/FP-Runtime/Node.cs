@@ -117,6 +117,8 @@ namespace FastPlay.Runtime {
 
 		public virtual void OnGraphAdd() { }
 
+		public virtual void OnGraphRemove() { }
+
 		public virtual void OnGraphPlay() { }
 
 		public virtual void OnGraphStop() { }

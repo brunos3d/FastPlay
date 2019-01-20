@@ -10,30 +10,53 @@ using System.IO;
 namespace FastPlay {
 	public static class Extensions {
 
+		/// <summary>
+		/// Check if a value is infinite positive or negative
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
 		public static bool IsInfinity(this float value) {
 			return float.IsPositiveInfinity(value) || float.IsNegativeInfinity(value);
 		}
 
+		/// <summary>
+		/// Returns a value that indicates whether the specified value is not a number (NaN).
+		/// </summary>
 		public static bool IsNaN(this float value) {
 			return float.IsNaN(value);
 		}
 
+		/// <summary>
+		/// Returns a value that indicates whether one of the axes of the specified vector is not a number (NaN).
+		/// </summary>
 		public static bool IsNaN(this Vector2 value) {
 			return value.x.IsNaN() || value.y.IsNaN();
 		}
 
+		/// <summary>
+		/// Returns a value that indicates whether one of the axes of the specified vector is not a number (NaN).
+		/// </summary>
 		public static bool IsNaN(this Vector3 value) {
 			return value.x.IsNaN() || value.y.IsNaN() || value.z.IsNaN();
 		}
 
+		/// <summary>
+		/// Returns a value that indicates whether one of the axes of the specified vector is not a number (NaN).
+		/// </summary>
 		public static bool IsNaN(this Vector4 value) {
 			return value.x.IsNaN() || value.y.IsNaN() || value.z.IsNaN() || value.w.IsNaN();
 		}
 
+		/// <summary>
+		/// Returns a value that indicates whether one of the axes of the specified quaternion is not a number (NaN).
+		/// </summary>
 		public static bool IsNaN(this Quaternion value) {
 			return value.x.IsNaN() || value.y.IsNaN() || value.z.IsNaN() || value.w.IsNaN();
 		}
 
+		/// <summary>
+		/// Indicates whether the specified IEnumerable<T> is null or an empty.
+		/// </summary>
 		public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable) {
 			if (enumerable == null) {
 				return true;
@@ -45,6 +68,9 @@ namespace FastPlay {
 			return !enumerable.Any();
 		}
 
+		/// <summary>
+		/// Make a displayable name for a variable/property.
+		/// </summary>
 		public static string NicifyPropertyName(this string input) {
 			int index = 0;
 			if (input.Contains("get_")) {

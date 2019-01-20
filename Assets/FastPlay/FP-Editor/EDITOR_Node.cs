@@ -344,7 +344,12 @@ namespace FastPlay.Runtime {
 								float value_label_width = 0.0f;
 								if (value == null) {
 									if (typeof(UnityEngine.Component).IsAssignableFrom(input_value.valueType) || typeof(Graph).IsAssignableFrom(input_value.valueType) || typeof(UnityEngine.GameObject).IsAssignableFrom(input_value.valueType)) {
-										value_content = string.Format("<b><color=#0667FF>SELF: {0}</color></b>", input_value.valueType.GetTypeName());
+										if (EditorGUIUtility.isProSkin) {
+											value_content = string.Format("<b><color=#0667FF>SELF: {0}</color></b>", input_value.valueType.GetTypeName());
+										}
+										else {
+											value_content = string.Format("<b><color=#458fff>SELF: {0}</color></b>", input_value.valueType.GetTypeName());
+										}
 									}
 									else {
 										value_content = input_value.valueType.GetTypeName(true);

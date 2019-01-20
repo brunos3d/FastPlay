@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using UnityEngine;
+using UnityEditor;
 
 namespace FastPlay.Editor {
 	public static class FPSkin {
@@ -8,7 +9,7 @@ namespace FastPlay.Editor {
 
 		public static GUISkin skin {
 			get {
-				if (!m_skin) return m_skin = EditorUtils.FindAssetByName<GUISkin>("FPSkin");
+				if (!m_skin) return m_skin = EditorUtils.FindAssetByName<GUISkin>(EditorGUIUtility.isProSkin ? "FPDarkSkin" : "FPLightSkin");
 				return m_skin;
 			}
 		}
@@ -150,6 +151,10 @@ namespace FastPlay.Editor {
 			get {
 				return GetStyle("OutputLabel");
 			}
+		}
+
+		public static void UpdateSkin() {
+			m_skin = EditorUtils.FindAssetByName<GUISkin>(EditorGUIUtility.isProSkin ? "FPDarkSkin" : "FPLightSkin");
 		}
 
 		public static GUIStyle GetStyle(string style_name) {

@@ -6,9 +6,6 @@ namespace FastPlay.Runtime {
 	[HideInList]
 	public class MacroNode : Node, IRegisterDefaultPorts {
 
-		[NonSerialized]
-		private int validated_frame;
-
 		// The asset
 		public GraphAsset reference;
 
@@ -32,9 +29,12 @@ namespace FastPlay.Runtime {
 		[NonSerialized]
 		public List<IOutputValue> output_values = new List<IOutputValue>();
 
+		bool is_validating;
+
 		public override void Validate() {
 			//stack overflow prevent
-			if (validated_frame++ > 1) return;
+			if (is_validating) return;
+			is_validating = true;
 			if (reference) {
 				macro = this;
 
@@ -51,7 +51,7 @@ namespace FastPlay.Runtime {
 				reference.Validate();
 			}
 			base.Validate();
-			validated_frame = 0;
+			is_validating = false;
 		}
 
 		public override void Initialize() {
@@ -76,10 +76,10 @@ namespace FastPlay.Runtime {
 					input_node.macro = this;
 					input = RegisterEntryPort("In", OnExecute);
 
-					if (output_node) {
-						output_node.macro = this;
-						output = RegisterExitPort("Out");
-					}
+				}
+				if (output_node) {
+					output_node.macro = this;
+					output = RegisterExitPort("Out");
 				}
 
 				if (macro) {

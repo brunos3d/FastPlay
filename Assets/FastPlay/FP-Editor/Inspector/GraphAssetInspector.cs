@@ -15,7 +15,7 @@ namespace FastPlay.Editor {
 
 			public static readonly string[] MENUS = new string[] { "Graph", "Parameters", "Variables", "Node Inspector" };
 
-			public GUIStyle menu_button;
+			public readonly GUIStyle menu_button;
 
 			public Styles() {
 				menu_button = FPSkin.GetStyle("LargeButton");

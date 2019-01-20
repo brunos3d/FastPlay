@@ -5,7 +5,7 @@ namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Icon("InputNode Icon")]
 	[Title("Input")]
-	[Path("Graph/Input")]
+	[Path("Macros/Input")]
 	public class InputNode : Node, IRegisterDefaultPorts {
 
 		[NonSerialized]
@@ -16,6 +16,10 @@ namespace FastPlay.Runtime {
 
 		[NonSerialized]
 		public List<IOutputValue> output_values = new List<IOutputValue>();
+
+		public override void OnGraphAdd() {
+			graph.Validate();
+		}
 
 		public void OnRegisterDefaultPorts() {
 			output = RegisterExitPort("Out");

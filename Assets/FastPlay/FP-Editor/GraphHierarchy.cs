@@ -9,7 +9,7 @@ namespace FastPlay.Editor {
 
 		private class Styles {
 
-			public GUIStyle icon;
+			public readonly GUIStyle icon;
 
 			public Styles() {
 				icon = new GUIStyle(FPSkin.icon);

@@ -6,6 +6,8 @@ using UnityEngine;
 namespace FastPlay {
 	public class TreeNode<T> {
 
+		public string[] tags;
+
 		public GUIContent content;
 
 		public T data;
@@ -67,23 +69,27 @@ namespace FastPlay {
 			this.children_index = new LinkedList<TreeNode<T>>();
 		}
 
+		public TreeNode(GUIContent content, T data, params string[] tags) : this(content, data) {
+			this.tags = tags;
+		}
+
 		public void AddAnExistingTreeNode(TreeNode<T> tree) {
 			this.children[tree.contentName] = tree;
 			this.RegisterChildForSearch(tree);
 		}
 
-		public TreeNode<T> AddChild(GUIContent content, T child) {
+		public TreeNode<T> AddChild(GUIContent content, T child, params string[] tags) {
 			TreeNode<T> child_node;
 			if (this.children.TryGetValue(content.text + ":" + content.tooltip, out child_node)) {
 				return child_node;
 			}
-			child_node = new TreeNode<T>(content, child) { parent = this };
+			child_node = new TreeNode<T>(content, child, tags) { parent = this };
 			this.children[child_node.contentName] = child_node;
 			this.RegisterChildForSearch(child_node);
 			return child_node;
 		}
 
-		public TreeNode<T> AddChildByPath(GUIContent content, T data) {
+		public TreeNode<T> AddChildByPath(GUIContent content, T data, params string[] tags) {
 			string path = content.text;
 			var paths = path.Split('/').Where(s => !s.IsNullOrWhiteSpace());
 			string root_path = paths.ElementAt(0);
@@ -91,7 +97,7 @@ namespace FastPlay {
 			// root_path == paths.ElementAt(path_count - 1)
 			TreeNode<T> child_node;
 			if (paths.Count() == 1) {
-				child_node = AddChild(content, data);
+				child_node = AddChild(content, data, tags);
 				return this.children[child_node.contentName] = child_node;
 			}
 			else {
@@ -105,7 +111,7 @@ namespace FastPlay {
 				else {
 					child_node = AddChild(new GUIContent(root_path, content.image), default(T));
 					this.children[child_node.contentName] = child_node;
-					return child_node.AddChildByPath(subcontent, data);
+					return child_node.AddChildByPath(subcontent, data, tags);
 				}
 			}
 		}

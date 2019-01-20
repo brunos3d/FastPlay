@@ -337,6 +337,7 @@ namespace FastPlay.Runtime {
 		}
 
 		public void RemoveNode(Node node) {
+			node.OnGraphRemove();
 			foreach (Port port in node.portValues) {
 				if (port is IPlug) {
 					((IPlug)port).Unplug();

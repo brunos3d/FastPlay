@@ -13,9 +13,11 @@ namespace FastPlay {
 
 		private static Dictionary<string, Type> cache_types = new Dictionary<string, Type>();
 
+		private static Dictionary<string, MethodInfo> cache_methods = new Dictionary<string, MethodInfo>();
+
 		private static Dictionary<string, string> cache_type_names = new Dictionary<string, string>();
 
-		private static Dictionary<string, MethodInfo> cache_methods = new Dictionary<string, MethodInfo>();
+		public static Dictionary<MemberInfo, string> cached_summary = new Dictionary<MemberInfo, string>();
 
 		private static readonly Dictionary<Type, string> keywords = new Dictionary<Type, string>() {
 			{ typeof(int), "int" },
@@ -37,6 +39,9 @@ namespace FastPlay {
 	};
 
 
+		/// <summary>
+		/// Returns all types of all current assemblies
+		/// </summary>
 		public static List<Type> GetFullTypes() {
 			List<Type> types = new List<Type>();
 			if (cache_types.IsNullOrEmpty()) {
@@ -58,6 +63,9 @@ namespace FastPlay {
 			}
 		}
 
+		/// <summary>
+		/// Returns all current assemblies
+		/// </summary>
 		public static List<Assembly> GetFullAssemblies() {
 			if (cache_assemblies.IsNullOrEmpty()) {
 				cache_assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
@@ -66,6 +74,16 @@ namespace FastPlay {
 			return cache_assemblies;
 		}
 
+		/// <summary>
+		/// Returns a list of types in a namespace
+		/// </summary>
+		public static List<Type> GetTypesWithNamespace(string @namespace) {
+			return GetFullTypes().Where(t => t.Namespace == @namespace).ToList();
+		}
+
+		/// <summary>
+		/// Find the method from your serializable name
+		/// </summary>
 		public static MethodInfo GetMethodInfoByKey(Type type, string key) {
 			if (type == null || key.IsNullOrEmpty()) return null;
 			MethodInfo m1;
@@ -75,6 +93,9 @@ namespace FastPlay {
 			return type.GetMethods().FirstOrDefault(m2 => GetMethodInfoKey(m2) == key);
 		}
 
+		/// <summary>
+		/// Returns a serializable name for the method
+		/// </summary>
 		public static string GetMethodInfoKey(MethodInfo method) {
 			string key = method.ReturnType.GetTypeName(true);
 			key += method.Name;
@@ -85,6 +106,9 @@ namespace FastPlay {
 			return key;
 		}
 
+		/// <summary>
+		/// Search for a type from your name
+		/// </summary>
 		public static Type GetTypeByName(string type_name) {
 			Type t1 = Type.GetType(type_name);
 			if (t1 != null) {
@@ -120,10 +144,16 @@ namespace FastPlay {
 
 		// Extensions
 
+		/// <summary>
+		/// Extension to check if a type is static
+		/// </summary>
 		public static bool IsStatic(this Type type) {
 			return type.IsAbstract && type.IsSealed;
 		}
 
+		/// <summary>
+		/// Returns the first attribute of type "T" of the member or inherited if "inherit" is true
+		/// </summary>
 		public static T GetAttribute<T>(this MemberInfo member, bool inherit) where T : Attribute {
 			object[] attributes = member.GetCustomAttributes(typeof(T), inherit);
 			if (attributes.Length > 0) {
@@ -132,10 +162,16 @@ namespace FastPlay {
 			return null;
 		}
 
+		/// <summary>
+		/// Checks whether there is an attribute on a member
+		/// </summary>
 		public static bool HasAttribute<T>(this MemberInfo member, bool inherit) where T : Attribute {
 			return GetAttribute<T>(member, inherit) != null;
 		}
 
+		/// <summary>
+		/// Returns the signature (friendly name) of the method that sets it apart from others
+		/// </summary>
 		public static string GetSignName(this MethodInfo method, bool full_path = false, bool full_name = false) {
 			if (method == null) return null;
 			string p_name;
@@ -152,6 +188,9 @@ namespace FastPlay {
 			}
 		}
 
+		/// <summary>
+		/// Returns the path of the type as a directory
+		/// </summary>
 		public static string GetTypePath(this Type type, bool standard_types_prevail = false) {
 			string namespace_path = type.Namespace;
 			if (namespace_path.IsNullOrEmpty()) {
@@ -163,6 +202,9 @@ namespace FastPlay {
 			return string.Format("{0}/{1}", namespace_path, type.GetTypeName(false, standard_types_prevail));
 		}
 
+		/// <summary>
+		/// Friendly name for types (ex: List'1 = List <T>)
+		/// </summary>
 		public static string GetTypeName(this Type type, bool full_name = false, bool standard_types_prevail = false) {
 			if (type == null) return null;
 			string s;
@@ -199,20 +241,25 @@ namespace FastPlay {
 			return cache_type_names[string.Format("{0}, {1} & {2}", type, full_name, standard_types_prevail)] = (full_name ? type.FullName : type.Name);
 		}
 
-		public static object CreateGenericInstance(this Type generic, Type type_arg, params object[] constructor_args) {
-			if (generic == null) return null;
-			return Activator.CreateInstance(generic.MakeGenericType(type_arg), constructor_args);
+		/// <summary>
+		/// Make a generic instance based on "generic_type" using the "type_argument" argument
+		/// </summary>
+		public static object CreateGenericInstance(this Type generic_type, Type type_argument, params object[] constructor_args) {
+			if (generic_type == null) return null;
+			return Activator.CreateInstance(generic_type.MakeGenericType(type_argument), constructor_args);
 		}
 
-		public static object CreateGenericInstance(this Type generic, Type[] type_args, params object[] constructor_args) {
-			if (generic == null) return null;
-			return Activator.CreateInstance(generic.MakeGenericType(type_args), constructor_args);
+		/// <summary>
+		/// Make a generic instance based on "generic_type" using the "type_args" arguments
+		/// </summary>
+		public static object CreateGenericInstance(this Type generic_type, Type[] type_args, params object[] constructor_args) {
+			if (generic_type == null) return null;
+			return Activator.CreateInstance(generic_type.MakeGenericType(type_args), constructor_args);
 		}
 
-		//Description
-
-		public static Dictionary<MemberInfo, string> cached_summary = new Dictionary<MemberInfo, string>();
-
+		/// <summary>
+		/// Return member description/summary
+		/// </summary>
 		public static string GetDescription(this MemberInfo member) {
 			if (member == null) return string.Empty;
 			string s;

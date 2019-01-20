@@ -12,12 +12,22 @@ namespace FastPlay.Editor {
 	public class GraphEditorWindow : EditorWindow {
 
 		private class Styles {
-			public GUIStyle border;
-			public GUIStyle header;
+
+			public readonly GUIStyle border;
+			public readonly GUIStyle header;
+
+			public readonly Texture2D background;
 
 			public Styles() {
 				border = FPSkin.border;
 				header = FPSkin.header;
+
+				if (EditorGUIUtility.isProSkin) {
+					background = EditorUtils.FindAssetByName<Texture2D>("background_dark");
+				}
+				else {
+					background = EditorUtils.FindAssetByName<Texture2D>("background_light");
+				}
 			}
 		}
 
@@ -26,8 +36,6 @@ namespace FastPlay.Editor {
 		private Styles styles;
 
 		private Event current;
-
-		private GenericMenu generic_menu;
 
 		private bool internal_error;
 
@@ -44,8 +52,6 @@ namespace FastPlay.Editor {
 		private Rect select_box;
 
 		private PropertyInfo docked;
-
-		private Texture2D background;
 
 		private List<Texture2D> anim = new List<Texture2D>();
 
@@ -69,9 +75,7 @@ namespace FastPlay.Editor {
 			editor = GetWindow<GraphEditorWindow>(typeof(SceneView));
 			Texture2D icon = EditorUtils.FindAssetByName<Texture2D>("title_content");
 			editor.titleContent = new GUIContent("FastPlay", icon);
-			if (!DetailsEditorWindow.is_open) {
-				DetailsEditorWindow.Init();
-			}
+			editor.wantsMouseMove = true;
 			return editor;
 		}
 
@@ -158,7 +162,6 @@ namespace FastPlay.Editor {
 			EditorApplication.update += Update;
 			EditorApplication.playModeStateChanged += OnStateChange;
 
-			background = EditorUtils.FindAssetByName<Texture2D>("background_dark");
 			anim = new List<Texture2D>();
 			for (int id = 1; id < 22; id++) {
 				anim.Add(EditorUtils.FindAssetByName<Texture2D>(string.Format("anim ({0})", id)));
@@ -518,7 +521,7 @@ namespace FastPlay.Editor {
 							break;
 						case 1:
 							if (!GraphEditor.is_drag) {
-								AdvancedSearchWindow.Init();
+								AdvancedSearchWindow.Init(GraphEditor.mouse_position);
 								current.Use();
 							}
 							GraphEditor.is_drag = false;
@@ -665,7 +668,7 @@ namespace FastPlay.Editor {
 				case (EventType.KeyDown):
 					switch (current.keyCode) {
 						case KeyCode.Space:
-							AdvancedSearchWindow.Init();
+							AdvancedSearchWindow.Init(position.size / 2.0f);
 							current.Use();
 							break;
 						case KeyCode.Delete:
@@ -821,16 +824,13 @@ namespace FastPlay.Editor {
 		}
 
 		private void DrawScrollBackground() {
-			if (background == null) {
-				background = EditorUtils.FindAssetByName<Texture2D>("background_dark");
-				if (background == null) {
-					Debug.LogError("(INTERNAL_ERROR) The GraphEditorWindow 'background' is NULL!");
-					internal_error = true;
-					return;
-				}
+			if (styles.background == null) {
+				Debug.LogError("(INTERNAL_ERROR) The GraphEditorWindow 'background' is NULL!");
+				internal_error = true;
+				return;
 			}
-			float width = background.width * GraphEditor.zoom;
-			float height = background.height * GraphEditor.zoom;
+			float width = styles.background.width * GraphEditor.zoom;
+			float height = styles.background.height * GraphEditor.zoom;
 			float grid_size = GraphEditor.zoom > 0.51 ? 240 : GraphEditor.zoom > 0.3f && GraphEditor.zoom <= 0.51f ? 480 : 960;
 			Vector2 offset = new Vector2(GraphEditor.scroll.x % grid_size - grid_size, GraphEditor.scroll.y % grid_size - grid_size);
 			int tileX = Mathf.CeilToInt((position.width + (width - offset.x)) / width);
@@ -839,7 +839,7 @@ namespace FastPlay.Editor {
 			for (float x = 0; x < tileX; x++) {
 				for (float y = 0; y < tileY; y++) {
 					var backRect = new Rect(offset.x + x * grid_size, offset.y + y * grid_size, grid_size, grid_size);
-					GUI.DrawTexture(backRect, background);
+					GUI.DrawTexture(backRect, styles.background);
 				}
 			}
 		}

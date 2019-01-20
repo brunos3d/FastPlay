@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 namespace FastPlay {
 	public static class FPMath {
 
 		public static float SnapValue(float value, float snap = 20.0f) {
-			return Mathf.Round(value / snap) * snap;
+			return (float)Math.Round(value / snap) * snap;
 		}
 
 		public static Vector2 SnapVector2(Vector2 value, float snap = 20.0f) {

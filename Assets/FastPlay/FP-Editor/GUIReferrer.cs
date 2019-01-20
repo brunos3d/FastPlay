@@ -39,6 +39,9 @@ namespace FastPlay.Editor {
 			{ typeof(PlayerPrefs), "PlayerPrefs Icon" },
 			{ typeof(Screen), "Screen Icon" },
 			{ typeof(Cursor), "Cursor Icon" },
+			{ typeof(Application), "Application Icon" },
+			{ typeof(GUI), "GUI Icon" },
+			{ typeof(GUILayout), "GUI Icon" },
 
 	};
 

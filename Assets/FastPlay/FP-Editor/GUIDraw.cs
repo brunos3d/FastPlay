@@ -13,10 +13,10 @@ namespace FastPlay.Editor {
 
 		private class Styles {
 
-			public GUIStyle label;
-			public GUIStyle type_button;
-			public GUIStyle search_text_field;
-			public GUIStyle search_cancel_button;
+			public readonly GUIStyle label;
+			public readonly GUIStyle type_button;
+			public readonly GUIStyle search_text_field;
+			public readonly GUIStyle search_cancel_button;
 
 			public Styles() {
 				label = FPSkin.GetStyle("label");
