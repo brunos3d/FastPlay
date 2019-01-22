@@ -116,10 +116,10 @@ namespace FastPlay {
 			}
 		}
 
-		private void RegisterChildForSearch(TreeNode<T> node) {
-			children_index.Add(node);
+		private void RegisterChildForSearch(TreeNode<T> child) {
+			children_index.Add(child);
 			if (parent != null) {
-				parent.RegisterChildForSearch(node);
+				parent.RegisterChildForSearch(child);
 			}
 		}
 
@@ -127,18 +127,34 @@ namespace FastPlay {
 			return this.children_index.FirstOrDefault(predicate);
 		}
 
-		public TreeNode<T> GetAllTreeNodeInChildren() {
-			TreeNode<T> result_tree = new TreeNode<T>(new GUIContent("Search"), default(T));
-			foreach (TreeNode<T> node in this.children_index) {
-				result_tree.AddAnExistingTreeNode(node);
+		public TreeNode<T> GetChildren() {
+			TreeNode<T> result_tree = new TreeNode<T>(new GUIContent("#Search"), default(T));
+			foreach (TreeNode<T> child in this.children.Values) {
+				result_tree.AddAnExistingTreeNode(child);
+			}
+			return result_tree;
+		}
+
+		public TreeNode<T> GetAllChildren() {
+			TreeNode<T> result_tree = new TreeNode<T>(new GUIContent("#Search"), default(T));
+			foreach (TreeNode<T> child in this.children_index) {
+				result_tree.AddAnExistingTreeNode(child);
 			}
 			return result_tree;
 		}
 
 		public TreeNode<T> GetTreeNodeInChildren(Func<TreeNode<T>, bool> predicate) {
-			TreeNode<T> search_tree = new TreeNode<T>(new GUIContent("Search"), default(T));
-			foreach (TreeNode<T> node in this.children_index.Where(predicate)) {
-				search_tree.AddAnExistingTreeNode(node);
+			TreeNode<T> search_tree = new TreeNode<T>(new GUIContent("#Search"), default(T));
+			foreach (TreeNode<T> child in this.children.Values.Where(predicate)) {
+				search_tree.AddAnExistingTreeNode(child);
+			}
+			return search_tree;
+		}
+
+		public TreeNode<T> GetTreeNodeInAllChildren(Func<TreeNode<T>, bool> predicate) {
+			TreeNode<T> search_tree = new TreeNode<T>(new GUIContent("#Search"), default(T));
+			foreach (TreeNode<T> child in this.children_index.Where(predicate)) {
+				search_tree.AddAnExistingTreeNode(child);
 			}
 			return search_tree;
 		}

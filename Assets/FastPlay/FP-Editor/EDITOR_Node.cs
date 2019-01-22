@@ -107,9 +107,9 @@ namespace FastPlay.Runtime {
 			}
 		}
 
-		public static readonly float MIN_SIZE_X = 100.0f;
+		public const float MIN_SIZE_X = 100.0f;
 
-		public static readonly float MIN_SIZE_Y = 60.0f;
+		public const float MIN_SIZE_Y = 60.0f;
 
 		public static readonly Vector2 V2x0y2 = new Vector2(0.0f, 2.0f);
 
@@ -137,15 +137,15 @@ namespace FastPlay.Runtime {
 
 		private bool has_subtitle;
 
-		private Rect head_rect = new Rect();
+		private Rect head_rect;
 
-		private Rect body_rect = new Rect();
+		private Rect body_rect;
 
-		private Rect icon_rect = new Rect();
+		private Rect icon_rect;
 
-		private Rect title_rect = new Rect();
+		private Rect title_rect;
 
-		private Rect subtitle_rect = new Rect();
+		private Rect subtitle_rect;
 
 		public Vector2 position = Vector2.zero;
 
@@ -173,19 +173,19 @@ namespace FastPlay.Runtime {
 		[NonSerialized]
 		public bool is_occluded;
 
-		public static Dictionary<int, Rect> points = new Dictionary<int, Rect>();
+		public static readonly Dictionary<int, Rect> points = new Dictionary<int, Rect>();
 
-		public static Dictionary<int, Rect> rects = new Dictionary<int, Rect>();
+		public static readonly Dictionary<int, Rect> rects = new Dictionary<int, Rect>();
 
-		public static Dictionary<int, Color> colors = new Dictionary<int, Color>();
+		public static readonly Dictionary<int, Color> colors = new Dictionary<int, Color>();
 
 		public Rect nodeRect {
 			get {
 				Rect r;
-				if (rects.TryGetValue(this.GetInstanceID(), out r)) {
+				if (rects.TryGetValue(this.id, out r)) {
 					return r;
 				}
-				return rects[this.GetInstanceID()] = new Rect(this.position, this.size);
+				return rects[this.id] = new Rect(this.position, this.size);
 			}
 		}
 
@@ -504,12 +504,12 @@ namespace FastPlay.Runtime {
 				if (!GraphEditor.is_drag) {
 					position = FPMath.SnapVector2(position);
 				}
-				rects[this.GetInstanceID()] = new Rect(FPMath.SnapVector2(this.position) + GraphEditor.scroll, this.size);
+				rects[this.id] = new Rect(FPMath.SnapVector2(this.position) + GraphEditor.scroll, this.size);
 			}
 			else {
-				rects[this.GetInstanceID()] = new Rect(this.position + GraphEditor.scroll, this.size);
+				rects[this.id] = new Rect(this.position + GraphEditor.scroll, this.size);
 			}
-			Vector2 pos = rects[this.GetInstanceID()].position;
+			Vector2 pos = rects[this.id].position;
 			head_rect.position = pos;
 			body_rect.position = new Vector2(pos.x, pos.y + head_height);
 			icon_rect.position = new Vector2(pos.x + 5.0f, pos.y + 5.0f);
@@ -555,10 +555,10 @@ namespace FastPlay.Runtime {
 				// Create nodeRect...
 			}
 			if (GraphEditor.snapToGrid) {
-				rects[this.GetInstanceID()] = new Rect(FPMath.SnapVector2(this.position) + GraphEditor.scroll, this.size);
+				rects[this.id] = new Rect(FPMath.SnapVector2(this.position) + GraphEditor.scroll, this.size);
 			}
 			else {
-				rects[this.GetInstanceID()] = new Rect(this.position + GraphEditor.scroll, this.size);
+				rects[this.id] = new Rect(this.position + GraphEditor.scroll, this.size);
 			}
 			// Recalculate Size...
 			CreatePortPoints();
@@ -620,7 +620,6 @@ namespace FastPlay.Runtime {
 				if (this.subtitle.IsNullOrEmpty()) {
 					this.subtitle = "Event";
 				}
-				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(typeof(EventNode));
 			}
 			else if (this is ReflectedNode) {
 				invert_title = true;
@@ -646,9 +645,6 @@ namespace FastPlay.Runtime {
 				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(reflected_type, false) ?? GUIReferrer.GetTypeIcon(typeof(MonoScript));
 
 			}
-			else if (this is ValueNode) {
-				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(((ValueNode)this).valueType);
-			}
 			else if (this is LiteralNode) {
 				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(((LiteralNode)this).valueType);
 			}
@@ -672,12 +668,12 @@ namespace FastPlay.Runtime {
 				else {
 					port_position = new Vector2(5.0f, head_height + 12.0f + (20.0f * input));
 				}
-				points[port.GetInstanceID()] = new Rect(port_position, PORT_SIZE);
+				points[port.id] = new Rect(port_position, PORT_SIZE);
 				if (port is ValuePort) {
-					colors[port.GetInstanceID()] = GUIReferrer.GetTypeColor((port as ValuePort).valueType);
+					colors[port.id] = GUIReferrer.GetTypeColor((port as ValuePort).valueType);
 				}
 				else {
-					colors[port.GetInstanceID()] = GUIReferrer.GetTypeColor(port.type);
+					colors[port.id] = GUIReferrer.GetTypeColor(port.type);
 				}
 				input++;
 			}
@@ -692,12 +688,12 @@ namespace FastPlay.Runtime {
 				else {
 					port_position = new Vector2(size.x - 23.0f, head_height + 12.0f + (20.0f * output));
 				}
-				points[port.GetInstanceID()] = new Rect(port_position, PORT_SIZE);
+				points[port.id] = new Rect(port_position, PORT_SIZE);
 				if (port is ValuePort) {
-					colors[port.GetInstanceID()] = GUIReferrer.GetTypeColor((port as ValuePort).valueType);
+					colors[port.id] = GUIReferrer.GetTypeColor((port as ValuePort).valueType);
 				}
 				else {
-					colors[port.GetInstanceID()] = GUIReferrer.GetTypeColor(port.type);
+					colors[port.id] = GUIReferrer.GetTypeColor(port.type);
 				}
 				output++;
 			}
@@ -705,8 +701,8 @@ namespace FastPlay.Runtime {
 
 		public static Rect GetPortPoint(Port port) {
 			Rect p;
-			if (points.TryGetValue(port.GetInstanceID(), out p)) {
-				p.position += rects[port.node.GetInstanceID()].position;
+			if (points.TryGetValue(port.id, out p)) {
+				p.position += rects[port.node.id].position;
 				return p;
 			}
 			return default(Rect);
@@ -714,15 +710,15 @@ namespace FastPlay.Runtime {
 
 		public static Color GetPortColor(Port port) {
 			Color c;
-			if (colors.TryGetValue(port.GetInstanceID(), out c)) {
+			if (colors.TryGetValue(port.id, out c)) {
 				return c;
 			}
 			else {
 				if (port is ValuePort) {
-					return (colors[port.GetInstanceID()] = GUIReferrer.GetTypeColor((port as ValuePort).valueType));
+					return (colors[port.id] = GUIReferrer.GetTypeColor((port as ValuePort).valueType));
 				}
 				else {
-					return (colors[port.GetInstanceID()] = GUIReferrer.GetTypeColor(port.type));
+					return (colors[port.id] = GUIReferrer.GetTypeColor(port.type));
 				}
 			}
 		}

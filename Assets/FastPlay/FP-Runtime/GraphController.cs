@@ -189,11 +189,6 @@ namespace FastPlay.Runtime {
 					break;
 			}
 			StopAllCoroutines2();
-#if UNITY_EDITOR
-			if (!UnityEditor.EditorApplication.isPlaying) {
-				new log("yeah");
-			}
-#endif
 		}
 
 		public void OnControllerDestroy() {

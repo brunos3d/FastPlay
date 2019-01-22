@@ -32,7 +32,7 @@ namespace FastPlay {
 
 		public Type type {
 			get {
-				return this.GetType();
+				return GetType();
 			}
 		}
 

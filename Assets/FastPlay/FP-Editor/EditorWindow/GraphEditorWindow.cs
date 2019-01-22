@@ -14,6 +14,7 @@ namespace FastPlay.Editor {
 		private class Styles {
 
 			public readonly GUIStyle border;
+
 			public readonly GUIStyle header;
 
 			public readonly Texture2D background;
@@ -53,7 +54,7 @@ namespace FastPlay.Editor {
 
 		private PropertyInfo docked;
 
-		private List<Texture2D> anim = new List<Texture2D>();
+		private List<Texture2D> anim;
 
 		private static bool set_dirty = false;
 
@@ -154,17 +155,17 @@ namespace FastPlay.Editor {
 		}
 
 		private void OnEnable() {
+			styles = new Styles();
 			is_open = true;
 			editor = this;
-			styles = new Styles();
 
 			Undo.undoRedoPerformed += UndoRedoPerformed;
 			EditorApplication.update += Update;
 			EditorApplication.playModeStateChanged += OnStateChange;
 
 			anim = new List<Texture2D>();
-			for (int id = 1; id < 22; id++) {
-				anim.Add(EditorUtils.FindAssetByName<Texture2D>(string.Format("anim ({0})", id)));
+			for (int id = 0; id < 21; id++) {
+				anim.Add(EditorUtils.FindAssetByName<Texture2D>(string.Format("anim_{0}", id)));
 			}
 			OnSelectionChange();
 		}
@@ -668,8 +669,10 @@ namespace FastPlay.Editor {
 				case (EventType.KeyDown):
 					switch (current.keyCode) {
 						case KeyCode.Space:
-							AdvancedSearchWindow.Init(position.size / 2.0f);
-							current.Use();
+							if (!current.control) {
+								AdvancedSearchWindow.Init(position.size / 2.0f);
+								current.Use();
+							}
 							break;
 						case KeyCode.Delete:
 							DeleteSelectedNodes();

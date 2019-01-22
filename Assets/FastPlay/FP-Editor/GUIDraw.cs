@@ -434,8 +434,8 @@ namespace FastPlay.Editor {
 						GUILayout.Label("[NULL]", options);
 						GUILayout.EndHorizontal();
 						if (GUILayout.Button("Create List")) {
-							Type listType = typeof(List<>);
-							Type constructedListType = listType.MakeGenericType(list_type);
+							Type gen_list_type = typeof(List<>);
+							Type constructedListType = gen_list_type.MakeGenericType(list_type);
 							collection = (IList)Activator.CreateInstance(constructedListType);
 						}
 					}

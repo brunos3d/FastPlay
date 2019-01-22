@@ -14,7 +14,7 @@ namespace FastPlay.Runtime {
 		}
 
 		public override void OnExecute() {
-			new log(text.value);
+			Debug.Log(text.value, Current.controller);
 			Call(output);
 		}
 	}

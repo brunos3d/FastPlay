@@ -22,6 +22,7 @@ namespace FastPlay.Editor {
 			{ typeof(bool), "Boolean Icon" },
 			{ typeof(string), "String Icon" },
 			{ typeof(object), "SystemObject Icon" },
+			{ typeof(Type), "SystemType Icon" },
 			{ typeof(Enum), "Enum Icon" },
 			{ typeof(Rect), "Rect Icon" },
 			{ typeof(Color), "Color Icon" },
@@ -31,6 +32,7 @@ namespace FastPlay.Editor {
 			{ typeof(Quaternion), "Quaternion Icon" },
 			{ typeof(UnityObject), "UnityObject Icon" },
 			{ typeof(UnityEngine.ScriptableObject), "UnityScriptableObject Icon" },
+			{ typeof(Ray), "Ray Icon" },
 			{ typeof(Time), "Time Icon" },
 			{ typeof(Physics), "Physics Icon" },
 			{ typeof(Physics2D), "Physics2D Icon" },
@@ -87,8 +89,24 @@ namespace FastPlay.Editor {
 			if (icon_flag != null) {
 				return icons[type] = icon_flag.GetIcon();
 			}
-			if (typeof(UnityObject).IsAssignableFrom(type)) {
+			else if (typeof(UnityObject).IsAssignableFrom(type)) {
 				return icons[type] = EditorGUIUtility.ObjectContent(null, type).image;
+			}
+			else if (type.IsSubclassOf(typeof(EventNode))) {
+				return icons[type] = GetTypeIcon(typeof(EventNode), return_default_icon);
+			}
+			else {
+				Type base_type = type;
+				while (!base_type.IsGenericType) {
+					if (base_type.BaseType == null) break;
+					base_type = base_type.BaseType;
+				}
+				if (base_type.IsGenericType) {
+					t = GetTypeIcon(base_type.GetGenericArguments()[0], false);
+					if (t != null) {
+						return icons[type] = t;
+					}
+				}
 			}
 			if (return_default_icon) {
 				return icons[type] = EditorUtils.FindAssetByName<Texture>("404_icon_not_found");

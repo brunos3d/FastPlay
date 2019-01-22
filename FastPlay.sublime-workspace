@@ -7,6 +7,15 @@
 	},
 	"buffers":
 	[
+		{
+			"contents": "\t\t\tTreeNode<Act> parent = current_tree.parent;\n\t\t\tList<TreeNode<Act>> parents = new List<TreeNode<Act>>();\n\t\t\t//while parent isNotRoot\n\t\t\twhile (parent != null) {\n\t\t\t\tparents.Add(parent);\n\t\t\t\tparent = parent.parent;\n\t\t\t}\n\t\t\tGUILayout.BeginHorizontal();\n\t\t\tfor (int id = parents.Count - 1; id >= 0; id--) {\n\t\t\t\tif (GUILayout.Button(parent.content, GUILayout.ExpandWidth(false), GUILayout.Height(20.0f))) {\n\t\t\t\t\tGoToNode(parent, true);\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}",
+			"settings":
+			{
+				"buffer_size": 456,
+				"line_ending": "Windows",
+				"name": "TreeNode<Act> parent = current_tree.parent;"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -93,8 +102,37 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 456,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								433,
+								433
+							]
+						],
+						"settings":
+						{
+							"auto_name": "TreeNode<Act> parent = current_tree.parent;",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
