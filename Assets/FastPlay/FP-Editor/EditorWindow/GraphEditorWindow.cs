@@ -262,8 +262,7 @@ namespace FastPlay.Editor {
 						zoom_area = new Rect(0.0f, 22.0f, position.width, position.height);
 					}
 
-					// Window draw layers
-					RefreshHoverElements();
+					ClearHoverElements();
 
 					BeginZoomArea();
 
@@ -373,7 +372,7 @@ namespace FastPlay.Editor {
 			}
 		}
 
-		private void RefreshHoverElements() {
+		private void ClearHoverElements() {
 			GraphEditor.hover_node = null;
 			GraphEditor.hover_port = null;
 		}
@@ -702,9 +701,6 @@ namespace FastPlay.Editor {
 			List<Type> current_types = EditorHandler.GetConstantTypesCurrentInstance().current_types;
 			MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
 
-			//methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type)
-			//methods.Where(m => m.IsSpecialName)
-			//methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)
 			foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type)) {
 				if (method.IsGenericMethod) {
 					foreach (Type t in current_types) {
@@ -765,10 +761,12 @@ namespace FastPlay.Editor {
 			foreach (Node node in GraphEditor.graph.nodes) {
 				node.EDITOR_Update();
 
-				// optimization
-				node.is_occluded = !view_area.Overlaps(node.nodeRect);
+				Rect node_rect = node.nodeRect;
 
-				if (GraphEditor.ZoomedRect(node.nodeRect).Contains(GraphEditor.mouse_position)) {
+				// optimization
+				node.is_occluded = !view_area.Overlaps(node_rect);
+
+				if (GraphEditor.ZoomedRect(node_rect).Contains(GraphEditor.mouse_position)) {
 					GraphEditor.hover_node = node;
 				}
 
@@ -836,11 +834,11 @@ namespace FastPlay.Editor {
 			float height = styles.background.height * GraphEditor.zoom;
 			float grid_size = GraphEditor.zoom > 0.51 ? 240 : GraphEditor.zoom > 0.3f && GraphEditor.zoom <= 0.51f ? 480 : 960;
 			Vector2 offset = new Vector2(GraphEditor.scroll.x % grid_size - grid_size, GraphEditor.scroll.y % grid_size - grid_size);
-			int tileX = Mathf.CeilToInt((position.width + (width - offset.x)) / width);
-			int tileY = Mathf.CeilToInt((position.height + (height - offset.y)) / height);
+			int tile_x = Mathf.CeilToInt((position.width + (width - offset.x)) / width);
+			int tile_y = Mathf.CeilToInt((position.height + (height - offset.y)) / height);
 
-			for (float x = 0; x < tileX; x++) {
-				for (float y = 0; y < tileY; y++) {
+			for (float x = 0; x < tile_x; x++) {
+				for (float y = 0; y < tile_y; y++) {
 					var backRect = new Rect(offset.x + x * grid_size, offset.y + y * grid_size, grid_size, grid_size);
 					GUI.DrawTexture(backRect, styles.background);
 				}

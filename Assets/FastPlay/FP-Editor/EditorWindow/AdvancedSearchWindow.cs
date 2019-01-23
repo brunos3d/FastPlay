@@ -14,7 +14,9 @@ namespace FastPlay.Editor {
 
 			public readonly Texture search_icon;
 
-			public readonly GUIStyle label = (GUIStyle)"label";
+			public readonly GUIStyle label = EditorStyles.label;
+
+			public readonly GUIStyle tag_button = EditorStyles.miniButton;
 
 			public readonly GUIStyle background = (GUIStyle)"grey_border";
 
@@ -30,7 +32,7 @@ namespace FastPlay.Editor {
 
 			public readonly GUIStyle on_search_description_item;
 
-			public Styles(float width) {
+			public Styles() {
 				search_bar = FPSkin.GetStyle("Search Bar");
 				search_label = FPSkin.GetStyle("Search Label");
 				search_item = FPSkin.GetStyle("Search Item");
@@ -80,6 +82,8 @@ namespace FastPlay.Editor {
 
 		private bool drag_scroll;
 
+		private bool disable_layout;
+
 		private float scroll_pos;
 
 		public int selected_index;
@@ -122,6 +126,7 @@ namespace FastPlay.Editor {
 						search_format = search_format.Replace("#in:", string.Empty);
 						search_format = search_format.Replace("#node:", string.Empty);
 						search_format = search_format.Replace("#path:", string.Empty);
+						search_format = search_format.Replace("#tag:", string.Empty);
 						search_format = search_format.Replace("#title:", string.Empty);
 						return search_format;
 					}
@@ -174,11 +179,13 @@ namespace FastPlay.Editor {
 				Close();
 			}
 			if (styles == null) {
-				styles = new Styles(position.width);
+				styles = new Styles();
 			}
 			if (styles.search_icon == null) {
 				return;
 			}
+
+			disable_layout = false;
 
 			GUI.Box(new Rect(0.0f, 0.0f, base.position.width, base.position.height), GUIContent.none, styles.background);
 
@@ -186,57 +193,7 @@ namespace FastPlay.Editor {
 
 			KeyboardInputGUI();
 
-			if (new_search != search) {
-				new_search = search;
-				if (new_search.IsNullOrEmpty()) {
-					GoToNode(root_tree, false);
-				}
-				else {
-					TreeNode<Act> search_result = root_tree;
-					if (searchFormat.Contains("#")) {
-						search_result = new TreeNode<Act>(new GUIContent("#Commands"), null);
-						search_result.AddChild(new GUIContent("#description:", "Search results by description"), () => { search = "#description:"; });
-						search_result.AddChild(new GUIContent("#event:", "Search results node events only"), () => { search = "#event:"; });
-						search_result.AddChild(new GUIContent("#in:", "All items within the directory searched"), () => { search = "#in:"; });
-						search_result.AddChild(new GUIContent("#node:", "Search results nodes only"), () => { search = "#node:"; });
-						search_result.AddChild(new GUIContent("#path:", "Search results directories only"), () => { search = "#path:"; });
-						search_result.AddChild(new GUIContent("#title:", "Search results by title"), () => { search = "#title:"; });
-						search_result = search_result.GetTreeNodeInAllChildren(tn => tn.content.text.ToLower().Contains(search.ToLower()));
-					}
-					else {
-						if (new_search == "*") {
-							search_result = root_tree.GetAllChildren();
-						}
-						else if (new_search.Contains("#in:")) {
-							search_result = root_tree.GetTreeNodeInAllChildren(tn => tn.parent != null && (tn.parent.content.text.ToLower().Contains(searchFormat.ToLower())));
-						}
-						else {
-							search_result = search_result.GetTreeNodeInAllChildren(tn => tn.content.text == searchFormat || tn.content.tooltip == searchFormat || tn.contentName.ToLower().Contains(searchFormat.ToLower()));
-						}
-
-						if (new_search.Contains("#event:")) {
-							search_result = search_result.GetTreeNodeInAllChildren(tn => tn.tags.Contains("EventNode"));
-						}
-						else if (new_search.Contains("#node:")) {
-							search_result = search_result.GetTreeNodeInAllChildren(tn => tn.isLeaf);
-						}
-						else if (new_search.Contains("#path:")) {
-							search_result = search_result.GetTreeNodeInAllChildren(tn => !tn.isLeaf);
-						}
-						else if (new_search.Contains("#title:")) {
-							search_result = search_result.GetTreeNodeInAllChildren(tn => tn.content.text.ToLower().Contains(searchFormat.ToLower()));
-						}
-						else if (new_search.Contains("#description:")) {
-							search_result = search_result.GetTreeNodeInAllChildren(tn => tn.content.tooltip.ToLower().Contains(searchFormat.ToLower()));
-						}
-						if (searchFormat == "*") {
-							search_result = search_result.GetAllChildren();
-						}
-					}
-
-					GoToNode(search_result, false);
-				}
-			}
+			RefreshSearchStatus();
 
 			Rect search_rect = new Rect(15.0f, 10.0f, position.width - 30.0f, 30.0f);
 			Rect search_icon_rect = new Rect(20.0f, 13.0f, 23.0f, 23.0f);
@@ -278,25 +235,27 @@ namespace FastPlay.Editor {
 				}
 			}
 
-			GUILayout.Space(50.0f);
+			if (!disable_layout) {
+				GUILayout.Space(50.0f);
 
-			GUILayout.BeginHorizontal();
-			{
-				if (hasSearch && current_tree.content.text == "#Search") {
-					if (GUILayout.Button(new GUIContent("Home"), GUILayout.ExpandWidth(false), GUILayout.Height(20.0f))) {
-						GoToHome();
+				GUILayout.BeginHorizontal();
+				{
+					if (hasSearch && current_tree.content.text == "#Search") {
+						if (GUILayout.Button(new GUIContent("Home"), GUILayout.ExpandWidth(false), GUILayout.Height(20.0f))) {
+							GoToHome();
+						}
 					}
-				}
-				for (int id = parents.Count - 1; id >= 0; id--) {
-					TreeNode<Act> parent = parents[id];
-					if (GUILayout.Button(parent.content.text, GUILayout.ExpandWidth(false), GUILayout.Height(20.0f))) {
-						GoToNode(parent, true);
-						break;
+					for (int id = parents.Count - 1; id >= 0; id--) {
+						TreeNode<Act> parent = parents[id];
+						if (GUILayout.Button(parent.content.text, GUILayout.ExpandWidth(false), GUILayout.Height(20.0f))) {
+							GoToNode(parent, true);
+							break;
+						}
 					}
+					GUILayout.Button(current_tree.content.text, GUILayout.ExpandWidth(false), GUILayout.Height(20.0f));
 				}
-				GUILayout.Button(current_tree.content.text, GUILayout.ExpandWidth(false), GUILayout.Height(20.0f));
+				GUILayout.EndHorizontal();
 			}
-			GUILayout.EndHorizontal();
 
 			int current_tree_count = current_tree.Count;
 
@@ -323,12 +282,26 @@ namespace FastPlay.Editor {
 				TreeNode<Act> node = current_tree[id];
 				Rect layout_rect = new Rect(1.0f, WINDOW_HEAD_HEIGHT + draw_index * ELEMENT_LIST_HEIGHT, position.width - 22.0f, ELEMENT_LIST_HEIGHT);
 
-				//Selection Box
+				//Draw Selection Box
 				if (selected_index == draw_index + first_scroll_index || (Event.current.type == EventType.MouseMove && layout_rect.Contains(Event.current.mousePosition))) {
 					selected = true;
 					selected_node = node;
 					selected_index = draw_index + first_scroll_index;
 					EditorGUI.DrawRect(layout_rect, FOCUS_COLOR);
+				}
+
+				if (!disable_layout) {
+					//Draw Tag Buttons
+					GUILayout.BeginArea(new Rect(layout_rect.x, layout_rect.y + 5.0f, layout_rect.width, layout_rect.height));
+					GUILayout.BeginHorizontal();
+					GUILayout.FlexibleSpace();
+					foreach (string tag in node.tags) {
+						if (GUILayout.Button(tag, styles.tag_button, GUILayout.ExpandWidth(false))) {
+							search = "#tag:" + tag;
+						}
+					}
+					GUILayout.EndHorizontal();
+					GUILayout.EndArea();
 				}
 
 				//Draw TreeNode Button
@@ -340,6 +313,64 @@ namespace FastPlay.Editor {
 			}
 			PostInputGUI();
 			Repaint();
+		}
+
+		void RefreshSearchStatus() {
+			if (new_search != search) {
+				new_search = search;
+				if (new_search.IsNullOrEmpty()) {
+					GoToNode(root_tree, false);
+				}
+				else {
+					TreeNode<Act> search_result = root_tree;
+					if (searchFormat.Contains("#")) {
+						search_result = new TreeNode<Act>(new GUIContent("#Commands"), null);
+						search_result.AddChild(new GUIContent("#description:", "Search results by description"), () => { search = "#description:"; });
+						search_result.AddChild(new GUIContent("#event:", "Search results node events only"), () => { search = "#event:"; });
+						search_result.AddChild(new GUIContent("#in:", "All items within the directory searched"), () => { search = "#in:"; });
+						search_result.AddChild(new GUIContent("#node:", "Search results nodes only"), () => { search = "#node:"; });
+						search_result.AddChild(new GUIContent("#path:", "Search results directories only"), () => { search = "#path:"; });
+						search_result.AddChild(new GUIContent("#tag:", "Search results by tag"), () => { search = "#tag:"; });
+						search_result.AddChild(new GUIContent("#title:", "Search results by title"), () => { search = "#title:"; });
+						search_result = search_result.GetTreeNodeInAllChildren(tn => tn.content.text.ToLower().Contains(search.ToLower()));
+					}
+					else {
+						if (new_search == "*") {
+							search_result = root_tree.GetAllChildren();
+						}
+						else {
+							search_result = search_result.GetTreeNodeInAllChildren(tn => tn.content.text == searchFormat || tn.content.tooltip == searchFormat || tn.contentName.ToLower().Contains(searchFormat.ToLower()));
+						}
+
+						if (new_search.Contains("#in:")) {
+							search_result = root_tree.GetTreeNodeInAllChildren(tn => tn.parent != null && (tn.parent.content.text.ToLower().Contains(searchFormat.ToLower())));
+						}
+						else if (new_search.Contains("#event:")) {
+							search_result = search_result.GetTreeNodeInAllChildren(tn => tn.tags.Contains("EventNode"));
+						}
+						else if (new_search.Contains("#node:")) {
+							search_result = search_result.GetTreeNodeInAllChildren(tn => tn.isLeaf);
+						}
+						else if (new_search.Contains("#path:")) {
+							search_result = search_result.GetTreeNodeInAllChildren(tn => !tn.isLeaf);
+						}
+						else if (new_search.Contains("#tag:")) {
+							search_result = root_tree.GetTreeNodeInAllChildren(tn => tn.tags.Any(tag => tag.ToLower().Contains(searchFormat.ToLower())));
+						}
+						else if (new_search.Contains("#title:")) {
+							search_result = root_tree.GetTreeNodeInAllChildren(tn => tn.content.text.ToLower().Contains(searchFormat.ToLower()));
+						}
+						else if (new_search.Contains("#description:")) {
+							search_result = root_tree.GetTreeNodeInAllChildren(tn => tn.content.tooltip.ToLower().Contains(searchFormat.ToLower()));
+						}
+						if (searchFormat == "*") {
+							search_result = search_result.GetAllChildren();
+						}
+					}
+
+					GoToNode(search_result, false);
+				}
+			}
 		}
 
 		void KeyboardInputGUI() {
@@ -359,85 +390,135 @@ namespace FastPlay.Editor {
 				case EventType.KeyDown:
 					keyboard_pressed = true;
 					if (!current.control) {
-						if (current.keyCode == KeyCode.Home) {
+						char current_char = Event.current.character;
+						if (char.IsNumber(current_char)) {
 							if (keyboard_navigation || !hasSearch) {
-								selected_index = 0;
-								scroll_pos = 0.0f;
+								selected_index = (int)(scroll_pos + (char.GetNumericValue(current_char))) - 1;
+								if (selected_index < 0) {
+									selected_index = 0;
+								}
+								else if (selected_index >= current_tree.Count) {
+									selected_index = current_tree.Count - 1;
+									scroll_pos = current_tree.Count;
+								}
+								else if (selected_index >= scroll_pos + view_element_capacity) {
+									scroll_pos += Mathf.Abs(selected_index - view_element_capacity);
+								}
 								current.Use();
 								keyboard_navigation = true;
 							}
-							else {
-								text_navigation = true;
-							}
 						}
-						else if (current.keyCode == KeyCode.End) {
-							if (keyboard_navigation || !hasSearch) {
-								selected_index = current_tree.Count - 1;
-								scroll_pos = current_tree.Count;
-								current.Use();
-								keyboard_navigation = true;
+						else {
+							if (current.keyCode == KeyCode.Home) {
+								if (keyboard_navigation || !hasSearch) {
+									selected_index = 0;
+									scroll_pos = 0.0f;
+									current.Use();
+									keyboard_navigation = true;
+								}
+								else {
+									text_navigation = true;
+								}
 							}
-							else {
-								text_navigation = true;
+							else if (current.keyCode == KeyCode.End) {
+								if (keyboard_navigation || !hasSearch) {
+									selected_index = current_tree.Count - 1;
+									scroll_pos = current_tree.Count;
+									current.Use();
+									keyboard_navigation = true;
+								}
+								else {
+									text_navigation = true;
+								}
 							}
-						}
-						else if (current.keyCode == KeyCode.DownArrow) {
-							selected_index++;
-							if (selected_index > scroll_pos) {
-								scroll_pos++;
+							else if (current.keyCode == KeyCode.PageDown) {
+								if (keyboard_navigation || !hasSearch) {
+									selected_index += view_element_capacity;
+									scroll_pos += view_element_capacity;
+									if (selected_index >= current_tree.Count) {
+										selected_index = 0;
+										scroll_pos = 0.0f;
+									}
+									current.Use();
+									keyboard_navigation = true;
+								}
+								else {
+									text_navigation = true;
+								}
 							}
-							if (selected_index >= current_tree.Count) {
-								selected_index = 0;
-								scroll_pos = 0.0f;
+							else if (current.keyCode == KeyCode.PageUp) {
+								if (keyboard_navigation || !hasSearch) {
+									selected_index -= view_element_capacity;
+									scroll_pos -= view_element_capacity;
+									if (selected_index < 0) {
+										selected_index = current_tree.Count - 1;
+										scroll_pos = current_tree.Count;
+									}
+									current.Use();
+									keyboard_navigation = true;
+								}
+								else {
+									text_navigation = true;
+								}
 							}
-							current.Use();
-							text_navigation = false;
-							keyboard_navigation = true;
-						}
-						else if (current.keyCode == KeyCode.UpArrow) {
-							selected_index--;
-							if (selected_index < scroll_pos - view_element_capacity) {
-								scroll_pos--;
-							}
-							if (selected_index < 0) {
-								selected_index = current_tree.Count - 1;
-								scroll_pos = current_tree.Count;
-							}
-							current.Use();
-							text_navigation = false;
-							keyboard_navigation = true;
-						}
-						else if ((current.keyCode == KeyCode.Return) || (current.keyCode == KeyCode.KeypadEnter)) {
-							this.GoToNode(selected_node, true);
-							GUIUtility.keyboardControl = 0;
-							current.Use();
-							text_navigation = false;
-							keyboard_navigation = true;
-						}
-						else if ((current.keyCode == KeyCode.LeftArrow) || (current.keyCode == KeyCode.Backspace)) {
-							if (keyboard_navigation || !hasSearch) {
-								this.GoToParent();
+							else if (current.keyCode == KeyCode.DownArrow) {
+								selected_index++;
+								if (selected_index >= scroll_pos + view_element_capacity) {
+									scroll_pos++;
+								}
+								if (selected_index >= current_tree.Count) {
+									selected_index = 0;
+									scroll_pos = 0.0f;
+								}
 								current.Use();
 								text_navigation = false;
 								keyboard_navigation = true;
 							}
-							else {
-								text_navigation = true;
-							}
-						}
-						else if (current.keyCode == KeyCode.RightArrow) {
-							if (keyboard_navigation || !hasSearch) {
-								this.GoToNode(selected_node, false);
+							else if (current.keyCode == KeyCode.UpArrow) {
+								selected_index--;
+								if (selected_index < scroll_pos) {
+									scroll_pos--;
+								}
+								if (selected_index < 0) {
+									selected_index = current_tree.Count - 1;
+									scroll_pos = current_tree.Count;
+								}
 								current.Use();
+								text_navigation = false;
 								keyboard_navigation = true;
 							}
-							else {
-								text_navigation = true;
+							else if ((current.keyCode == KeyCode.Return) || (current.keyCode == KeyCode.KeypadEnter)) {
+								this.GoToNode(selected_node, true);
+								GUIUtility.keyboardControl = 0;
+								current.Use();
+								text_navigation = false;
+								keyboard_navigation = true;
 							}
-						}
-						else {
-							text_navigation = false;
-							keyboard_navigation = false;
+							else if ((current.keyCode == KeyCode.LeftArrow) || (current.keyCode == KeyCode.Backspace)) {
+								if (keyboard_navigation || !hasSearch) {
+									this.GoToParent();
+									current.Use();
+									text_navigation = false;
+									keyboard_navigation = true;
+								}
+								else {
+									text_navigation = true;
+								}
+							}
+							else if (current.keyCode == KeyCode.RightArrow) {
+								if (keyboard_navigation || !hasSearch) {
+									this.GoToNode(selected_node, false);
+									current.Use();
+									keyboard_navigation = true;
+								}
+								else {
+									text_navigation = true;
+								}
+							}
+							else {
+								text_navigation = false;
+								keyboard_navigation = false;
+							}
 						}
 					}
 					else {
@@ -487,7 +568,7 @@ namespace FastPlay.Editor {
 			Rect layout_rect = new Rect(rect);
 			bool trigger = GUI.Button(layout_rect, string.Empty, styles.label);
 
-			Rect icon_rect = new Rect(layout_rect.x + 10.0f, layout_rect.y, layout_rect.height, layout_rect.height);
+			Rect icon_rect = new Rect(layout_rect.x + 10.0f, layout_rect.y, ELEMENT_LIST_HEIGHT, ELEMENT_LIST_HEIGHT);
 			Rect title_rect = new Rect(55.0f, layout_rect.y, layout_rect.width - 60.0f, layout_rect.height);
 			Rect subtitle_rect = new Rect(title_rect);
 
@@ -522,6 +603,8 @@ namespace FastPlay.Editor {
 
 		void GoToNode(TreeNode<Act> node, bool call_if_is_leaf) {
 			if (node == null) return;
+			disable_layout = true;
+
 			if (node.isLeaf) {
 				if (call_if_is_leaf) {
 					node.data();
@@ -607,12 +690,23 @@ namespace FastPlay.Editor {
 						if (!type_gen.HasAttribute<BuiltInNodeAttribute>(false)) {
 							path = "References/" + path;
 						}
-						if (typeof(EventNode).IsAssignableFrom(type)) {
-							root_tree.AddChildByPath(new GUIContent(path, icon, type_descritpion), () => { AddNode(type_gen); }, "Event");
+						List<string> tags = new List<string>();
+						if (type.IsSubclassOf(typeof(EventNode))) {
+							tags.Add("EventNode");
 						}
-						else {
-							root_tree.AddChildByPath(new GUIContent(path, icon, type_descritpion), () => { AddNode(type_gen); });
+						if (type.IsSubclassOf(typeof(ActionNode))) {
+							tags.Add("ActionNode");
 						}
+						if (type.IsSubclassOf(typeof(ValueNode))) {
+							tags.Add("ValueNode");
+						}
+						if (type.IsSubclassOf(typeof(ReflectedNode))) {
+							tags.Add("ReflectedNode");
+						}
+						if (type_gen.IsGenericType) {
+							tags = tags.Concat(type_gen.GetGenericArguments().Select(gen_arg => gen_arg.GetTypeName(false, true))).ToList();
+						}
+						root_tree.AddChildByPath(new GUIContent(path, icon, type_descritpion), () => { AddNode(type_gen); }, tags.ToArray());
 					}
 				}
 				else {
@@ -633,14 +727,29 @@ namespace FastPlay.Editor {
 					if (!type.HasAttribute<BuiltInNodeAttribute>(false)) {
 						path = "References/" + path;
 					}
-					if (type.IsGenericType) {
-						List<string> tags = new List<string>() { type_name };
-						tags = tags.Concat(type.GetGenericArguments().Select(t => t.GetTypeName())).ToList();
-						root_tree.AddChildByPath(new GUIContent(path, icon, type_descritpion), () => { AddNode(type); }, tags.ToArray());
+					List<string> tags = new List<string>();
+					if (type.IsSubclassOf(typeof(EventNode))) {
+						tags.Add("EventNode");
 					}
-					else {
-						root_tree.AddChildByPath(new GUIContent(path, icon, type_descritpion), () => { AddNode(type); }, type_name);
+					if (type.IsSubclassOf(typeof(ActionNode))) {
+						tags.Add("ActionNode");
 					}
+					if (type.IsSubclassOf(typeof(ValueNode))) {
+						tags.Add("ValueNode");
+					}
+					if (type.IsSubclassOf(typeof(ReflectedNode))) {
+						tags.Add("ReflectedNode");
+					}
+					Type base_type = type;
+					while (!base_type.IsGenericType) {
+						if (base_type.BaseType == null) break;
+						base_type = base_type.BaseType;
+					}
+					if (base_type.IsGenericType) {
+						tags = tags.Concat(base_type.GetGenericArguments().Select(gen_arg => gen_arg.GetTypeName(false, true))).ToList();
+					}
+					root_tree.AddChildByPath(new GUIContent(path, icon, type_descritpion), () => { AddNode(type); }, tags.ToArray());
+
 				}
 			}
 			//reflected nodes
