@@ -2,8 +2,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Xml;
-using System.IO;
 using FastPlay.Runtime;
 
 namespace FastPlay {
@@ -143,6 +141,18 @@ namespace FastPlay {
 		}
 
 		// Extensions
+
+		public static Type[] TryGetGenericParameterConstraints(this Type type) {
+			try {
+				if (type.IsGenericType) {
+					return type.GetGenericParameterConstraints();
+				}
+			}
+			catch {
+				return null;
+			}
+			return null;
+		}
 
 		/// <summary>
 		/// Extension to check if a type is static

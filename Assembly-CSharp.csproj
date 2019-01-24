@@ -265,6 +265,7 @@
      <Compile Include="Assets\FastPlay\FP-Runtime\VariableObject(T).cs" />
      <Compile Include="Assets\FastPlay\FP-Runtime\VariableObject.cs" />
      <Compile Include="Assets\FastPlay\FP-Runtime\WaitFor.cs" />
+     <Compile Include="Assets\MyClass.cs" />
  <Reference Include="UnityEditor.StandardEvents">
  <HintPath>C:/Users/bruno/Desktop/FastPlay/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
  </Reference>

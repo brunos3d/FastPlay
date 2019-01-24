@@ -2,9 +2,10 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 namespace FastPlay {
-	public class TreeNode<T> {
+	public class TreeNode<T> : IEnumerable {
 
 		public string[] tags;
 
@@ -17,6 +18,8 @@ namespace FastPlay {
 		public ICollection<TreeNode<T>> children_index;
 
 		public Dictionary<string, TreeNode<T>> children;
+
+		public bool isSearch { get; private set; }
 
 		public bool isRoot {
 			get { return parent == null; }
@@ -62,6 +65,10 @@ namespace FastPlay {
 			}
 		}
 
+		public IEnumerator GetEnumerator() {
+			return children.Values.GetEnumerator();
+		}
+
 		public TreeNode(GUIContent content, T data) {
 			this.content = content;
 			this.data = data;
@@ -69,7 +76,11 @@ namespace FastPlay {
 			this.children_index = new LinkedList<TreeNode<T>>();
 		}
 
-		public TreeNode(GUIContent content, T data, params string[] tags) : this(content, data) {
+		public TreeNode(GUIContent content, T data, params string[] tags) {
+			this.content = content;
+			this.data = data;
+			this.children = new Dictionary<string, TreeNode<T>>();
+			this.children_index = new LinkedList<TreeNode<T>>();
 			this.tags = tags;
 		}
 
@@ -132,6 +143,7 @@ namespace FastPlay {
 			foreach (TreeNode<T> child in this.children.Values) {
 				result_tree.AddAnExistingTreeNode(child);
 			}
+			result_tree.isSearch = true;
 			return result_tree;
 		}
 
@@ -140,23 +152,26 @@ namespace FastPlay {
 			foreach (TreeNode<T> child in this.children_index) {
 				result_tree.AddAnExistingTreeNode(child);
 			}
+			result_tree.isSearch = true;
 			return result_tree;
 		}
 
 		public TreeNode<T> GetTreeNodeInChildren(Func<TreeNode<T>, bool> predicate) {
-			TreeNode<T> search_tree = new TreeNode<T>(new GUIContent("#Search"), default(T));
+			TreeNode<T> result_tree = new TreeNode<T>(new GUIContent("#Search"), default(T));
 			foreach (TreeNode<T> child in this.children.Values.Where(predicate)) {
-				search_tree.AddAnExistingTreeNode(child);
+				result_tree.AddAnExistingTreeNode(child);
 			}
-			return search_tree;
+			result_tree.isSearch = true;
+			return result_tree;
 		}
 
 		public TreeNode<T> GetTreeNodeInAllChildren(Func<TreeNode<T>, bool> predicate) {
-			TreeNode<T> search_tree = new TreeNode<T>(new GUIContent("#Search"), default(T));
+			TreeNode<T> result_tree = new TreeNode<T>(new GUIContent("#Search"), default(T));
 			foreach (TreeNode<T> child in this.children_index.Where(predicate)) {
-				search_tree.AddAnExistingTreeNode(child);
+				result_tree.AddAnExistingTreeNode(child);
 			}
-			return search_tree;
+			result_tree.isSearch = true;
+			return result_tree;
 		}
 	}
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("Application Icon")]
 	[Title("OnApplicationFocus")]
 	[Path("Events/Application/OnApplicationFocus")]
 	[Summary("Sent to all GameObjects when the player gets or loses focus.")]

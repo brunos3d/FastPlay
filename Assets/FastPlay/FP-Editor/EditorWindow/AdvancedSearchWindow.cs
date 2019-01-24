@@ -24,38 +24,42 @@ namespace FastPlay.Editor {
 
 			public readonly GUIStyle search_label;
 
-			public readonly GUIStyle search_item;
+			public readonly GUIStyle search_title_item;
 
 			public readonly GUIStyle search_description_item;
 
-			public readonly GUIStyle on_search_item;
+			public readonly GUIStyle on_search_title_item;
 
 			public readonly GUIStyle on_search_description_item;
 
 			public Styles() {
 				search_bar = FPSkin.GetStyle("Search Bar");
 				search_label = FPSkin.GetStyle("Search Label");
-				search_item = FPSkin.GetStyle("Search Item");
-				search_description_item = FPSkin.GetStyle("Search Description");
+				search_title_item = FPSkin.GetStyle("Search Title Item");
+				search_description_item = FPSkin.GetStyle("Search Title Description");
 
 				search_icon = EditorGUIUtility.FindTexture("Search Icon");
 
-				on_search_item = new GUIStyle(FPSkin.GetStyle("Search Item"));
-				on_search_description_item = new GUIStyle(FPSkin.GetStyle("Search Description"));
+				on_search_title_item = new GUIStyle(FPSkin.GetStyle("Search Title Item"));
+				on_search_description_item = new GUIStyle(FPSkin.GetStyle("Search Title Description"));
 
-				on_search_item.normal = FPSkin.GetStyle("Search Item").onNormal;
-				on_search_description_item.normal = FPSkin.GetStyle("Search Description").onNormal;
+				on_search_title_item.normal = FPSkin.GetStyle("Search Title Item").onNormal;
+				on_search_description_item.normal = FPSkin.GetStyle("Search Title Description").onNormal;
 
-				on_search_item.hover = FPSkin.GetStyle("Search Item").onHover;
-				on_search_description_item.hover = FPSkin.GetStyle("Search Description").onHover;
+				on_search_title_item.hover = FPSkin.GetStyle("Search Title Item").onHover;
+				on_search_description_item.hover = FPSkin.GetStyle("Search Title Description").onHover;
 			}
 		}
 
 		private const float WINDOW_HEAD_HEIGHT = 80.0f;
 
-		private const float WINDOW_FOOT_OFFSET = 15.0f;
+		private const float WINDOW_FOOT_OFFSET = 10.0f;
 
 		private const float ELEMENT_LIST_HEIGHT = 50.0f;
+
+		private const BindingFlags METHOD_BIND_FLAGS = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
+
+		private readonly Color FOCUS_COLOR = new Color(62.0f / 255.0f, 95.0f / 255.0f, 150.0f / 255.0f);
 
 		private readonly string[] TIPS = new string[] {
 			"FastPlay visual scripting...",
@@ -65,8 +69,6 @@ namespace FastPlay.Editor {
 			"Create nodes quickly by dragging Objects into the editor!",
 			"Quickly connect one port to another by dropping it on the node!"
 		};
-
-		private readonly Color FOCUS_COLOR = new Color(62.0f / 255.0f, 95.0f / 255.0f, 150.0f / 255.0f);
 
 		private static Styles styles;
 
@@ -82,7 +84,7 @@ namespace FastPlay.Editor {
 
 		private bool drag_scroll;
 
-		private bool disable_layout;
+		private bool enable_layout;
 
 		private float scroll_pos;
 
@@ -159,6 +161,9 @@ namespace FastPlay.Editor {
 				Close();
 				return;
 			}
+			if (styles == null) {
+				styles = new Styles();
+			}
 			auto_type = FindObjectOfType<AutoTypeInstance>() ?? CreateInstance<AutoTypeInstance>();
 			auto_type.Init(6, 3.0f, false, TIPS);
 			need_refocus = true;
@@ -178,14 +183,9 @@ namespace FastPlay.Editor {
 			if (focusedWindow != this || !GraphEditor.graph || EditorApplication.isCompiling) {
 				Close();
 			}
-			if (styles == null) {
-				styles = new Styles();
-			}
 			if (styles.search_icon == null) {
 				return;
 			}
-
-			disable_layout = false;
 
 			GUI.Box(new Rect(0.0f, 0.0f, base.position.width, base.position.height), GUIContent.none, styles.background);
 
@@ -235,7 +235,7 @@ namespace FastPlay.Editor {
 				}
 			}
 
-			if (!disable_layout) {
+			if (enable_layout) {
 				GUILayout.Space(50.0f);
 
 				GUILayout.BeginHorizontal();
@@ -274,7 +274,7 @@ namespace FastPlay.Editor {
 			int last_scroll_index = (int)Mathf.Clamp(scroll_pos + view_element_capacity, 0, current_tree_count);
 
 			//Scroll debug info
-			GUI.Label(new Rect(position.width - 100.0f, WINDOW_HEAD_HEIGHT + Mathf.Lerp(0.0f, position.height - WINDOW_HEAD_HEIGHT - 20.0f, (scroll_pos / current_tree_count)), 100.0f, 20.0f), string.Format("({0}) {1}/{2}", current_tree_count, scroll_pos, last_scroll_index - first_scroll_index));
+			//GUI.Label(new Rect(position.width - 100.0f, WINDOW_HEAD_HEIGHT + Mathf.Lerp(0.0f, position.height - WINDOW_HEAD_HEIGHT - 20.0f, (scroll_pos / current_tree_count)), 100.0f, 20.0f), string.Format("({0}) {1}/{2}", current_tree_count, scroll_pos, last_scroll_index - first_scroll_index));
 
 			int draw_index = 0;
 			for (int id = first_scroll_index; id < last_scroll_index; id++) {
@@ -290,7 +290,7 @@ namespace FastPlay.Editor {
 					EditorGUI.DrawRect(layout_rect, FOCUS_COLOR);
 				}
 
-				if (!disable_layout) {
+				if (enable_layout) {
 					//Draw Tag Buttons
 					GUILayout.BeginArea(new Rect(layout_rect.x, layout_rect.y + 5.0f, layout_rect.width, layout_rect.height));
 					GUILayout.BeginHorizontal();
@@ -312,6 +312,10 @@ namespace FastPlay.Editor {
 				draw_index++;
 			}
 			PostInputGUI();
+
+			if (Event.current.type == EventType.Repaint) {
+				enable_layout = true;
+			}
 			Repaint();
 		}
 
@@ -319,10 +323,10 @@ namespace FastPlay.Editor {
 			if (new_search != search) {
 				new_search = search;
 				if (new_search.IsNullOrEmpty()) {
-					GoToNode(root_tree, false);
+					GoToNode(last_tree, false);
 				}
 				else {
-					TreeNode<Act> search_result = root_tree;
+					TreeNode<Act> search_result = last_tree;
 					if (searchFormat.Contains("#")) {
 						search_result = new TreeNode<Act>(new GUIContent("#Commands"), null);
 						search_result.AddChild(new GUIContent("#description:", "Search results by description"), () => { search = "#description:"; });
@@ -343,7 +347,7 @@ namespace FastPlay.Editor {
 						}
 
 						if (new_search.Contains("#in:")) {
-							search_result = root_tree.GetTreeNodeInAllChildren(tn => tn.parent != null && (tn.parent.content.text.ToLower().Contains(searchFormat.ToLower())));
+							search_result = last_tree.GetTreeNodeInAllChildren(tn => tn.parent != null && (tn.parent.content.text.ToLower().Contains(searchFormat.ToLower())));
 						}
 						else if (new_search.Contains("#event:")) {
 							search_result = search_result.GetTreeNodeInAllChildren(tn => tn.tags.Contains("EventNode"));
@@ -355,13 +359,13 @@ namespace FastPlay.Editor {
 							search_result = search_result.GetTreeNodeInAllChildren(tn => !tn.isLeaf);
 						}
 						else if (new_search.Contains("#tag:")) {
-							search_result = root_tree.GetTreeNodeInAllChildren(tn => tn.tags.Any(tag => tag.ToLower().Contains(searchFormat.ToLower())));
+							search_result = last_tree.GetTreeNodeInAllChildren(tn => tn.tags.Any(tag => tag.ToLower().Contains(searchFormat.ToLower())));
 						}
 						else if (new_search.Contains("#title:")) {
-							search_result = root_tree.GetTreeNodeInAllChildren(tn => tn.content.text.ToLower().Contains(searchFormat.ToLower()));
+							search_result = last_tree.GetTreeNodeInAllChildren(tn => tn.content.text.ToLower().Contains(searchFormat.ToLower()));
 						}
 						else if (new_search.Contains("#description:")) {
-							search_result = root_tree.GetTreeNodeInAllChildren(tn => tn.content.tooltip.ToLower().Contains(searchFormat.ToLower()));
+							search_result = last_tree.GetTreeNodeInAllChildren(tn => tn.content.tooltip.ToLower().Contains(searchFormat.ToLower()));
 						}
 						if (searchFormat == "*") {
 							search_result = search_result.GetAllChildren();
@@ -577,11 +581,11 @@ namespace FastPlay.Editor {
 				string title = content.text.Replace(searchFormat, string.Format("<color=#ffff00ff><b>{0}</b></color>", searchFormat));
 				string subtitle = content.tooltip.Replace(searchFormat, string.Format("<color=#ffff00ff><b>{0}</b></color>", searchFormat));
 
-				EditorGUI.LabelField(title_rect, title, selected ? styles.on_search_item : styles.search_item);
+				EditorGUI.LabelField(title_rect, title, selected ? styles.on_search_title_item : styles.search_title_item);
 				EditorGUI.LabelField(subtitle_rect, subtitle, selected ? styles.on_search_description_item : styles.search_description_item);
 			}
 			else {
-				EditorGUI.LabelField(title_rect, content.text, selected ? styles.on_search_item : styles.search_item);
+				EditorGUI.LabelField(title_rect, content.text, selected ? styles.on_search_title_item : styles.search_title_item);
 				EditorGUI.LabelField(subtitle_rect, content.tooltip, selected ? styles.on_search_description_item : styles.search_description_item);
 			}
 
@@ -603,7 +607,7 @@ namespace FastPlay.Editor {
 
 		void GoToNode(TreeNode<Act> node, bool call_if_is_leaf) {
 			if (node == null) return;
-			disable_layout = true;
+			enable_layout = false;
 
 			if (node.isLeaf) {
 				if (call_if_is_leaf) {
@@ -618,8 +622,13 @@ namespace FastPlay.Editor {
 				}
 			}
 			else {
-				last_tree = current_tree;
+				if (current_tree != null && !current_tree.isSearch) {
+					last_tree = current_tree;
+				}
 				current_tree = node;
+				if (last_tree == null) {
+					last_tree = current_tree;
+				}
 
 				parents.Clear();
 				TreeNode<Act> parent = current_tree.parent;
@@ -636,8 +645,17 @@ namespace FastPlay.Editor {
 		}
 
 		void RecalculateSize() {
-			Vector2 pos = new Vector2(Screen.currentResolution.width / 4.0f, 120.0f);
-			Vector2 size = new Vector2(Screen.currentResolution.width / 2.0f, Mathf.Min(WINDOW_HEAD_HEIGHT + (current_tree.Count * ELEMENT_LIST_HEIGHT) + WINDOW_FOOT_OFFSET, Screen.currentResolution.height - 200.0f));
+			float width = 0.0f;
+			foreach (TreeNode<Act> node in current_tree) {
+				float tags_width = 0.0f;
+				foreach (string tag in node.tags) {
+					tags_width += GUIUtils.GetTextWidth(tag, styles.tag_button) + 5.0f;
+				}
+				width = Mathf.Max(width, GUIUtils.GetTextWidth(node.content.text, styles.search_title_item) + 85.0f + tags_width);
+			}
+			width = Mathf.Max(Screen.currentResolution.width / 2.0f, width);
+			Vector2 pos = new Vector2(Screen.currentResolution.width / 2.0f - width / 2.0f, 120.0f);
+			Vector2 size = new Vector2(width, Mathf.Min(WINDOW_HEAD_HEIGHT + (current_tree.Count * ELEMENT_LIST_HEIGHT) + WINDOW_FOOT_OFFSET, Screen.currentResolution.height - 200.0f));
 
 			position = new Rect(pos, size);
 		}
@@ -659,6 +677,8 @@ namespace FastPlay.Editor {
 				root_tree.AddChildByPath(new GUIContent(string.Format("Local Variables/{0} : {1}", param.name, param.valueType.GetTypeName(true)), icon), () => { AddCustomNode(args); });
 			}
 
+			TreeNode<Act> codebase = root_tree.AddChild(new GUIContent("Codebase", EditorUtils.FindAssetByName<Texture>("Codebase Icon")), null);
+
 			foreach (Type type in built_in_nodes) {
 				Texture icon = icons[type];
 				string path = string.Empty;
@@ -667,7 +687,8 @@ namespace FastPlay.Editor {
 				PathAttribute path_attribute = type.GetAttribute<PathAttribute>(false);
 
 				if (type.IsGenericType) {
-					foreach (Type t in current_types) {
+					IEnumerable<Type> types = type.TryGetGenericParameterConstraints() ?? (IEnumerable<Type>)current_types;
+					foreach (Type t in types) {
 						Type type_gen = type.MakeGenericType(t);
 						string type_gen_name = type_gen.GetTypeName();
 
@@ -699,9 +720,6 @@ namespace FastPlay.Editor {
 						}
 						if (type.IsSubclassOf(typeof(ValueNode))) {
 							tags.Add("ValueNode");
-						}
-						if (type.IsSubclassOf(typeof(ReflectedNode))) {
-							tags.Add("ReflectedNode");
 						}
 						if (type_gen.IsGenericType) {
 							tags = tags.Concat(type_gen.GetGenericArguments().Select(gen_arg => gen_arg.GetTypeName(false, true))).ToList();
@@ -737,9 +755,6 @@ namespace FastPlay.Editor {
 					if (type.IsSubclassOf(typeof(ValueNode))) {
 						tags.Add("ValueNode");
 					}
-					if (type.IsSubclassOf(typeof(ReflectedNode))) {
-						tags.Add("ReflectedNode");
-					}
 					Type base_type = type;
 					while (!base_type.IsGenericType) {
 						if (base_type.BaseType == null) break;
@@ -753,7 +768,6 @@ namespace FastPlay.Editor {
 				}
 			}
 			//reflected nodes
-			TreeNode<Act> codebase = root_tree.AddChild(new GUIContent("Codebase", EditorUtils.FindAssetByName<Texture>("Codebase Icon")), null);
 
 			foreach (Type type in current_types) {
 				Texture icon = icons[type];
@@ -771,77 +785,126 @@ namespace FastPlay.Editor {
 				}
 
 				if (type.IsGenericType) {
-					foreach (Type t in current_types) {
+					IEnumerable<Type> types = type.TryGetGenericParameterConstraints() ?? (IEnumerable<Type>)current_types;
+					foreach (Type t in types) {
 						Type type_gen = type.MakeGenericType(t);
 						string type_gen_name = type_gen.GetTypeName();
 
 						icon = icons[type_gen] = GUIReferrer.GetTypeIcon(type_gen);
 
-						MethodInfo[] methods = type_gen.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
-						foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type_gen)) {
-							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Inherited/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); });
+						MethodInfo[] methods = type_gen.GetMethods(METHOD_BIND_FLAGS).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
+						foreach (MethodInfo method in methods.Where(m => m.DeclaringType != type)) {
+							List<string> tags = new List<string>();
+							tags.Add(method.IsStatic ? "Static" : "Instance");
+							tags.Add(method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+
+							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Inherited/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 						foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
-							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Properties/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); });
+							List<string> tags = new List<string>();
+							tags.Add(method.IsStatic ? "Static" : "Instance");
+							tags.Add(method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+
+							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Properties/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 
 						//Literal Nodes
 						if (!type_gen.IsStatic()) {
 							Type literal_node_type = typeof(LiteralNode<>).MakeGenericType(type_gen);
-							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Literal {0}", type_gen_name), icon), () => { AddNode(literal_node_type); });
+							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Literal {0}", type_gen_name), icon), () => { AddNode(literal_node_type); }, "LiteralNode");
 						}
 
 						foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type_gen)) {
-							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); });
+							List<string> tags = new List<string>();
+							tags.Add(method.IsStatic ? "Static" : "Instance");
+							tags.Add(method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+
+							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 					}
 				}
 				else {
-					MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
-					foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type)) {
+					MethodInfo[] methods = type.GetMethods(METHOD_BIND_FLAGS).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
+					foreach (MethodInfo method in methods.Where(m => m.DeclaringType != type)) {
 						TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("Inherited/{0}", method.Name), icon, method.GetDescription()), null);
 						if (method.IsGenericMethod) {
-							foreach (Type t in current_types) {
+							IEnumerable<Type> method_param_types = method.GetParameters().Select(p => p.ParameterType);
+							foreach (Type t in method_param_types) {
 								MethodInfo method_gen = method.MakeGenericMethod(t);
+								List<string> tags = new List<string>();
+								tags.Add(method.IsStatic ? "Static" : "Instance");
+								tags.Add(method_gen.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+
 								object[] args = new object[] { method_gen, t };
-								generic_node.AddChildByPath(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); });
+								generic_node.AddChildByPath(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); }, tags.ToArray());
 							}
 						}
 						else {
-							type_tree.AddChildByPath(new GUIContent(string.Format("Inherited/{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); });
+							List<string> tags = new List<string>();
+							tags.Add(method.IsStatic ? "Static" : "Instance");
+							tags.Add(method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+
+							type_tree.AddChildByPath(new GUIContent(string.Format("Inherited/{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 					}
 					foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
 						if (method.IsGenericMethod) {
+							IEnumerable<Type> method_param_types = method.GetParameters().Select(p => p.ParameterType);
 							TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("Properties/{0}", method.Name), icon, method.GetDescription()), null);
-							foreach (Type t in current_types) {
+							foreach (Type t in method_param_types) {
 								MethodInfo method_gen = method.MakeGenericMethod(t);
+								List<string> tags = new List<string>();
+								tags.Add(method.IsStatic ? "Static" : "Instance");
+								tags.Add(method_gen.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+
 								object[] args = new object[] { method_gen, t };
-								generic_node.AddChildByPath(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); });
+								generic_node.AddChildByPath(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); }, tags.ToArray());
 							}
 						}
 						else {
-							type_tree.AddChildByPath(new GUIContent(string.Format("Properties/{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); });
+							List<string> tags = new List<string>();
+							tags.Add(method.IsStatic ? "Static" : "Instance");
+							tags.Add(method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+
+							type_tree.AddChildByPath(new GUIContent(string.Format("Properties/{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 					}
 
 					//Literal Nodes
 					if (!type.IsStatic()) {
 						Type literal_node_type = typeof(LiteralNode<>).MakeGenericType(type);
-						type_tree.AddChildByPath(new GUIContent(string.Format("Literal {0}", type_name), icon), () => { AddNode(literal_node_type); });
+						type_tree.AddChildByPath(new GUIContent(string.Format("Literal {0}", type_name), icon), () => { AddNode(literal_node_type); }, "LiteralNode");
 					}
 
 					foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)) {
 						if (method.IsGenericMethod) {
+							IEnumerable<Type> method_param_types = method.GetParameters().Select(p => p.ParameterType);
 							TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("{0}", method.Name), icon, method.GetDescription()), null);
-							foreach (Type t in current_types) {
+							foreach (Type t in method_param_types) {
 								MethodInfo method_gen = method.MakeGenericMethod(t);
+								List<string> tags = new List<string>();
+								tags.Add(method.IsStatic ? "Static" : "Instance");
+								tags.Add(method_gen.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+
 								object[] args = new object[] { method_gen, t };
-								generic_node.AddChild(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); });
+								generic_node.AddChild(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); }, tags.ToArray());
 							}
 						}
 						else {
-							type_tree.AddChildByPath(new GUIContent(string.Format("{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); });
+							List<string> tags = new List<string>();
+							tags.Add(method.IsStatic ? "Static" : "Instance");
+							tags.Add(method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+
+							type_tree.AddChildByPath(new GUIContent(string.Format("{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 					}
 				}
@@ -858,12 +921,15 @@ namespace FastPlay.Editor {
 		}
 
 		void AddReflectedNode(object obj) {
-			GraphEditorWindow.AddCustomNode<ReflectedNode>(spawn_pos - GraphEditor.scroll, true, (MethodInfo)obj);
+			MethodInfo method = (MethodInfo)obj;
+			GraphEditorWindow.AddCustomNode<ReflectedNode>(spawn_pos - GraphEditor.scroll, true, method);
 		}
 
 		void AddReflectedGenericNode(object obj) {
 			object[] args = (object[])obj;
-			GraphEditorWindow.AddCustomNode<ReflectedNode>(spawn_pos - GraphEditor.scroll, true, (MethodInfo)args[0], new Type[] { (Type)args[1] });
+			Type type = (Type)args[1];
+			MethodInfo method = (MethodInfo)args[0];
+			GraphEditorWindow.AddCustomNode<ReflectedNode>(spawn_pos - GraphEditor.scroll, true, method, new Type[] { type });
 		}
 	}
 }

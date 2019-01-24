@@ -32,6 +32,8 @@ namespace FastPlay.Editor {
 			}
 		}
 
+		private const BindingFlags METHOD_BIND_FLAGS = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
+
 		private const float TOOLBAR_HEIGHT = 17.0f;
 
 		private Styles styles;
@@ -699,9 +701,9 @@ namespace FastPlay.Editor {
 			if (type == null) return;
 			string type_name = type.GetTypeName();
 			List<Type> current_types = EditorHandler.GetConstantTypesCurrentInstance().current_types;
-			MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
+			MethodInfo[] methods = type.GetMethods(METHOD_BIND_FLAGS).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
 
-			foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType != type)) {
+			foreach (MethodInfo method in methods.Where(m => m.DeclaringType != type)) {
 				if (method.IsGenericMethod) {
 					foreach (Type t in current_types) {
 						MethodInfo method_gen = method.MakeGenericMethod(t);

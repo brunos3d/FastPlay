@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("OnJointBreakEvent Icon")]
 	[Title("OnJointBreak2D")]
 	[Path("Events/Joint/OnJointBreak2D")]
 	[Summary("Called when a Joint2D attached to the same game object breaks.")]

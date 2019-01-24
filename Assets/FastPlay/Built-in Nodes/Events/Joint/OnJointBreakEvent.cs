@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("OnJointBreakEvent Icon")]
 	[Title("OnJointBreak")]
 	[Path("Events/Joint/OnJointBreak")]
 	[Summary("Called when a joint attached to the same game object broke.")]

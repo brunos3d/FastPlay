@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("OnMouseUpEvent Icon")]
 	[Title("OnMouseUp")]
 	[Path("Events/Mouse/OnMouseUp")]
 	[Summary("OnMouseUp is called when the user has released the mouse button.")]

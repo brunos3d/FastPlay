@@ -1551,7 +1551,7 @@ MonoBehaviour:
     m_FixedHeight: 0
     m_StretchWidth: 1
     m_StretchHeight: 0
-  - m_Name: Search Item
+  - m_Name: Search Title Item
     m_Normal:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
@@ -1615,9 +1615,9 @@ MonoBehaviour:
     m_ContentOffset: {x: 15, y: 5}
     m_FixedWidth: 0
     m_FixedHeight: 0
-    m_StretchWidth: 1
+    m_StretchWidth: 0
     m_StretchHeight: 0
-  - m_Name: Search Description
+  - m_Name: Search Title Description
     m_Normal:
       m_Background: {fileID: 0}
       m_ScaledBackgrounds: []
@@ -1681,7 +1681,7 @@ MonoBehaviour:
     m_ContentOffset: {x: 15, y: 8}
     m_FixedWidth: 0
     m_FixedHeight: 0
-    m_StretchWidth: 1
+    m_StretchWidth: 0
     m_StretchHeight: 0
   - m_Name: Node Message
     m_Normal:
@@ -2653,7 +2653,7 @@ MonoBehaviour:
       m_Bottom: 0
     m_Padding:
       m_Left: 0
-      m_Right: 0
+      m_Right: 10
       m_Top: 0
       m_Bottom: 0
     m_Overflow:

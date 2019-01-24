@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("AudioClip Icon")]
 	[Title("OnAudioFilterRead")]
 	[Path("Events/Audio/OnAudioFilterRead")]
 	[Summary("OnAudioFilterRead is called every time a chunk of audio is sent to the filter (this happens frequently, every ~20ms depending on the sample rate and platform).")]

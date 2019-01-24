@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("Application Icon")]
 	[Title("OnApplicationQuit")]
 	[Path("Events/Application/OnApplicationQuit")]
 	[Summary("Sent to all game objects before the application quits.")]
