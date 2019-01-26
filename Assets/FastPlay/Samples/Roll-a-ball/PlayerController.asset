@@ -9,14 +9,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a52e0d399afdf44e9757cd1883bf71c, type: 3}
-  m_Name: Macro
+  m_Name: PlayerController
   m_EditorClassIdentifier: 
   is_ready: 1
   serialization_data:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 11400000}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -26,20 +25,20 @@ MonoBehaviour:
       Entry: 5
       Data: true
     - Name: title
-      Entry: 1
-      Data: CompareName
+      Entry: 6
+      Data: 
     - Name: subtitle
-      Entry: 1
-      Data: Compare the object names
+      Entry: 6
+      Data: 
     - Name: position
       Entry: 7
       Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
       Entry: 4
-      Data: -25
+      Data: 26.875
     - Name: 
       Entry: 4
-      Data: 46
+      Data: -12.5
     - Name: 
       Entry: 8
       Data: 
@@ -48,7 +47,7 @@ MonoBehaviour:
       Data: 0|FastPlay.Runtime.Graph, Assembly-CSharp
     - Name: m_id
       Entry: 3
-      Data: 1486213750
+      Data: -2042679542
     - Name: name
       Entry: 6
       Data: 
@@ -76,82 +75,37 @@ MonoBehaviour:
         mscorlib
     - Name: 
       Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 2|FastPlay.Runtime.OutputNode, Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: 1932733254
-    - Name: name
-      Entry: 6
-      Data: 
-    - Name: position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 560
-    - Name: 
-      Entry: 4
-      Data: 120
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: graph
-      Entry: 9
-      Data: 0
-    - Name: macro
-      Entry: 7
-      Data: 3|FastPlay.Runtime.MacroNode, Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: 1982290559
-    - Name: name
-      Entry: 1
-      Data: '{ CompareName }'
-    - Name: position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 300
-    - Name: 
-      Entry: 4
-      Data: 60
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: graph
-      Entry: 7
-      Data: 4|FastPlay.Runtime.Graph, Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: 2058631142
-    - Name: name
-      Entry: 6
-      Data: 
-    - Name: position
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: graph
-      Entry: 9
       Data: 4
+    - Name: 
+      Entry: 7
+      Data: 2|FastPlay.Runtime.FixedUpdateEvent, Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: -1793986463
+    - Name: name
+      Entry: 6
+      Data: 
+    - Name: position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 56
+    - Name: 
+      Entry: 4
+      Data: 78
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: graph
+      Entry: 9
+      Data: 0
     - Name: macro
       Entry: 6
       Data: 
     - Name: nodes
       Entry: 7
-      Data: 5|System.Collections.Generic.List`1[[FastPlay.Runtime.Node, Assembly-CSharp]],
+      Data: 3|System.Collections.Generic.List`1[[FastPlay.Runtime.Node, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -164,104 +118,81 @@ MonoBehaviour:
       Data: 
     - Name: ports
       Entry: 7
-      Data: 6|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 4|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 7
-      Data: 7|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+      Data: 5|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
         mscorlib]], mscorlib
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
     - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: inputs
       Entry: 7
-      Data: 8|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Out
+    - Name: 
+      Entry: 7
+      Data: 6|FastPlay.Runtime.OutputAction, Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: -1777019341
+    - Name: name
+      Entry: 1
+      Data: Out
+    - Name: display_port
+      Entry: 5
+      Data: true
+    - Name: node
       Entry: 9
-      Data: 7
+      Data: 2
+    - Name: input
+      Entry: 7
+      Data: 7|FastPlay.Runtime.InputAction, Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: 1468589751
+    - Name: name
+      Entry: 1
+      Data: In
+    - Name: display_port
+      Entry: 5
+      Data: true
+    - Name: node
+      Entry: 7
+      Data: 8|FastPlay.Runtime.ReflectedNode, Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: -2089332712
+    - Name: name
+      Entry: 1
+      Data: OverlapSphere
+    - Name: position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
     - Name: 
-      Entry: 12
-      Data: 0
+      Entry: 4
+      Data: 340
     - Name: 
-      Entry: 13
-      Data: 
+      Entry: 4
+      Data: 124
     - Name: 
       Entry: 8
       Data: 
-    - Name: outputs
-      Entry: 7
-      Data: 9|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
+    - Name: graph
       Entry: 9
-      Data: 7
-    - Name: 
-      Entry: 12
       Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: var_parameters
-      Entry: 7
-      Data: 10|System.Collections.Generic.List`1[[FastPlay.Runtime.Parameter, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: in_parameters
-      Entry: 7
-      Data: 11|System.Collections.Generic.List`1[[FastPlay.Runtime.Parameter, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: out_parameters
-      Entry: 7
-      Data: 12|System.Collections.Generic.List`1[[FastPlay.Runtime.Parameter, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
-    - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
     - Name: macro
-      Entry: 9
-      Data: 3
+      Entry: 6
+      Data: 
     - Name: nodes
       Entry: 7
-      Data: 13|System.Collections.Generic.List`1[[FastPlay.Runtime.Node, Assembly-CSharp]],
+      Data: 9|System.Collections.Generic.List`1[[FastPlay.Runtime.Node, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -274,51 +205,23 @@ MonoBehaviour:
       Data: 
     - Name: ports
       Entry: 7
-      Data: 14|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 10|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 7
-    - Name: 
-      Entry: 12
       Data: 5
     - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: In
-    - Name: 
-      Entry: 7
-      Data: 15|FastPlay.Runtime.InputAction, Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: 1994089919
-    - Name: name
-      Entry: 1
-      Data: In
-    - Name: display_port
-      Entry: 5
-      Data: true
-    - Name: node
-      Entry: 9
-      Data: 3
-    - Name: connections
-      Entry: 7
-      Data: 16|System.Collections.Generic.List`1[[FastPlay.Runtime.IPlugIn, Assembly-CSharp]],
-        mscorlib
-    - Name: 
       Entry: 12
-      Data: 0
+      Data: 6
     - Name: 
-      Entry: 13
+      Entry: 7
       Data: 
     - Name: 
-      Entry: 8
-      Data: 
+      Entry: 1
+      Data: In
     - Name: 
-      Entry: 8
-      Data: 
+      Entry: 9
+      Data: 7
     - Name: 
       Entry: 8
       Data: 
@@ -330,10 +233,10 @@ MonoBehaviour:
       Data: Out
     - Name: 
       Entry: 7
-      Data: 17|FastPlay.Runtime.OutputAction, Assembly-CSharp
+      Data: 11|FastPlay.Runtime.OutputAction, Assembly-CSharp
     - Name: m_id
       Entry: 3
-      Data: 2004316032
+      Data: 1666014721
     - Name: name
       Entry: 1
       Data: Out
@@ -342,7 +245,7 @@ MonoBehaviour:
       Data: true
     - Name: node
       Entry: 9
-      Data: 3
+      Data: 8
     - Name: input
       Entry: 6
       Data: 
@@ -357,99 +260,26 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 1
-      Data: Obj A
+      Data: Get
     - Name: 
       Entry: 7
-      Data: 18|FastPlay.Runtime.InputValue`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
+      Data: 12|FastPlay.Runtime.OutputValue`1[[UnityEngine.Collider[], UnityEngine.PhysicsModule]],
         Assembly-CSharp
     - Name: m_id
       Entry: 3
-      Data: -1916800830
+      Data: 1882267692
     - Name: name
       Entry: 1
-      Data: Obj A
+      Data: Get
     - Name: display_port
       Entry: 5
       Data: true
     - Name: node
       Entry: 9
-      Data: 3
-    - Name: plugged_port
-      Entry: 6
-      Data: 
-    - Name: default_value
-      Entry: 6
-      Data: 
-    - Name: get_filter
-      Entry: 3
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: Obj B
-    - Name: 
-      Entry: 7
-      Data: 19|FastPlay.Runtime.InputValue`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
-        Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: -1905440824
-    - Name: name
-      Entry: 1
-      Data: Obj B
-    - Name: display_port
-      Entry: 5
-      Data: true
-    - Name: node
-      Entry: 9
-      Data: 3
-    - Name: plugged_port
-      Entry: 6
-      Data: 
-    - Name: default_value
-      Entry: 6
-      Data: 
-    - Name: get_filter
-      Entry: 3
-      Data: 1
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: result
-    - Name: 
-      Entry: 7
-      Data: 20|FastPlay.Runtime.OutputValue`1[[System.String, mscorlib]], Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: 1448173769
-    - Name: name
-      Entry: 1
-      Data: result
-    - Name: display_port
-      Entry: 5
-      Data: true
-    - Name: node
-      Entry: 9
-      Data: 3
+      Data: 8
     - Name: connections
       Entry: 7
-      Data: 21|System.Collections.Generic.List`1[[FastPlay.Runtime.IPlugIn, Assembly-CSharp]],
+      Data: 13|System.Collections.Generic.List`1[[FastPlay.Runtime.IPlugIn, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -463,6 +293,231 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Position
+    - Name: 
+      Entry: 7
+      Data: 14|FastPlay.Runtime.InputValue`1[[UnityEngine.Vector3, UnityEngine.CoreModule]],
+        Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: 2009078177
+    - Name: name
+      Entry: 1
+      Data: Position
+    - Name: display_port
+      Entry: 5
+      Data: true
+    - Name: node
+      Entry: 9
+      Data: 8
+    - Name: plugged_port
+      Entry: 6
+      Data: 
+    - Name: default_value
+      Entry: 7
+      Data: UnityEngine.Vector3, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: get_filter
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Radius
+    - Name: 
+      Entry: 7
+      Data: 15|FastPlay.Runtime.InputValue`1[[System.Single, mscorlib]], Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: 2099917269
+    - Name: name
+      Entry: 1
+      Data: Radius
+    - Name: display_port
+      Entry: 5
+      Data: true
+    - Name: node
+      Entry: 9
+      Data: 8
+    - Name: plugged_port
+      Entry: 6
+      Data: 
+    - Name: default_value
+      Entry: 4
+      Data: 0
+    - Name: get_filter
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Layer Mask
+    - Name: 
+      Entry: 7
+      Data: 16|FastPlay.Runtime.InputValue`1[[System.Int32, mscorlib]], Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: -2122106633
+    - Name: name
+      Entry: 1
+      Data: Layer Mask
+    - Name: display_port
+      Entry: 5
+      Data: true
+    - Name: node
+      Entry: 9
+      Data: 8
+    - Name: plugged_port
+      Entry: 7
+      Data: 17|FastPlay.Runtime.OutputValue`1[[UnityEngine.LayerMask, UnityEngine.CoreModule]],
+        Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: 1725076900
+    - Name: name
+      Entry: 1
+      Data: Get
+    - Name: display_port
+      Entry: 5
+      Data: true
+    - Name: node
+      Entry: 7
+      Data: 18|FastPlay.Runtime.LiteralNode`1[[UnityEngine.LayerMask, UnityEngine.CoreModule]],
+        Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: 1435187747
+    - Name: name
+      Entry: 6
+      Data: 
+    - Name: position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 101
+    - Name: 
+      Entry: 4
+      Data: 229
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: graph
+      Entry: 9
+      Data: 0
+    - Name: macro
+      Entry: 6
+      Data: 
+    - Name: nodes
+      Entry: 7
+      Data: 19|System.Collections.Generic.List`1[[FastPlay.Runtime.Node, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: ports
+      Entry: 7
+      Data: 20|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 9
+      Data: 5
+    - Name: 
+      Entry: 12
+      Data: 2
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Value
+    - Name: 
+      Entry: 7
+      Data: 21|FastPlay.Runtime.InputValue`1[[UnityEngine.LayerMask, UnityEngine.CoreModule]],
+        Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: 1615920717
+    - Name: name
+      Entry: 1
+      Data: Value
+    - Name: display_port
+      Entry: 5
+      Data: false
+    - Name: node
+      Entry: 9
+      Data: 18
+    - Name: plugged_port
+      Entry: 6
+      Data: 
+    - Name: default_value
+      Entry: 7
+      Data: UnityEngine.LayerMask, UnityEngine.CoreModule
+    - Name: 
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: get_filter
+      Entry: 3
+      Data: 1
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Get
+    - Name: 
+      Entry: 9
+      Data: 17
     - Name: 
       Entry: 8
       Data: 
@@ -478,43 +533,19 @@ MonoBehaviour:
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 7
+      Data: 5
     - Name: 
       Entry: 12
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 7
       Data: 
     - Name: 
       Entry: 1
-      Data: In
+      Data: Value
     - Name: 
       Entry: 9
-      Data: 15
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: Obj A
-    - Name: 
-      Entry: 9
-      Data: 18
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: Obj B
-    - Name: 
-      Entry: 9
-      Data: 19
+      Data: 21
     - Name: 
       Entry: 8
       Data: 
@@ -530,7 +561,142 @@ MonoBehaviour:
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
+      Data: 5
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Get
+    - Name: 
+      Entry: 9
+      Data: 17
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: value
+      Entry: 9
+      Data: 21
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: connections
+      Entry: 7
+      Data: 24|System.Collections.Generic.List`1[[FastPlay.Runtime.IPlugIn, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 12
+      Data: 1
+    - Name: 
+      Entry: 9
+      Data: 16
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: default_value
+      Entry: 3
+      Data: 0
+    - Name: get_filter
+      Entry: 3
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: inputs
+      Entry: 7
+      Data: 25|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 9
+      Data: 5
+    - Name: 
+      Entry: 12
+      Data: 4
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: In
+    - Name: 
+      Entry: 9
       Data: 7
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Position
+    - Name: 
+      Entry: 9
+      Data: 14
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Radius
+    - Name: 
+      Entry: 9
+      Data: 15
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Layer Mask
+    - Name: 
+      Entry: 9
+      Data: 16
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: outputs
+      Entry: 7
+      Data: 26|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 9
+      Data: 5
     - Name: 
       Entry: 12
       Data: 2
@@ -542,7 +708,7 @@ MonoBehaviour:
       Data: Out
     - Name: 
       Entry: 9
-      Data: 17
+      Data: 11
     - Name: 
       Entry: 8
       Data: 
@@ -551,10 +717,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 1
-      Data: result
+      Data: Get
     - Name: 
       Entry: 9
-      Data: 20
+      Data: 12
     - Name: 
       Entry: 8
       Data: 
@@ -564,40 +730,25 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: reference
-      Entry: 10
-      Data: 0
-    - Name: input_node
+    - Name: is_obsolete
+      Entry: 5
+      Data: false
+    - Name: serialized_method
       Entry: 7
-      Data: 24|FastPlay.Runtime.InputNode, Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: 1840698248
-    - Name: name
-      Entry: 6
-      Data: 
-    - Name: position
+      Data: 27|FastPlay.Runtime.SerializedMethod, Assembly-CSharp
+    - Name: is_generic
+      Entry: 5
+      Data: false
+    - Name: method_key
+      Entry: 1
+      Data: UnityEngine.Collider[]OverlapSphereUnityEngine.Vector3,System.Single,System.Int32
+    - Name: base_type_name
+      Entry: 1
+      Data: UnityEngine.Physics, UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+    - Name: generic_args
       Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 180
-    - Name: 
-      Entry: 4
-      Data: 120
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: graph
-      Entry: 9
-      Data: 0
-    - Name: macro
-      Entry: 9
-      Data: 3
-    - Name: nodes
-      Entry: 7
-      Data: 25|System.Collections.Generic.List`1[[FastPlay.Runtime.Node, Assembly-CSharp]],
-        mscorlib
+      Data: 28|System.Collections.Generic.List`1[[System.String, mscorlib]], mscorlib
     - Name: 
       Entry: 12
       Data: 0
@@ -607,122 +758,27 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: ports
-      Entry: 7
-      Data: 26|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
-        Assembly-CSharp]], mscorlib
-    - Name: comparer
-      Entry: 7
-      Data: 27|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
-        mscorlib]], mscorlib
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 12
-      Data: 3
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: Out
-    - Name: 
-      Entry: 7
-      Data: 28|FastPlay.Runtime.OutputAction, Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: 1879046170
-    - Name: name
-      Entry: 1
-      Data: Out
-    - Name: display_port
-      Entry: 5
-      Data: true
-    - Name: node
-      Entry: 9
-      Data: 24
-    - Name: input
-      Entry: 6
-      Data: 
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 8
       Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: Obj A
-    - Name: 
-      Entry: 7
-      Data: 29|FastPlay.Runtime.OutputValue`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
-        Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: -2126867147
-    - Name: name
-      Entry: 1
-      Data: Obj A
-    - Name: display_port
-      Entry: 5
-      Data: true
-    - Name: node
-      Entry: 9
-      Data: 24
     - Name: connections
       Entry: 7
-      Data: 30|System.Collections.Generic.List`1[[FastPlay.Runtime.IPlugIn, Assembly-CSharp]],
+      Data: 29|System.Collections.Generic.List`1[[FastPlay.Runtime.IPlugIn, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
     - Name: 
-      Entry: 13
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: Obj B
-    - Name: 
-      Entry: 7
-      Data: 31|FastPlay.Runtime.OutputValue`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
-        Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: -1936844229
-    - Name: name
-      Entry: 1
-      Data: Obj B
-    - Name: display_port
-      Entry: 5
-      Data: true
-    - Name: node
       Entry: 9
-      Data: 24
-    - Name: connections
-      Entry: 7
-      Data: 32|System.Collections.Generic.List`1[[FastPlay.Runtime.IPlugIn, Assembly-CSharp]],
-        mscorlib
-    - Name: 
-      Entry: 12
-      Data: 0
+      Data: 6
     - Name: 
       Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
       Data: 
     - Name: 
       Entry: 8
@@ -741,11 +797,11 @@ MonoBehaviour:
       Data: 
     - Name: inputs
       Entry: 7
-      Data: 33|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 30|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 27
+      Data: 5
     - Name: 
       Entry: 12
       Data: 0
@@ -757,14 +813,14 @@ MonoBehaviour:
       Data: 
     - Name: outputs
       Entry: 7
-      Data: 34|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 31|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 27
+      Data: 5
     - Name: 
       Entry: 12
-      Data: 3
+      Data: 1
     - Name: 
       Entry: 7
       Data: 
@@ -773,31 +829,7 @@ MonoBehaviour:
       Data: Out
     - Name: 
       Entry: 9
-      Data: 28
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: Obj A
-    - Name: 
-      Entry: 9
-      Data: 29
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 
-    - Name: 
-      Entry: 1
-      Data: Obj B
-    - Name: 
-      Entry: 9
-      Data: 31
+      Data: 6
     - Name: 
       Entry: 8
       Data: 
@@ -810,21 +842,39 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-    - Name: output_node
+    - Name: 
       Entry: 9
-      Data: 2
-    - Name: input
-      Entry: 9
-      Data: 15
-    - Name: output
-      Entry: 9
-      Data: 17
+      Data: 8
+    - Name: 
+      Entry: 7
+      Data: 32|FastPlay.Runtime.LogText, Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: 1461105746
+    - Name: name
+      Entry: 6
+      Data: 
+    - Name: position
+      Entry: 7
+      Data: UnityEngine.Vector2, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 656
+    - Name: 
+      Entry: 4
+      Data: 136
     - Name: 
       Entry: 8
       Data: 
+    - Name: graph
+      Entry: 9
+      Data: 0
+    - Name: macro
+      Entry: 6
+      Data: 
     - Name: nodes
       Entry: 7
-      Data: 35|System.Collections.Generic.List`1[[FastPlay.Runtime.Node, Assembly-CSharp]],
+      Data: 33|System.Collections.Generic.List`1[[FastPlay.Runtime.Node, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -837,14 +887,14 @@ MonoBehaviour:
       Data: 
     - Name: ports
       Entry: 7
-      Data: 36|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 34|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 27
+      Data: 5
     - Name: 
       Entry: 12
-      Data: 2
+      Data: 3
     - Name: 
       Entry: 7
       Data: 
@@ -853,10 +903,10 @@ MonoBehaviour:
       Data: In
     - Name: 
       Entry: 7
-      Data: 37|FastPlay.Runtime.InputAction, Assembly-CSharp
+      Data: 35|FastPlay.Runtime.InputAction, Assembly-CSharp
     - Name: m_id
       Entry: 3
-      Data: 1952255832
+      Data: 1654788716
     - Name: name
       Entry: 1
       Data: In
@@ -865,10 +915,10 @@ MonoBehaviour:
       Data: true
     - Name: node
       Entry: 9
-      Data: 2
+      Data: 32
     - Name: connections
       Entry: 7
-      Data: 38|System.Collections.Generic.List`1[[FastPlay.Runtime.IPlugIn, Assembly-CSharp]],
+      Data: 36|System.Collections.Generic.List`1[[FastPlay.Runtime.IPlugIn, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -890,22 +940,52 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 1
-      Data: result
+      Data: Out
     - Name: 
       Entry: 7
-      Data: 39|FastPlay.Runtime.InputValue`1[[System.String, mscorlib]], Assembly-CSharp
+      Data: 37|FastPlay.Runtime.OutputAction, Assembly-CSharp
     - Name: m_id
       Entry: 3
-      Data: -2019223230
+      Data: 1777036899
     - Name: name
       Entry: 1
-      Data: result
+      Data: Out
     - Name: display_port
       Entry: 5
       Data: true
     - Name: node
       Entry: 9
-      Data: 2
+      Data: 32
+    - Name: input
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: text
+    - Name: 
+      Entry: 7
+      Data: 38|FastPlay.Runtime.InputValue`1[[System.String, mscorlib]], Assembly-CSharp
+    - Name: m_id
+      Entry: 3
+      Data: 1863567687
+    - Name: name
+      Entry: 1
+      Data: text
+    - Name: display_port
+      Entry: 5
+      Data: true
+    - Name: node
+      Entry: 9
+      Data: 32
     - Name: plugged_port
       Entry: 6
       Data: 
@@ -929,11 +1009,11 @@ MonoBehaviour:
       Data: 
     - Name: inputs
       Entry: 7
-      Data: 40|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 39|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 27
+      Data: 5
     - Name: 
       Entry: 12
       Data: 2
@@ -945,7 +1025,7 @@ MonoBehaviour:
       Data: In
     - Name: 
       Entry: 9
-      Data: 37
+      Data: 35
     - Name: 
       Entry: 8
       Data: 
@@ -954,10 +1034,10 @@ MonoBehaviour:
       Data: 
     - Name: 
       Entry: 1
-      Data: result
+      Data: text
     - Name: 
       Entry: 9
-      Data: 39
+      Data: 38
     - Name: 
       Entry: 8
       Data: 
@@ -969,26 +1049,41 @@ MonoBehaviour:
       Data: 
     - Name: outputs
       Entry: 7
-      Data: 41|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 40|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 27
+      Data: 5
     - Name: 
       Entry: 12
-      Data: 0
+      Data: 1
+    - Name: 
+      Entry: 7
+      Data: 
+    - Name: 
+      Entry: 1
+      Data: Out
+    - Name: 
+      Entry: 9
+      Data: 37
+    - Name: 
+      Entry: 8
+      Data: 
     - Name: 
       Entry: 13
       Data: 
     - Name: 
       Entry: 8
       Data: 
+    - Name: text
+      Entry: 9
+      Data: 38
     - Name: 
       Entry: 8
       Data: 
     - Name: 
       Entry: 9
-      Data: 24
+      Data: 18
     - Name: 
       Entry: 13
       Data: 
@@ -997,11 +1092,11 @@ MonoBehaviour:
       Data: 
     - Name: ports
       Entry: 7
-      Data: 42|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 41|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 27
+      Data: 5
     - Name: 
       Entry: 12
       Data: 0
@@ -1013,11 +1108,11 @@ MonoBehaviour:
       Data: 
     - Name: inputs
       Entry: 7
-      Data: 43|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 42|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 27
+      Data: 5
     - Name: 
       Entry: 12
       Data: 0
@@ -1029,11 +1124,11 @@ MonoBehaviour:
       Data: 
     - Name: outputs
       Entry: 7
-      Data: 44|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
+      Data: 43|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[FastPlay.Runtime.Port,
         Assembly-CSharp]], mscorlib
     - Name: comparer
       Entry: 9
-      Data: 27
+      Data: 5
     - Name: 
       Entry: 12
       Data: 0
@@ -1045,7 +1140,7 @@ MonoBehaviour:
       Data: 
     - Name: var_parameters
       Entry: 7
-      Data: 45|System.Collections.Generic.List`1[[FastPlay.Runtime.Parameter, Assembly-CSharp]],
+      Data: 44|System.Collections.Generic.List`1[[FastPlay.Runtime.Parameter, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
@@ -1058,43 +1153,11 @@ MonoBehaviour:
       Data: 
     - Name: in_parameters
       Entry: 7
-      Data: 46|System.Collections.Generic.List`1[[FastPlay.Runtime.Parameter, Assembly-CSharp]],
+      Data: 45|System.Collections.Generic.List`1[[FastPlay.Runtime.Parameter, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
-      Data: 2
-    - Name: 
-      Entry: 7
-      Data: 47|FastPlay.Runtime.Parameter`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
-        Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: 2025239083
-    - Name: name
-      Entry: 1
-      Data: Obj A
-    - Name: is_public
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 48|FastPlay.Runtime.Parameter`1[[UnityEngine.GameObject, UnityEngine.CoreModule]],
-        Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: 2094220519
-    - Name: name
-      Entry: 1
-      Data: Obj B
-    - Name: is_public
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 0
     - Name: 
       Entry: 13
       Data: 
@@ -1103,26 +1166,11 @@ MonoBehaviour:
       Data: 
     - Name: out_parameters
       Entry: 7
-      Data: 49|System.Collections.Generic.List`1[[FastPlay.Runtime.Parameter, Assembly-CSharp]],
+      Data: 46|System.Collections.Generic.List`1[[FastPlay.Runtime.Parameter, Assembly-CSharp]],
         mscorlib
     - Name: 
       Entry: 12
-      Data: 1
-    - Name: 
-      Entry: 7
-      Data: 50|FastPlay.Runtime.Parameter`1[[System.String, mscorlib]], Assembly-CSharp
-    - Name: m_id
-      Entry: 3
-      Data: -2058023728
-    - Name: name
-      Entry: 1
-      Data: result
-    - Name: is_public
-      Entry: 5
-      Data: true
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 0
     - Name: 
       Entry: 13
       Data: 
@@ -1132,6 +1180,6 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  title: CompareName
-  subtitle: Compare the object names
-  position: {x: -25, y: 46}
+  title: 
+  subtitle: 
+  position: {x: 26.875, y: -12.5}

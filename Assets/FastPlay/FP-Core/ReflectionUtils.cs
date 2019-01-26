@@ -7,7 +7,11 @@ using FastPlay.Runtime;
 namespace FastPlay {
 	public static class ReflectionUtils {
 
-		private static List<Assembly> cache_assemblies = new List<Assembly>();
+		private static IEnumerable<Assembly> cache_assemblies;
+
+		private static Dictionary<string, ConverterFlagAtribute> cache_converter_flags = new Dictionary<string, ConverterFlagAtribute>();
+
+		private static Dictionary<string, IValueConverter> cache_obj_converters = new Dictionary<string, IValueConverter>();
 
 		private static Dictionary<string, Type> cache_types = new Dictionary<string, Type>();
 
@@ -37,6 +41,73 @@ namespace FastPlay {
 	};
 
 
+		public static bool CanConvert<T>(Type from) {
+			return CanConvert(from, typeof(T));
+		}
+
+		public static bool CanConvert(this Type from, Type to) {
+			IValueConverter vc = GetConverter(from, to);
+			if (vc != null) {
+				return vc.CanConvert(from, to);
+			}
+			return false;
+		}
+
+		public static IValueConverter<T> GetConverter<T>(Type from) {
+			return (IValueConverter<T>)GetConverter(from, typeof(T));
+		}
+
+		public static IValueConverter GetConverter(this Type from, Type to) {
+			string key = from.FullName + to.FullName;
+			IValueConverter vc;
+			if (cache_obj_converters.TryGetValue(key, out vc)) {
+				return vc;
+			}
+			ConverterFlagAtribute cf;
+			if (cache_converter_flags.TryGetValue(key, out cf)) {
+				return cache_obj_converters[key] = (IValueConverter)Activator.CreateInstance(cf.base_type);
+			}
+			foreach (ConverterFlagAtribute flag in YieldGetAllConverterFlags()) {
+				if (flag.CanConvert(from, to)) {
+					return cache_obj_converters[flag.from.FullName + flag.to.FullName] = (IValueConverter)Activator.CreateInstance(flag.base_type);
+				}
+			}
+			return null;
+		}
+
+		public static IEnumerable<ConverterFlagAtribute> YieldGetAllConverterFlags() {
+			foreach (Type type in YieldGetFullTypes()) {
+				ConverterFlagAtribute flag = type.GetAttribute<ConverterFlagAtribute>(false);
+				if (flag != null) {
+					flag.base_type = type;
+					yield return cache_converter_flags[flag.from.FullName + flag.to.FullName] = flag;
+				}
+			}
+		}
+
+		public static IEnumerable<ConverterFlagAtribute> GetAllConverterFlags() {
+			foreach (Type type in GetFullTypes()) {
+				ConverterFlagAtribute flag = type.GetAttribute<ConverterFlagAtribute>(false);
+				if (flag != null) {
+					flag.base_type = type;
+					yield return cache_converter_flags[flag.from.FullName + flag.to.FullName] = flag;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns all types of all current assemblies
+		/// </summary>
+		public static IEnumerable<Type> YieldGetFullTypes() {
+			foreach (Assembly assembly in YieldGetFullAssemblies()) {
+				foreach (Type type in assembly.GetTypes()) {
+					if (type != null && type.IsPublic) {
+						yield return cache_types[type.GetTypeName(true)] = type;
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Returns all types of all current assemblies
 		/// </summary>
@@ -64,19 +135,30 @@ namespace FastPlay {
 		/// <summary>
 		/// Returns all current assemblies
 		/// </summary>
-		public static List<Assembly> GetFullAssemblies() {
+		public static IEnumerable<Assembly> YieldGetFullAssemblies() {
+			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+				if (cache_assemblies.IsNullOrEmpty() || !cache_assemblies.Contains(assembly)) {
+					cache_assemblies = cache_assemblies.AddItem(assembly);
+				}
+				yield return assembly;
+			}
+		}
+
+		/// <summary>
+		/// Returns all current assemblies
+		/// </summary>
+		public static IEnumerable<Assembly> GetFullAssemblies() {
 			if (cache_assemblies.IsNullOrEmpty()) {
-				cache_assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-				cache_assemblies.Sort((a1, a2) => string.Compare(a1.FullName, a2.FullName));
+				cache_assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			}
 			return cache_assemblies;
 		}
 
 		/// <summary>
-		/// Returns a list of types in a namespace
+		/// Returns types in a namespace
 		/// </summary>
-		public static List<Type> GetTypesWithNamespace(string @namespace) {
-			return GetFullTypes().Where(t => t.Namespace == @namespace).ToList();
+		public static IEnumerable<Type> GetTypesWithNamespace(string @namespace) {
+			return GetFullTypes().Where(t => t.Namespace == @namespace);
 		}
 
 		/// <summary>
@@ -116,7 +198,7 @@ namespace FastPlay {
 			if (cache_types.TryGetValue(type_name, out t2)) {
 				return t2;
 			}
-			foreach (Type type in GetFullTypes()) {
+			foreach (Type type in YieldGetFullTypes()) {
 				if (type.Name == type_name || type.FullName == type_name || type.GetTypeName(true) == type_name || type.GetTypeName(false) == type_name) {
 					return type;
 				}
@@ -152,6 +234,24 @@ namespace FastPlay {
 				return null;
 			}
 			return null;
+		}
+
+		//T = string
+		//from_type = float
+		public static bool CanBeCastTo<T>(this Type from_type) {
+			object obj = Activator.CreateInstance(from_type);
+			try {
+				UnityEngine.Debug.Log("pass 1");
+				if (obj is T) {
+					return true;
+				}
+				UnityEngine.Debug.Log("pass 2");
+				return true;
+			}
+			catch {
+				UnityEngine.Debug.Log("pass 3");
+				return typeof(T).IsAssignableFrom(from_type);
+			}
 		}
 
 		/// <summary>

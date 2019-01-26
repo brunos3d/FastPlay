@@ -295,10 +295,12 @@ namespace FastPlay.Editor {
 				return EditorGUILayout.ColorField(content, (Color)value, options);
 			}
 			else if (typeof(LayerMask).IsAssignableFrom(type)) {
-				return EditorGUILayout.LayerField(content, (LayerMask)value, options);
+				object result = EditorGUILayout.LayerField(content, (LayerMask)value, options);
+				GUILayout.EndVertical();
+				return result;
 			}
 			else if (typeof(Enum).IsAssignableFrom(type)) {
-				return EditorGUILayout.EnumPopup(content, (Enum)value, options);
+				return EditorGUILayout.EnumFlagsField(content, (Enum)value, options);
 			}
 			else if (typeof(Type).IsAssignableFrom(type)) {
 				current_id = GUIUtility.GetControlID(FocusType.Passive);

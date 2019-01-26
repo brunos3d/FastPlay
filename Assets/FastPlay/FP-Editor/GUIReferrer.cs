@@ -31,6 +31,7 @@ namespace FastPlay.Editor {
 			{ typeof(Vector4), "Vector4 Icon" },
 			{ typeof(Quaternion), "Quaternion Icon" },
 			{ typeof(UnityObject), "UnityObject Icon" },
+			{ typeof(LayerMask), "LayerMask Icon" },
 			{ typeof(UnityEngine.ScriptableObject), "UnityScriptableObject Icon" },
 			{ typeof(Ray), "Ray Icon" },
 			{ typeof(Time), "Time Icon" },
@@ -67,6 +68,7 @@ namespace FastPlay.Editor {
 			{ typeof(Vector4), new Color(1.0f, 193.0f / 255.0f, 64.0f / 255.0f) },
 			{ typeof(Quaternion), new Color(85.0f / 255.0f, 90.0f / 255.0f, 232.0f / 255.0f) },
 			{ typeof(UnityObject), Color.gray },
+			{ typeof(LayerMask), Color.gray },
 			{ typeof(Texture), new Color(0.0f / 255.0f, 232.0f / 255.0f, 87.0f / 255.0f) },
 	};
 

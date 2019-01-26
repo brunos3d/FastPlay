@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("UpdateEventNode Icon")]
 	[Title("LateUpdate")]
 	[Path("Events/Lifecycle/LateUpdate")]
 	[Summary("LateUpdate is called every frame, if the Behaviour is enabled.")]

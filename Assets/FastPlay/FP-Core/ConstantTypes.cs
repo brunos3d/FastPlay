@@ -46,6 +46,7 @@ namespace FastPlay {
 		typeof(GUI),
 		typeof(GUILayout),
 		typeof(Input),
+		typeof(LayerMask),
 		typeof(Light),
 		typeof(Material),
 		typeof(Mathf),

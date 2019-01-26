@@ -123,13 +123,6 @@ namespace FastPlay {
 			return true;
 		}
 
-		public static T CastTo<T>(this object value) {
-			if (value is T) {
-				return (T)value;
-			}
-			return default(T);
-		}
-
 		public static void Resize(ref Array array, Type array_type, int new_size) {
 			if (new_size < 0) {
 				throw new ArgumentOutOfRangeException("new_size");
@@ -152,6 +145,15 @@ namespace FastPlay {
 			List<T> list = new List<T>(array);
 			list.Add(item);
 			return list.ToArray<T>();
+		}
+
+		public static IEnumerable<T> AddItem<T>(this IEnumerable<T> enumerable, T value) {
+			if (enumerable != null) {
+				foreach (T current in enumerable) {
+					yield return current;
+				}
+			}
+			yield return value;
 		}
 
 		public static T[] RemoveItem<T>(this T[] array, T item) {

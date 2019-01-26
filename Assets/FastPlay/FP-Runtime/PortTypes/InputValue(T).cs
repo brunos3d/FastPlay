@@ -1,6 +1,8 @@
 namespace FastPlay.Runtime {
 	public class InputValue<T> : ValuePort<T>, IInputValue, IPlugIn {
 
+		private IValueConverter<T> converter;
+
 		public IOutputValue plugged_port;
 
 		public T default_value;
@@ -15,6 +17,8 @@ namespace FastPlay.Runtime {
 				switch (get_filter) {
 					case GetFilter.Action:
 						return (T)plugged_port.GetValue();
+					case GetFilter.ActionWithConverter:
+						return converter.Convert(plugged_port.GetValue());
 					case GetFilter.DefaultValue:
 						return default_value;
 					default:
@@ -35,7 +39,10 @@ namespace FastPlay.Runtime {
 		}
 
 		public override void Initialize() {
-			if (get_filter == GetFilter.DefaultValue) {
+			if (get_filter == GetFilter.ActionWithConverter) {
+				converter = ReflectionUtils.GetConverter<T>(plugged_port.valueType);
+			}
+			else if (get_filter == GetFilter.DefaultValue) {
 				if (typeof(UnityEngine.Component).IsAssignableFrom(typeof(T))) {
 					default_value = (T)(object)Current.GetComponent(valueType);
 				}
@@ -46,6 +53,7 @@ namespace FastPlay.Runtime {
 					default_value = (T)(object)Current.graph;
 				}
 			}
+
 		}
 
 		public object GetValue() {
@@ -70,16 +78,24 @@ namespace FastPlay.Runtime {
 
 		public bool CanPlug(IPlugOut plug, bool overwrite = true) {
 			Port port = plug as Port;
-			return this.display_port && ((overwrite & (port && port.display_port) ? true : !IsPlugged()) && port && port.display_port && port.node != node && port is IOutputValue && typeof(T).IsAssignableFrom(((IOutputValue)port).valueType));
+
+			return this.display_port && ((overwrite & (port && port.display_port) ? true : !IsPlugged()) && port && port.display_port && port.node != node && port is IOutputValue && (typeof(T).IsAssignableFrom(((IOutputValue)port).valueType) || ((IOutputValue)port).valueType.CanConvert(typeof(T))));
 		}
 
+		//Input -> Component
+		//Output -> Rigidbody
 		public void PlugTo(IPlugOut port) {
 			if (CanPlug(port)) {
 				if (IsPlugged()) {
 					GetPluggedPort().UnplugFrom(this);
 				}
 				plugged_port = (IOutputValue)port;
-				get_filter = GetFilter.Action;
+				if (typeof(T).IsAssignableFrom(((IOutputValue)port).valueType)) {
+					get_filter = GetFilter.Action;
+				}
+				else if (((IOutputValue)port).valueType.CanConvert(typeof(T))) {
+					get_filter = GetFilter.ActionWithConverter;
+				}
 				port.AddPlug(this);
 			}
 		}

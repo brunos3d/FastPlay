@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("OnMouseDownEvent Icon")]
+	[Icon("OnMouseDownEventNode Icon")]
 	[Title("OnMouseDown")]
 	[Path("Events/Mouse/OnMouseDown")]
 	[Summary("OnMouseDown is called when the user has pressed the mouse button while over the GUIElement or Collider.")]
