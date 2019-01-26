@@ -145,14 +145,22 @@ namespace FastPlay.Editor {
 			}
 		}
 
-		public static void Init(Vector2 spawn_pos) {
+		public static AdvancedSearchWindow Init(Vector2 spawn_pos) {
 			AdvancedSearchWindow window = AdvancedSearchWindow.CreateInstance<AdvancedSearchWindow>();
 			window.spawn_pos = spawn_pos;
 			window.wantsMouseMove = true;
 			window.ShowPopup();
 			//window.ShowAsDropDown(new Rect(pos, Vector2.zero), size);
 			FocusWindowIfItsOpen<AdvancedSearchWindow>();
+			return window;
 		}
+
+		public static AdvancedSearchWindow Init(Vector2 spawn_pos, string search) {
+			AdvancedSearchWindow window = Init(spawn_pos);
+			window.search = search;
+			return window;
+		}
+
 
 		void OnEnable() {
 			//Unity bug fix
@@ -393,6 +401,9 @@ namespace FastPlay.Editor {
 					break;
 				case EventType.KeyDown:
 					keyboard_pressed = true;
+					if (current.keyCode == KeyCode.Escape) {
+						this.Close();
+					}
 					if (!current.control) {
 						char current_char = Event.current.character;
 						if (char.IsNumber(current_char)) {
@@ -674,7 +685,7 @@ namespace FastPlay.Editor {
 				Texture icon = icons[param.valueType];
 
 				object[] args = new object[] { typeof(VariableNode<>).MakeGenericType(param.valueType), param };
-				root_tree.AddChildByPath(new GUIContent(string.Format("Local Variables/{0} : {1}", param.name, param.valueType.GetTypeName(true)), icon), () => { AddCustomNode(args); });
+				root_tree.AddChildByPath(new GUIContent(string.Format("Local Variables/{0} : {1}", param.name, param.valueType.GetTypeName(true, true)), icon), () => { AddCustomNode(args); });
 			}
 
 			TreeNode<Act> codebase = root_tree.AddChild(new GUIContent("Codebase", EditorUtils.FindAssetByName<Texture>("Codebase Icon")), null);
@@ -796,16 +807,16 @@ namespace FastPlay.Editor {
 						foreach (MethodInfo method in methods.Where(m => m.DeclaringType != type)) {
 							List<string> tags = new List<string>();
 							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add(method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
 
 							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Inherited/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 						foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
 							List<string> tags = new List<string>();
 							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add(method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
 
 							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Properties/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
@@ -819,8 +830,8 @@ namespace FastPlay.Editor {
 						foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type_gen)) {
 							List<string> tags = new List<string>();
 							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add(method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
 
 							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
@@ -836,8 +847,8 @@ namespace FastPlay.Editor {
 								MethodInfo method_gen = method.MakeGenericMethod(t);
 								List<string> tags = new List<string>();
 								tags.Add(method.IsStatic ? "Static" : "Instance");
-								tags.Add(method_gen.ReturnType.GetTypeName(false, true));
-								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+								tags.Add("out " + method_gen.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
 
 								object[] args = new object[] { method_gen, t };
 								generic_node.AddChildByPath(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); }, tags.ToArray());
@@ -846,8 +857,8 @@ namespace FastPlay.Editor {
 						else {
 							List<string> tags = new List<string>();
 							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add(method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
 
 							type_tree.AddChildByPath(new GUIContent(string.Format("Inherited/{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
@@ -860,8 +871,8 @@ namespace FastPlay.Editor {
 								MethodInfo method_gen = method.MakeGenericMethod(t);
 								List<string> tags = new List<string>();
 								tags.Add(method.IsStatic ? "Static" : "Instance");
-								tags.Add(method_gen.ReturnType.GetTypeName(false, true));
-								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+								tags.Add("out " + method_gen.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
 
 								object[] args = new object[] { method_gen, t };
 								generic_node.AddChildByPath(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); }, tags.ToArray());
@@ -870,8 +881,8 @@ namespace FastPlay.Editor {
 						else {
 							List<string> tags = new List<string>();
 							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add(method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
 
 							type_tree.AddChildByPath(new GUIContent(string.Format("Properties/{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
@@ -891,8 +902,8 @@ namespace FastPlay.Editor {
 								MethodInfo method_gen = method.MakeGenericMethod(t);
 								List<string> tags = new List<string>();
 								tags.Add(method.IsStatic ? "Static" : "Instance");
-								tags.Add(method_gen.ReturnType.GetTypeName(false, true));
-								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+								tags.Add("out " + method_gen.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
 
 								object[] args = new object[] { method_gen, t };
 								generic_node.AddChild(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); }, tags.ToArray());
@@ -901,8 +912,8 @@ namespace FastPlay.Editor {
 						else {
 							List<string> tags = new List<string>();
 							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add(method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => param_t.GetTypeName(false, true))).ToList();
+							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
 
 							type_tree.AddChildByPath(new GUIContent(string.Format("{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}

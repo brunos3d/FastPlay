@@ -13,7 +13,7 @@ namespace FastPlay.Runtime {
 
 		public string base_type_name;
 
-		public List<string> generic_args = new List<string>();
+		public readonly List<string> generic_args = new List<string>();
 
 		[NonSerialized]
 		public MethodInfo method_info;
@@ -31,7 +31,7 @@ namespace FastPlay.Runtime {
 			this.base_type_name = method.ReflectedType.AssemblyQualifiedName;
 			this.method_key = ReflectionUtils.GetMethodInfoKey(method);
 			this.method_info = method;
-			this.generic_args = new List<string>();
+			this.generic_args.Clear();
 			foreach (Type type in type_args) {
 				generic_args.Add(type.AssemblyQualifiedName);
 			}
@@ -41,7 +41,7 @@ namespace FastPlay.Runtime {
 			if (this.is_generic) {
 				List<Type> type_args = new List<Type>();
 				foreach (string arg in generic_args) {
-					type_args.Add(ReflectionUtils.GetTypeByName(base_type_name));
+					type_args.Add(ReflectionUtils.GetTypeByName(arg));
 				}
 				return this.method_info ?? (this.method_info = ReflectionUtils.GetMethodInfoByKey(ReflectionUtils.GetTypeByName(base_type_name), method_key)).MakeGenericMethod(type_args.ToArray());
 			}

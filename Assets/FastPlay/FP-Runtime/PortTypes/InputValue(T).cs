@@ -18,7 +18,7 @@ namespace FastPlay.Runtime {
 					case GetFilter.Action:
 						return (T)plugged_port.GetValue();
 					case GetFilter.ActionWithConverter:
-						return converter.Convert(plugged_port.GetValue());
+						return (converter ?? (converter = ReflectionUtils.GetConverter<T>(plugged_port.valueType))).Convert(plugged_port.GetValue());
 					case GetFilter.DefaultValue:
 						return default_value;
 					default:

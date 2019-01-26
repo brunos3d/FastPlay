@@ -1,1 +1,4 @@
-sceneSetups: []
+sceneSetups:
+- path: Assets/FastPlay/Samples/Macro/login.unity
+  isLoaded: 1
+  isActive: 1

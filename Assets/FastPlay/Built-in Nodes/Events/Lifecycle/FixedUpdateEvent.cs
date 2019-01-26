@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("UpdateEventNode Icon")]
+	[Icon("update_event_icon")]
 	[Title("FixedUpdate")]
 	[Path("Events/Lifecycle/FixedUpdate")]
 	[Summary("Frame-rate independent MonoBehaviour.FixedUpdate message for physics calculations.")]

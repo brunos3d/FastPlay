@@ -4,7 +4,7 @@ using UnityEngine;
 namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Icon("Input Icon")]
-	[Title("OnKeyboardInputEvent")]
+	[Title("OnKeyboardInput")]
 	[Path("Events/Utilities/OnKeyboardInput")]
 	public class OnKeyboardInputEvent : EventNode, IUpdate, IRegisterPorts {
 

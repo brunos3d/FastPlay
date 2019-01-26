@@ -179,6 +179,15 @@ namespace FastPlay.Editor {
 		}
 
 		private void OnFocus() {
+			if (GraphEditor.waiting_for_new_node) {
+				if (GraphEditor.drag_port) {
+					QuickPlugPort(GraphEditor.drag_port, GraphEditor.graph.nodes[GraphEditor.graph.nodes.Count - 1]);
+					GraphEditor.is_drag = false;
+					GraphEditor.drag_port = null;
+					GraphEditor.can_drag_port = false;
+				}
+				GraphEditor.waiting_for_new_node = false;
+			}
 			OnSelectionChange();
 		}
 
@@ -510,16 +519,40 @@ namespace FastPlay.Editor {
 								else if (!GraphEditor.is_scrolling) {
 									ClearSelection();
 								}
+								if (GraphEditor.drag_port && !GraphEditor.hover_node) {
+									InputAction in_act = GraphEditor.drag_port as InputAction;
+									OutputAction out_act = GraphEditor.drag_port as OutputAction;
+									IInputValue in_value = GraphEditor.drag_port as IInputValue;
+									IOutputValue out_value = GraphEditor.drag_port as IOutputValue;
+									if (in_act != null) {
+										GraphEditor.waiting_for_new_node = true;
+										AdvancedSearchWindow.Init(GraphEditor.mouse_position, "#tag:in void");
+									}
+									else if (out_act != null) {
+										GraphEditor.waiting_for_new_node = true;
+										AdvancedSearchWindow.Init(GraphEditor.mouse_position, "#tag:out void");
+									}
+									else if (in_value != null) {
+										GraphEditor.waiting_for_new_node = true;
+										AdvancedSearchWindow.Init(GraphEditor.mouse_position, "#tag:out " + in_value.valueType.GetTypeName(false, true));
+									}
+									else if (out_value != null) {
+										GraphEditor.waiting_for_new_node = true;
+										AdvancedSearchWindow.Init(GraphEditor.mouse_position, "#tag:in " + out_value.valueType.GetTypeName(false, true));
+									}
+								}
 							}
 							GraphEditor.can_select = false;
 							GraphEditor.is_select = false;
 							GraphEditor.is_scrolling = false;
-							GraphEditor.is_drag = false;
 							GraphEditor.hover_node = null;
 							GraphEditor.drag_node = null;
-							GraphEditor.drag_port = null;
+							if (!GraphEditor.waiting_for_new_node) {
+								GraphEditor.is_drag = false;
+								GraphEditor.drag_port = null;
+								GraphEditor.can_drag_port = false;
+							}
 							GraphEditor.can_drag_node = false;
-							GraphEditor.can_drag_port = false;
 							break;
 						case 1:
 							if (!GraphEditor.is_drag) {

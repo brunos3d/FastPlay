@@ -39,6 +39,8 @@ namespace FastPlay.Editor {
 
 		public static bool current_validate;
 
+		public static bool waiting_for_new_node;
+
 		public static bool can_select;
 
 		public static bool is_select;

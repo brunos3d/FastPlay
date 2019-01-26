@@ -300,7 +300,7 @@ namespace FastPlay.Editor {
 				return result;
 			}
 			else if (typeof(Enum).IsAssignableFrom(type)) {
-				return EditorGUILayout.EnumFlagsField(content, (Enum)value, options);
+				return EditorGUILayout.EnumPopup(content, (Enum)value, options);
 			}
 			else if (typeof(Type).IsAssignableFrom(type)) {
 				current_id = GUIUtility.GetControlID(FocusType.Passive);
