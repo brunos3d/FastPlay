@@ -1,8 +1,8 @@
-using System;
 using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("charactercontroller icon")]
 	[Title("OnControllerColliderHit")]
 	[Path("Events/Physics/OnControllerColliderHit")]
 	[Summary("OnControllerColliderHit is called when the controller hits a collider while performing a Move.")]

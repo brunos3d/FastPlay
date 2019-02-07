@@ -34,7 +34,7 @@ namespace OdinSerializer
         /// Bind a type to a name.
         /// </summary>
         /// <param name="type">The type to bind.</param>
-        /// <param name="debugContext">The debug current_context to log to.</param>
+        /// <param name="debugContext">The debug context to log to.</param>
         /// <returns>The name that the type has been bound to.</returns>
         public abstract string BindToName(Type type, DebugContext debugContext = null);
 
@@ -42,7 +42,7 @@ namespace OdinSerializer
         /// Binds a name to a type.
         /// </summary>
         /// <param name="typeName">The name of the type to bind.</param>
-        /// <param name="debugContext">The debug current_context to log to.</param>
+        /// <param name="debugContext">The debug context to log to.</param>
         /// <returns>The type that the name has been bound to, or null if the type could not be resolved.</returns>
         public abstract Type BindToType(string typeName, DebugContext debugContext = null);
 

@@ -45,9 +45,9 @@ namespace OdinSerializer
         /// Initializes a new instance of the <see cref="JsonDataWriter" /> class.
         /// </summary>
         /// <param name="stream">The base stream of the writer.</param>
-        /// <param name="current_context">The serialization current_context to use.</param>>
+        /// <param name="context">The serialization context to use.</param>>
         /// <param name="formatAsReadable">Whether the json should be packed, or formatted as human-readable.</param>
-        public JsonDataWriter(Stream stream, SerializationContext current_context, bool formatAsReadable = true) : base(stream, current_context)
+        public JsonDataWriter(Stream stream, SerializationContext context, bool formatAsReadable = true) : base(stream, context)
         {
             this.FormatAsReadable = formatAsReadable;
             this.justStarted = true;
@@ -453,6 +453,30 @@ namespace OdinSerializer
             this.justStarted = true;
         }
 
+        public override string GetDataDump()
+        {
+            if (!this.Stream.CanRead)
+            {
+                return "Json data stream for writing cannot be read; cannot dump data.";
+            }
+
+            if (!this.Stream.CanSeek)
+            {
+                return "Json data stream cannot seek; cannot dump data.";
+            }
+
+            var oldPosition = this.Stream.Position;
+
+            var bytes = new byte[oldPosition];
+
+            this.Stream.Position = 0;
+            this.Stream.Read(bytes, 0, (int)oldPosition);
+
+            this.Stream.Position = oldPosition;
+
+            return "Json: " + Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+        }
+
         private string EscapeString(string str)
         {
             // Escaping a string is pretty allocation heavy, so we try hard to not do it.
@@ -616,12 +640,12 @@ namespace OdinSerializer
                 {
                     id = this.seenTypes.Count;
                     this.seenTypes.Add(type, id);
-                    this.WriteString(JsonConfig.TYPE_SIG, id + "|" + this.Binder.BindToName(type, this.Context.Config.DebugContext));
+                    this.WriteString(JsonConfig.TYPE_SIG, id + "|" + this.Context.Binder.BindToName(type, this.Context.Config.DebugContext));
                 }
             }
             else
             {
-                this.WriteString(JsonConfig.TYPE_SIG, this.Binder.BindToName(type, this.Context.Config.DebugContext));
+                this.WriteString(JsonConfig.TYPE_SIG, this.Context.Binder.BindToName(type, this.Context.Config.DebugContext));
             }
         }
 

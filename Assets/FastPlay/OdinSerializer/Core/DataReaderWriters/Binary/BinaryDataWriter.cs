@@ -79,8 +79,8 @@ namespace OdinSerializer
         /// Initializes a new instance of the <see cref="BinaryDataWriter" /> class.
         /// </summary>
         /// <param name="stream">The base stream of the writer.</param>
-        /// <param name="current_context">The serialization current_context to use.</param>
-        public BinaryDataWriter(Stream stream, SerializationContext current_context) : base(stream, current_context)
+        /// <param name="context">The serialization context to use.</param>
+        public BinaryDataWriter(Stream stream, SerializationContext context) : base(stream, context)
         {
         }
 
@@ -659,6 +659,30 @@ namespace OdinSerializer
             this.types.Clear();
         }
 
+        public override string GetDataDump()
+        {
+            if (!this.Stream.CanRead)
+            {
+                return "Binary data stream for writing cannot be read; cannot dump data.";
+            }
+
+            if (!this.Stream.CanSeek)
+            {
+                return "Binary data stream cannot seek; cannot dump data.";
+            }
+
+            var oldPosition = this.Stream.Position;
+
+            var bytes = new byte[oldPosition];
+
+            this.Stream.Position = 0;
+            this.Stream.Read(bytes, 0, (int)oldPosition);
+
+            this.Stream.Position = oldPosition;
+
+            return "Binary hex dump: " + ProperBitConverter.BytesToHexString(bytes);
+        }
+
         private void WriteType(Type type)
         {
             if (type == null)
@@ -680,7 +704,7 @@ namespace OdinSerializer
                     this.types.Add(type, id);
                     this.Stream.WriteByte((byte)BinaryEntryType.TypeName);
                     this.WriteIntValue(id);
-                    this.WriteStringValue(this.Binder.BindToName(type, this.Context.Config.DebugContext));
+                    this.WriteStringValue(this.Context.Binder.BindToName(type, this.Context.Config.DebugContext));
                 }
             }
         }

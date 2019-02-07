@@ -1,8 +1,8 @@
 namespace FastPlay.Runtime {
 	public enum GetFilter {
-		Action,
-		DefaultValue,
-		ActionWithConverter,
+		DefaultValue = 0,
+		Action = 1,
+		ActionWithConverter = 2,
 		// Missing,
 	}
 }

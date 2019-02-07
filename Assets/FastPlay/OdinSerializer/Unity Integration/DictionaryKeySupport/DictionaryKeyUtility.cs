@@ -53,7 +53,7 @@ namespace OdinSerializer
 
         private static readonly HashSet<char> AllowedSpecialKeyStrChars = new HashSet<char>()
         {
-            ',', '(', ')', '\\', '|', '-'
+            ',', '(', ')', '\\', '|', '-', '+'
         };
 
         private static readonly Dictionary<Type, IDictionaryKeyPathProvider> TypeToKeyPathProviders = new Dictionary<Type, IDictionaryKeyPathProvider>();
@@ -307,7 +307,9 @@ namespace OdinSerializer
                 if (!ObjectsToTempKeys.TryGetValue(key, out keyString))
                 {
                     keyString = (tempKeyCounter++).ToString();
-                    ObjectsToTempKeys[key] = "{temp:" + keyString + "}";
+                    var str = "{temp:" + keyString + "}";
+                    ObjectsToTempKeys[key] = str;
+                    TempKeysToObjects[str] = key;
                 }
 
                 return keyString;

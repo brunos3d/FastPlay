@@ -24,7 +24,7 @@ namespace OdinSerializer
     using Utilities;
 
     /// <summary>
-    /// The current_context of a given serialization session. This class maintains all internal and external references during serialization.
+    /// The context of a given serialization session. This class maintains all internal and external references during serialization.
     /// </summary>
     /// <seealso cref="ICacheNotificationReceiver" />
     public sealed class SerializationContext : ICacheNotificationReceiver
@@ -33,6 +33,7 @@ namespace OdinSerializer
         private Dictionary<object, int> internalReferenceIdMap = new Dictionary<object, int>(128, ReferenceEqualityComparer<object>.Default);
         private StreamingContext streamingContext;
         private IFormatterConverter formatterConverter;
+        private TwoWaySerializationBinder binder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializationContext"/> class.
@@ -45,9 +46,9 @@ namespace OdinSerializer
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializationContext"/> class.
         /// </summary>
-        /// <param name="current_context">The streaming current_context to use.</param>
-        public SerializationContext(StreamingContext current_context)
-            : this(current_context, new FormatterConverter())
+        /// <param name="context">The streaming context to use.</param>
+        public SerializationContext(StreamingContext context)
+            : this(context, new FormatterConverter())
         {
         }
 
@@ -63,27 +64,51 @@ namespace OdinSerializer
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializationContext"/> class.
         /// </summary>
-        /// <param name="current_context">The streaming current_context to use.</param>
+        /// <param name="context">The streaming context to use.</param>
         /// <param name="formatterConverter">The formatter converter to use.</param>
         /// <exception cref="System.ArgumentNullException">The formatterConverter parameter is null.</exception>
-        public SerializationContext(StreamingContext current_context, FormatterConverter formatterConverter)
+        public SerializationContext(StreamingContext context, FormatterConverter formatterConverter)
         {
             if (formatterConverter == null)
             {
                 throw new ArgumentNullException("formatterConverter");
             }
 
-            this.streamingContext = current_context;
+            this.streamingContext = context;
             this.formatterConverter = formatterConverter;
 
             this.ResetToDefault();
         }
 
         /// <summary>
-        /// Gets the streaming current_context.
+        /// Gets or sets the context's type binder.
         /// </summary>
         /// <value>
-        /// The streaming current_context.
+        /// The context's serialization binder.
+        /// </value>
+        public TwoWaySerializationBinder Binder
+        {
+            get
+            {
+                if (this.binder == null)
+                {
+                    this.binder = DefaultSerializationBinder.Default;
+                }
+
+                return this.binder;
+            }
+
+            set
+            {
+                this.binder = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the streaming context.
+        /// </summary>
+        /// <value>
+        /// The streaming context.
         /// </value>
         public StreamingContext StreamingContext { get { return this.streamingContext; } }
 
@@ -256,7 +281,7 @@ namespace OdinSerializer
         }
 
         /// <summary>
-        /// Resets the current_context's internal reference map.
+        /// Resets the context's internal reference map.
         /// </summary>
         public void ResetInternalReferences()
         {
@@ -264,8 +289,8 @@ namespace OdinSerializer
         }
 
         /// <summary>
-        /// Resets the serialization current_context completely to baseline status, as if its constructor has just been called.
-        /// This allows complete reuse of a serialization current_context, with all of its internal reference buffers.
+        /// Resets the serialization context completely to baseline status, as if its constructor has just been called.
+        /// This allows complete reuse of a serialization context, with all of its internal reference buffers.
         /// </summary>
         public void ResetToDefault()
         {
@@ -278,6 +303,7 @@ namespace OdinSerializer
             this.IndexReferenceResolver = null;
             this.GuidReferenceResolver = null;
             this.StringReferenceResolver = null;
+            this.binder = null;
         }
 
         void ICacheNotificationReceiver.OnFreed()

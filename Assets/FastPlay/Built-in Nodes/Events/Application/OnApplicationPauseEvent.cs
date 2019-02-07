@@ -1,9 +1,6 @@
-using System;
-using UnityEngine;
-
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("Application Icon")]
+	[Icon("application_pause")]
 	[Title("OnApplicationPause")]
 	[Path("Events/Application/OnApplicationPause")]
 	[Summary("Sent to all GameObjects when the application pauses.")]

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("worldparticlecollider icon")]
 	[Title("OnParticleTrigger")]
 	[Path("Events/Physics/OnParticleTrigger")]
 	[Summary("OnParticleTrigger is called when any particles in a particle system meet the conditions in the trigger module.")]

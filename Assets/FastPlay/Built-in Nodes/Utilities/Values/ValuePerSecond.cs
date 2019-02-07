@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("Time Icon")]
+	[Icon("time")]
 	[Title("PerSecond")]
 	[Path("Utilities/Values/PerSecond")]
 	public class ValuePerSecond : ValueNode<float>, IRegisterPorts {

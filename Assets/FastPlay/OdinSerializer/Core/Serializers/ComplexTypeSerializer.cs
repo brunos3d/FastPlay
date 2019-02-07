@@ -42,11 +42,11 @@ namespace OdinSerializer
         /// </returns>
         public override T ReadValue(IDataReader reader)
         {
-            var current_context = reader.Context;
+            var context = reader.Context;
 
-            if (current_context.Config.SerializationPolicy.AllowNonSerializableTypes == false && typeof(T).IsSerializable == false)
+            if (context.Config.SerializationPolicy.AllowNonSerializableTypes == false && typeof(T).IsSerializable == false)
             {
-                current_context.Config.DebugContext.LogError("The type " + typeof(T).Name + " is not marked as serializable.");
+                context.Config.DebugContext.LogError("The type " + typeof(T).Name + " is not marked as serializable.");
                 return default(T);
             }
 
@@ -59,13 +59,13 @@ namespace OdinSerializer
             {
                 if (entry == EntryType.Null)
                 {
-                    current_context.Config.DebugContext.LogWarning("Expecting complex struct of type " + typeof(T).GetNiceFullName() + " but got null value.");
+                    context.Config.DebugContext.LogWarning("Expecting complex struct of type " + typeof(T).GetNiceFullName() + " but got null value.");
                     reader.ReadNull();
                     return default(T);
                 }
                 else if (entry != EntryType.StartOfNode)
                 {
-                    current_context.Config.DebugContext.LogWarning("Unexpected entry '" + name + "' of type " + entry.ToString() + ", when " + EntryType.StartOfNode + " was expected. A value has likely been lost.");
+                    context.Config.DebugContext.LogWarning("Unexpected entry '" + name + "' of type " + entry.ToString() + ", when " + EntryType.StartOfNode + " was expected. A value has likely been lost.");
                     reader.SkipEntry();
                     return default(T);
                 }
@@ -81,11 +81,11 @@ namespace OdinSerializer
                         {
                             if (serializedType != null)
                             {
-                                current_context.Config.DebugContext.LogWarning("Expected complex struct value " + expectedType.Name + " but the serialized value is of type " + serializedType.Name + ".");
+                                context.Config.DebugContext.LogWarning("Expected complex struct value " + expectedType.Name + " but the serialized value is of type " + serializedType.Name + ".");
 
                                 if (serializedType.IsCastableTo(expectedType))
                                 {
-                                    object value = FormatterLocator.GetFormatter(serializedType, current_context.Config.SerializationPolicy).Deserialize(reader);
+                                    object value = FormatterLocator.GetFormatter(serializedType, context.Config.SerializationPolicy).Deserialize(reader);
 
                                     bool serializedTypeIsNullable = serializedType.IsGenericType && serializedType.GetGenericTypeDefinition() == typeof(Nullable<>);
                                     bool allowCastMethod = !ComplexTypeIsNullable && !serializedTypeIsNullable;
@@ -103,24 +103,24 @@ namespace OdinSerializer
                                 }
                                 else
                                 {
-                                    current_context.Config.DebugContext.LogWarning("Can't cast serialized type " + serializedType.Name + " into expected type " + expectedType.Name + ". Value lost for node '" + name + "'.");
+                                    context.Config.DebugContext.LogWarning("Can't cast serialized type " + serializedType.Name + " into expected type " + expectedType.Name + ". Value lost for node '" + name + "'.");
                                     return default(T);
                                 }
                             }
                             else
                             {
-                                current_context.Config.DebugContext.LogWarning("Expected complex struct value " + expectedType.Name + " but the serialized type could not be resolved.");
+                                context.Config.DebugContext.LogWarning("Expected complex struct value " + expectedType.Name + " but the serialized type could not be resolved.");
                                 return default(T);
                             }
                         }
                         else
                         {
-                            return FormatterLocator.GetFormatter<T>(current_context.Config.SerializationPolicy).Deserialize(reader);
+                            return FormatterLocator.GetFormatter<T>(context.Config.SerializationPolicy).Deserialize(reader);
                         }
                     }
                     else
                     {
-                        current_context.Config.DebugContext.LogError("Failed to enter node '" + name + "'.");
+                        context.Config.DebugContext.LogError("Failed to enter node '" + name + "'.");
                         return default(T);
                     }
                 }
@@ -131,7 +131,7 @@ namespace OdinSerializer
                 }
                 catch (Exception ex)
                 {
-                    current_context.Config.DebugContext.LogException(ex);
+                    context.Config.DebugContext.LogException(ex);
                     return default(T);
                 }
                 finally
@@ -157,7 +157,7 @@ namespace OdinSerializer
                             int index;
                             reader.ReadExternalReference(out index);
 
-                            object value = current_context.GetExternalObject(index);
+                            object value = context.GetExternalObject(index);
 
                             try
                             {
@@ -165,7 +165,7 @@ namespace OdinSerializer
                             }
                             catch (InvalidCastException)
                             {
-                                current_context.Config.DebugContext.LogWarning("Can't cast external reference type " + value.GetType().Name + " into expected type " + typeof(T).Name + ". Value lost for node '" + name + "'.");
+                                context.Config.DebugContext.LogWarning("Can't cast external reference type " + value.GetType().Name + " into expected type " + typeof(T).Name + ". Value lost for node '" + name + "'.");
                                 return default(T);
                             }
                         }
@@ -175,7 +175,7 @@ namespace OdinSerializer
                             Guid guid;
                             reader.ReadExternalReference(out guid);
 
-                            object value = current_context.GetExternalObject(guid);
+                            object value = context.GetExternalObject(guid);
 
                             try
                             {
@@ -183,7 +183,7 @@ namespace OdinSerializer
                             }
                             catch (InvalidCastException)
                             {
-                                current_context.Config.DebugContext.LogWarning("Can't cast external reference type " + value.GetType().Name + " into expected type " + typeof(T).Name + ". Value lost for node '" + name + "'.");
+                                context.Config.DebugContext.LogWarning("Can't cast external reference type " + value.GetType().Name + " into expected type " + typeof(T).Name + ". Value lost for node '" + name + "'.");
                                 return default(T);
                             }
                         }
@@ -193,7 +193,7 @@ namespace OdinSerializer
                             string id;
                             reader.ReadExternalReference(out id);
 
-                            object value = current_context.GetExternalObject(id);
+                            object value = context.GetExternalObject(id);
 
                             try
                             {
@@ -201,7 +201,7 @@ namespace OdinSerializer
                             }
                             catch (InvalidCastException)
                             {
-                                current_context.Config.DebugContext.LogWarning("Can't cast external reference type " + value.GetType().Name + " into expected type " + typeof(T).Name + ". Value lost for node '" + name + "'.");
+                                context.Config.DebugContext.LogWarning("Can't cast external reference type " + value.GetType().Name + " into expected type " + typeof(T).Name + ". Value lost for node '" + name + "'.");
                                 return default(T);
                             }
                         }
@@ -211,7 +211,7 @@ namespace OdinSerializer
                             int id;
                             reader.ReadInternalReference(out id);
 
-                            object value = current_context.GetInternalReference(id);
+                            object value = context.GetInternalReference(id);
 
                             try
                             {
@@ -219,7 +219,7 @@ namespace OdinSerializer
                             }
                             catch (InvalidCastException)
                             {
-                                current_context.Config.DebugContext.LogWarning("Can't cast internal reference type " + value.GetType().Name + " into expected type " + typeof(T).Name + ". Value lost for node '" + name + "'.");
+                                context.Config.DebugContext.LogWarning("Can't cast internal reference type " + value.GetType().Name + " into expected type " + typeof(T).Name + ". Value lost for node '" + name + "'.");
                                 return default(T);
                             }
                         }
@@ -265,7 +265,7 @@ namespace OdinSerializer
                                                 }
                                                 else
                                                 {
-                                                    var alternateFormatter = FormatterLocator.GetFormatter(serializedType, current_context.Config.SerializationPolicy);
+                                                    var alternateFormatter = FormatterLocator.GetFormatter(serializedType, context.Config.SerializationPolicy);
                                                     value = alternateFormatter.Deserialize(reader);
                                                 }
 
@@ -307,12 +307,12 @@ namespace OdinSerializer
                                             // the reference so the reference isn't lost if it is referred to further down
                                             // the data stream.
 
-                                            var alternateFormatter = FormatterLocator.GetFormatter(serializedType, current_context.Config.SerializationPolicy);
+                                            var alternateFormatter = FormatterLocator.GetFormatter(serializedType, context.Config.SerializationPolicy);
                                             object value = alternateFormatter.Deserialize(reader);
 
                                             if (id >= 0)
                                             {
-                                                current_context.RegisterInternalReference(id, value);
+                                                context.RegisterInternalReference(id, value);
                                             }
 
                                             result = default(T);
@@ -321,7 +321,7 @@ namespace OdinSerializer
                                         if (!success)
                                         {
                                             // We can't use this
-                                            current_context.Config.DebugContext.LogWarning("Can't cast serialized type " + serializedType.Name + " into expected type " + expectedType.Name + ". Value lost for node '" + name + "'.");
+                                            context.Config.DebugContext.LogWarning("Can't cast serialized type " + serializedType.Name + " into expected type " + expectedType.Name + ". Value lost for node '" + name + "'.");
                                             result = default(T);
                                         }
                                     }
@@ -331,19 +331,19 @@ namespace OdinSerializer
                                     }
                                     else
                                     {
-                                        result = FormatterLocator.GetFormatter<T>(current_context.Config.SerializationPolicy).Deserialize(reader);
+                                        result = FormatterLocator.GetFormatter<T>(context.Config.SerializationPolicy).Deserialize(reader);
                                     }
 
                                     if (id >= 0)
                                     {
-                                        current_context.RegisterInternalReference(id, result);
+                                        context.RegisterInternalReference(id, result);
                                     }
 
                                     return result;
                                 }
                                 else
                                 {
-                                    current_context.Config.DebugContext.LogError("Failed to enter node '" + name + "'.");
+                                    context.Config.DebugContext.LogError("Failed to enter node '" + name + "'.");
                                     return default(T);
                                 }
                             }
@@ -354,7 +354,7 @@ namespace OdinSerializer
                             }
                             catch (Exception ex)
                             {
-                                current_context.Config.DebugContext.LogException(ex);
+                                context.Config.DebugContext.LogException(ex);
                                 return default(T);
                             }
                             finally
@@ -441,7 +441,7 @@ namespace OdinSerializer
                     default:
 
                         // Lost value somehow
-                        current_context.Config.DebugContext.LogWarning("Unexpected entry of type " + entry.ToString() + ", when a reference or node start was expected. A value has been lost.");
+                        context.Config.DebugContext.LogWarning("Unexpected entry of type " + entry.ToString() + ", when a reference or node start was expected. A value has been lost.");
                         reader.SkipEntry();
                         return default(T);
                 }
@@ -456,11 +456,11 @@ namespace OdinSerializer
         /// <param name="writer">The writer to use.</param>
         public override void WriteValue(string name, T value, IDataWriter writer)
         {
-            var current_context = writer.Context;
+            var context = writer.Context;
 
-            if (current_context.Config.SerializationPolicy.AllowNonSerializableTypes == false && typeof(T).IsSerializable == false)
+            if (context.Config.SerializationPolicy.AllowNonSerializableTypes == false && typeof(T).IsSerializable == false)
             {
-                current_context.Config.DebugContext.LogError("The type " + typeof(T).Name + " is not marked as serializable.");
+                context.Config.DebugContext.LogError("The type " + typeof(T).Name + " is not marked as serializable.");
                 return;
             }
 
@@ -473,7 +473,7 @@ namespace OdinSerializer
                 try
                 {
                     writer.BeginStructNode(name, typeof(T));
-                    FormatterLocator.GetFormatter<T>(current_context.Config.SerializationPolicy).Serialize(value, writer);
+                    FormatterLocator.GetFormatter<T>(context.Config.SerializationPolicy).Serialize(value, writer);
                 }
                 catch (SerializationAbortException ex)
                 {
@@ -501,19 +501,19 @@ namespace OdinSerializer
                 {
                     writer.WriteNull(name);
                 }
-                else if (current_context.TryRegisterExternalReference(value, out index))
+                else if (context.TryRegisterExternalReference(value, out index))
                 {
                     writer.WriteExternalReference(name, index);
                 }
-                else if (current_context.TryRegisterExternalReference(value, out guid))
+                else if (context.TryRegisterExternalReference(value, out guid))
                 {
                     writer.WriteExternalReference(name, guid);
                 }
-                else if (current_context.TryRegisterExternalReference(value, out strId))
+                else if (context.TryRegisterExternalReference(value, out strId))
                 {
                     writer.WriteExternalReference(name, strId);
                 }
-                else if (current_context.TryRegisterInternalReference(value, out id))
+                else if (context.TryRegisterInternalReference(value, out id))
                 {
                     Type type = value.GetType(); // Get type of actual stored object
 
@@ -541,7 +541,7 @@ namespace OdinSerializer
                     }
                     else
                     {
-                        var formatter = FormatterLocator.GetFormatter(type, current_context.Config.SerializationPolicy);
+                        var formatter = FormatterLocator.GetFormatter(type, context.Config.SerializationPolicy);
 
                         try
                         {

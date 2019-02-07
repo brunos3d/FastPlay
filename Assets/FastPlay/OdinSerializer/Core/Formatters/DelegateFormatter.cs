@@ -294,7 +294,7 @@ namespace OdinSerializer
             }
 
             this.RegisterReferenceID(value, reader);
-            this.InvokeOnDeserializingCallbacks(value, reader.Context);
+            this.InvokeOnDeserializingCallbacks(ref value, reader.Context);
         }
 
         /// <summary>

@@ -1,9 +1,6 @@
-using System;
-using UnityEngine;
-
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("OnMouseEnterEventNode Icon")]
+	[Icon("mouse_enter")]
 	[Title("OnMouseEnter")]
 	[Path("Events/Mouse/OnMouseEnter")]
 	[Summary("Called when the mouse enters the GUIElement or Collider.")]

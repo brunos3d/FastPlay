@@ -10,6 +10,8 @@ using UnityEditor;
 namespace FastPlay.Editor {
 	public class NodeScriptGenerator : EditorWindow {
 
+		private const BindingFlags METHOD_BIND_FLAGS = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
+
 		public const string VARIABLE_FORMAT = "public InputValue<#PARAMETERTYPE#> #PARAMETERNAME#;";
 		public const string REGISTER_PORT_FORMAT = @"#PARAMETERNAME# = this.RegisterInputValue<#PARAMETERTYPE#>(""#PARAMETERDISPLAYNAME#"");";
 
@@ -17,6 +19,7 @@ namespace FastPlay.Editor {
 using UnityEngine;
 using FastPlay.Runtime;
 
+[Icon(""#NODEICON#"")]
 [Title(""#NODETITLE#"")]
 [Subtitle(""#NODESUBTITLE#"")]
 [Path(""Generated/#NODETYPE#/#NODEDISPLAYNAME#"")]
@@ -55,6 +58,18 @@ public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 					GenerateScript();
 				}
 			}
+			if (GUILayout.Button("Generate All")) {
+				int id = 0;
+				foreach (string text in code_list.Values) {
+					string path = Application.dataPath + "/CSGenerated/";
+					using (StreamWriter writer = new StreamWriter(path + code_list.Keys.ToList()[id] + "NSG.cs", true)) {
+						writer.Write(text);
+						writer.Close();
+					}
+					id++;
+				}
+				AssetDatabase.Refresh();
+			}
 
 			scroll = EditorGUILayout.BeginScrollView(scroll);
 			int index = 0;
@@ -76,11 +91,12 @@ public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 			code_list = new Dictionary<string, string>();
 			Type base_type = ReflectionUtils.GetTypeByName(type_name);
 
-			foreach (MethodInfo method in base_type.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly)) {
+			foreach (MethodInfo method in base_type.GetMethods(METHOD_BIND_FLAGS)) {
 				if (method_name.IsNullOrEmpty() || method.Name.ToLower().Contains(method_name.ToLower()) || method.Name.ToLower() == method_name.ToLower()) {
 					bool is_value_node = method.ReturnType != typeof(void);
 					string node_type = "NODETYPE";
 					string node_name = "NODENAME";
+					string icon = GUIReferrer.GetTypeIconName(base_type);
 					string title = "NODETITLE";
 					string subtitle = "NODESUBTITLE";
 					string display_name = "NODESUBTITLE";
@@ -109,15 +125,14 @@ public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 								param_names[id++] = parameter.Name + ".value";
 								string variable = VARIABLE_FORMAT.Replace("#PARAMETERNAME#", parameter.Name);
 								variable = variable.Replace("#PARAMETERTYPE#", parameter.ParameterType.GetTypeName(true, true));
-								variables += "\n\t" + variable;
+								variables += Environment.NewLine + "\t" + variable;
 
 								string port = REGISTER_PORT_FORMAT.Replace("#PARAMETERNAME#", parameter.Name);
 								port = port.Replace("#PARAMETERDISPLAYNAME#", parameter.Name.AddSpacesToSentence());
 								port = port.Replace("#PARAMETERTYPE#", parameter.ParameterType.GetTypeName(true, true));
-								ports += "\n\t\t" + port;
+								ports += Environment.NewLine + "\t\t" + port;
 							}
 						}
-
 
 						title = method.Name;
 						subtitle = node_type;
@@ -132,28 +147,29 @@ public class #NODENAME# : ValueNode<#RETURNTYPE#>, IRegisterPorts {
 							}
 						}
 						else {
-							string target = VARIABLE_FORMAT.Replace("#PARAMETERNAME#", "_target");
+							string target = VARIABLE_FORMAT.Replace("#PARAMETERNAME#", "m_target");
 							target = target.Replace("#PARAMETERTYPE#", base_type.GetTypeName(true, true));
-							variables += "\n\t" + target;
+							variables += Environment.NewLine + "\t" + target;
 
-							string port = REGISTER_PORT_FORMAT.Replace("#PARAMETERNAME#", "this._target");
+							string port = REGISTER_PORT_FORMAT.Replace("#PARAMETERNAME#", "this.m_target");
 							port = port.Replace("#PARAMETERDISPLAYNAME#", "target");
 							port = port.Replace("#PARAMETERTYPE#", base_type.GetTypeName(true, true));
-							ports += "\n\t\t" + port;
+							ports += Environment.NewLine + "\t\t" + port;
 
 							if (method.IsSpecialName) {
-								method_invoke = string.Format("{0}.{1}", "this._target.value", method.Name);
+								method_invoke = string.Format("{0}.{1}", "this.m_target.value", method.Name);
 								method_invoke = method_invoke.Replace("get_", string.Empty);
 							}
 							else {
-								method_invoke = string.Format("{0}.{1}({2})", "this._target.value", method.Name, string.Join(",", param_names));
+								method_invoke = string.Format("{0}.{1}({2})", "this.m_target.value", method.Name, string.Join(",", param_names));
 							}
 						}
 					}
 
 					code = code.Replace("#NODETYPE#", node_type);
-					code = code.Replace("#NODENAME#", node_name);
+					code = code.Replace("#NODENAME#", node_name + "NSG");
 					code = code.Replace("#NODEDISPLAYNAME#", display_name);
+					code = code.Replace("#NODEICON#", icon);
 					code = code.Replace("#NODETITLE#", title);
 					code = code.Replace("#NODESUBTITLE#", subtitle);
 

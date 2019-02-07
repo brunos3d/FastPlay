@@ -71,10 +71,10 @@ namespace OdinSerializer
         }
 
         /// <summary>
-        /// Gets or sets the debug current_context. This value is never null; if set to null, a new default instance of <see cref="DebugContext"/> will be created upon the next get.
+        /// Gets or sets the debug context. This value is never null; if set to null, a new default instance of <see cref="DebugContext"/> will be created upon the next get.
         /// </summary>
         /// <value>
-        /// The debug current_context.
+        /// The debug context.
         /// </value>
         public DebugContext DebugContext
         {
@@ -120,7 +120,7 @@ namespace OdinSerializer
     }
 
     /// <summary>
-    /// Defines a current_context for debugging and logging during serialization and deserialization. This class is thread-safe.
+    /// Defines a context for debugging and logging during serialization and deserialization. This class is thread-safe.
     /// </summary>
     public sealed class DebugContext
     {

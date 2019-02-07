@@ -1,9 +1,6 @@
-using System;
-using UnityEngine;
-
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("Application Icon")]
+	[Icon("application_quit")]
 	[Title("OnApplicationQuit")]
 	[Path("Events/Application/OnApplicationQuit")]
 	[Summary("Sent to all game objects before the application quits.")]

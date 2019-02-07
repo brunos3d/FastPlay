@@ -48,16 +48,16 @@ namespace OdinSerializer
             if (constructor != null)
             {
                 // TODO: Fancy compiled delegate
-                ISerializableConstructor = (info, current_context) =>
+                ISerializableConstructor = (info, context) =>
                 {
                     T obj = (T)FormatterServices.GetUninitializedObject(typeof(T));
-                    constructor.Invoke(obj, new object[] { info, current_context });
+                    constructor.Invoke(obj, new object[] { info, context });
                     return obj;
                 };
             }
             else
             {
-                DefaultLoggers.DefaultLogger.LogWarning("Type " + typeof(T).Name + " implements the interface ISerializable but does not implement the required constructor with signature " + typeof(T).Name + "(SerializationInfo info, StreamingContext current_context). The interface declaration will be ignored, and the formatter fallbacks to reflection.");
+                DefaultLoggers.DefaultLogger.LogWarning("Type " + typeof(T).Name + " implements the interface ISerializable but does not implement the required constructor with signature " + typeof(T).Name + "(SerializationInfo info, StreamingContext context). The interface declaration will be ignored, and the formatter fallbacks to reflection.");
                 ReflectionFormatter = new ReflectionFormatter<T>();
             }
         }
@@ -91,7 +91,7 @@ namespace OdinSerializer
                     {
                         value = SerializableFormatter<T>.ISerializableConstructor(info, reader.Context.StreamingContext);
 
-                        this.InvokeOnDeserializingCallbacks(value, reader.Context);
+                        this.InvokeOnDeserializingCallbacks(ref value, reader.Context);
 
                         if (IsValueType == false)
                         {
@@ -110,7 +110,7 @@ namespace OdinSerializer
             {
                 value = ReflectionFormatter.Deserialize(reader);
 
-                this.InvokeOnDeserializingCallbacks(value, reader.Context);
+                this.InvokeOnDeserializingCallbacks(ref value, reader.Context);
 
                 if (IsValueType == false)
                 {
@@ -149,7 +149,7 @@ namespace OdinSerializer
         }
 
         /// <summary>
-        /// Creates and reads into a <see cref="SerializationInfo" /> instance using a given reader and current_context.
+        /// Creates and reads into a <see cref="SerializationInfo" /> instance using a given reader and context.
         /// </summary>
         /// <param name="reader">The reader to use.</param>
         /// <returns>
@@ -178,7 +178,7 @@ namespace OdinSerializer
                         {
                             string typeName;
                             reader.ReadString(out typeName);
-                            type = reader.Binder.BindToType(typeName, reader.Context.Config.DebugContext);
+                            type = reader.Context.Binder.BindToType(typeName, reader.Context.Config.DebugContext);
                         }
 
                         if (type == null)
@@ -220,7 +220,7 @@ namespace OdinSerializer
                 {
                     try
                     {
-                        writer.WriteString("type", writer.Binder.BindToName(entry.ObjectType, writer.Context.Config.DebugContext));
+                        writer.WriteString("type", writer.Context.Binder.BindToName(entry.ObjectType, writer.Context.Config.DebugContext));
                         var readerWriter = Serializer.Get(entry.ObjectType);
                         readerWriter.WriteValueWeak(entry.Name, entry.Value, writer);
                     }

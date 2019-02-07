@@ -55,11 +55,13 @@ namespace FastPlay.Editor {
 
 		private const float WINDOW_FOOT_OFFSET = 10.0f;
 
-		private const float ELEMENT_LIST_HEIGHT = 50.0f;
+		private const string PREFS_ELEMENT_SIZE_SLIDER = "FastPlay: ASW ElementSize Slider";
 
 		private const BindingFlags METHOD_BIND_FLAGS = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
 
 		private readonly Color FOCUS_COLOR = new Color(62.0f / 255.0f, 95.0f / 255.0f, 150.0f / 255.0f);
+
+		private readonly Color STRIP_COLOR = new Color(0.205f, 0.205f, 0.205f);
 
 		private readonly string[] TIPS = new string[] {
 			"FastPlay visual scripting...",
@@ -86,7 +88,11 @@ namespace FastPlay.Editor {
 
 		private bool enable_layout;
 
+		private bool enable_scroll;
+
 		private float scroll_pos;
+
+		private float element_list_height = 35;
 
 		public int selected_index;
 
@@ -113,6 +119,15 @@ namespace FastPlay.Editor {
 		public TreeNode<Act> selected_node;
 
 		public readonly List<TreeNode<Act>> parents = new List<TreeNode<Act>>();
+
+		public float sliderValue {
+			get {
+				return EditorPrefs.GetFloat(PREFS_ELEMENT_SIZE_SLIDER, 35);
+			}
+			set {
+				EditorPrefs.SetFloat(PREFS_ELEMENT_SIZE_SLIDER, value);
+			}
+		}
 
 		public string searchFormat {
 			get {
@@ -172,6 +187,7 @@ namespace FastPlay.Editor {
 			if (styles == null) {
 				styles = new Styles();
 			}
+			element_list_height = sliderValue;
 			auto_type = FindObjectOfType<AutoTypeInstance>() ?? CreateInstance<AutoTypeInstance>();
 			auto_type.Init(6, 3.0f, false, TIPS);
 			need_refocus = true;
@@ -197,7 +213,7 @@ namespace FastPlay.Editor {
 
 			GUI.Box(new Rect(0.0f, 0.0f, base.position.width, base.position.height), GUIContent.none, styles.background);
 
-			view_element_capacity = (int)((position.height - (WINDOW_HEAD_HEIGHT + WINDOW_FOOT_OFFSET)) / ELEMENT_LIST_HEIGHT);
+			view_element_capacity = (int)((position.height - (WINDOW_HEAD_HEIGHT + WINDOW_FOOT_OFFSET)) / element_list_height);
 
 			KeyboardInputGUI();
 
@@ -267,14 +283,17 @@ namespace FastPlay.Editor {
 
 			int current_tree_count = current_tree.Count;
 
-			if (view_element_capacity < current_tree_count) {
-				scroll_pos = GUI.VerticalScrollbar(new Rect(position.width - 17.0f, WINDOW_HEAD_HEIGHT, 20.0f, view_element_capacity * ELEMENT_LIST_HEIGHT), scroll_pos, 1.0f, 0.0f, current_tree_count - view_element_capacity + 1);
+			enable_scroll = view_element_capacity < current_tree_count;
+
+			if (enable_scroll) {
+				scroll_pos = GUI.VerticalScrollbar(new Rect(position.width - 17.0f, WINDOW_HEAD_HEIGHT, 20.0f, view_element_capacity * element_list_height), scroll_pos, 1.0f, 0.0f, current_tree_count - view_element_capacity + 1);
 			}
 			else {
 				scroll_pos = 0.0f;
 			}
-
 			scroll_pos = Mathf.Clamp(scroll_pos, 0.0f, current_tree_count);
+
+			sliderValue = FPMath.SnapValue(GUI.HorizontalSlider(new Rect(position.width - 60.0f, 50.0f, 50.0f, 20.0f), sliderValue, 25, 50), 5);
 
 			PreInputGUI();
 
@@ -288,7 +307,11 @@ namespace FastPlay.Editor {
 			for (int id = first_scroll_index; id < last_scroll_index; id++) {
 				bool selected = false;
 				TreeNode<Act> node = current_tree[id];
-				Rect layout_rect = new Rect(1.0f, WINDOW_HEAD_HEIGHT + draw_index * ELEMENT_LIST_HEIGHT, position.width - 22.0f, ELEMENT_LIST_HEIGHT);
+				Rect layout_rect = new Rect(1.0f, WINDOW_HEAD_HEIGHT + draw_index * element_list_height, position.width - (enable_scroll ? 19.0f : 2.0f), element_list_height);
+				if (id % 2 == 1) {
+					Rect strip_rect = new Rect(1.0f, WINDOW_HEAD_HEIGHT + draw_index * element_list_height, position.width - (enable_scroll ? 19.0f : 2.0f), element_list_height);
+					EditorGUI.DrawRect(strip_rect, STRIP_COLOR);
+				}
 
 				//Draw Selection Box
 				if (selected_index == draw_index + first_scroll_index || (Event.current.type == EventType.MouseMove && layout_rect.Contains(Event.current.mousePosition))) {
@@ -390,6 +413,12 @@ namespace FastPlay.Editor {
 
 			keyboard_pressed = false;
 			switch (current.type) {
+				case EventType.MouseUp:
+					if (element_list_height != sliderValue) {
+						element_list_height = sliderValue;
+						RecalculateSize();
+					}
+					break;
 				case EventType.ValidateCommand:
 					switch (Event.current.commandName) {
 						case ("SelectAll"):
@@ -557,7 +586,7 @@ namespace FastPlay.Editor {
 					break;
 				case EventType.MouseDrag:
 					drag_scroll = true;
-					scroll_pos -= current.delta.y / ELEMENT_LIST_HEIGHT;
+					scroll_pos -= current.delta.y / element_list_height;
 					current.Use();
 					break;
 			}
@@ -583,21 +612,25 @@ namespace FastPlay.Editor {
 			Rect layout_rect = new Rect(rect);
 			bool trigger = GUI.Button(layout_rect, string.Empty, styles.label);
 
-			Rect icon_rect = new Rect(layout_rect.x + 10.0f, layout_rect.y, ELEMENT_LIST_HEIGHT, ELEMENT_LIST_HEIGHT);
-			Rect title_rect = new Rect(55.0f, layout_rect.y, layout_rect.width - 60.0f, layout_rect.height);
+			Rect icon_rect = new Rect(layout_rect.x + 10.0f, layout_rect.y, element_list_height, element_list_height);
+			Rect title_rect = new Rect(element_list_height + 5.0f, layout_rect.y, layout_rect.width - element_list_height - 10.0f, layout_rect.height);
 			Rect subtitle_rect = new Rect(title_rect);
 
 			GUI.Label(icon_rect, content.image);
 			if (!searchFormat.IsNullOrEmpty()) {
 				string title = content.text.Replace(searchFormat, string.Format("<color=#ffff00ff><b>{0}</b></color>", searchFormat));
-				string subtitle = content.tooltip.Replace(searchFormat, string.Format("<color=#ffff00ff><b>{0}</b></color>", searchFormat));
-
 				EditorGUI.LabelField(title_rect, title, selected ? styles.on_search_title_item : styles.search_title_item);
-				EditorGUI.LabelField(subtitle_rect, subtitle, selected ? styles.on_search_description_item : styles.search_description_item);
+
+				if (sliderValue > 30) {
+					string subtitle = content.tooltip.Replace(searchFormat, string.Format("<color=#ffff00ff><b>{0}</b></color>", searchFormat));
+					EditorGUI.LabelField(subtitle_rect, subtitle, selected ? styles.on_search_description_item : styles.search_description_item);
+				}
 			}
 			else {
 				EditorGUI.LabelField(title_rect, content.text, selected ? styles.on_search_title_item : styles.search_title_item);
-				EditorGUI.LabelField(subtitle_rect, content.tooltip, selected ? styles.on_search_description_item : styles.search_description_item);
+				if (sliderValue > 30) {
+					EditorGUI.LabelField(subtitle_rect, content.tooltip, selected ? styles.on_search_description_item : styles.search_description_item);
+				}
 			}
 
 			return !drag_scroll && trigger;
@@ -656,6 +689,7 @@ namespace FastPlay.Editor {
 		}
 
 		void RecalculateSize() {
+			enable_layout = false;
 			float width = 0.0f;
 			foreach (TreeNode<Act> node in current_tree) {
 				float tags_width = 0.0f;
@@ -666,7 +700,7 @@ namespace FastPlay.Editor {
 			}
 			width = Mathf.Max(Screen.currentResolution.width / 2.0f, width);
 			Vector2 pos = new Vector2(Screen.currentResolution.width / 2.0f - width / 2.0f, 120.0f);
-			Vector2 size = new Vector2(width, Mathf.Min(WINDOW_HEAD_HEIGHT + (current_tree.Count * ELEMENT_LIST_HEIGHT) + WINDOW_FOOT_OFFSET, Screen.currentResolution.height - 200.0f));
+			Vector2 size = new Vector2(width, Mathf.Min(WINDOW_HEAD_HEIGHT + (current_tree.Count * element_list_height) + WINDOW_FOOT_OFFSET, Screen.currentResolution.height - 200.0f));
 
 			position = new Rect(pos, size);
 		}
@@ -688,7 +722,7 @@ namespace FastPlay.Editor {
 				root_tree.AddChildByPath(new GUIContent(string.Format("Local Variables/{0} : {1}", param.name, param.valueType.GetTypeName(true, true)), icon), () => { AddCustomNode(args); });
 			}
 
-			TreeNode<Act> codebase = root_tree.AddChild(new GUIContent("Codebase", EditorUtils.FindAssetByName<Texture>("Codebase Icon")), null);
+			TreeNode<Act> codebase = root_tree.AddChild(new GUIContent("Codebase", EditorUtils.FindAssetByName<Texture>("cog")), null);
 
 			foreach (Type type in built_in_nodes) {
 				Texture icon = icons[type];
@@ -698,8 +732,7 @@ namespace FastPlay.Editor {
 				PathAttribute path_attribute = type.GetAttribute<PathAttribute>(false);
 
 				if (type.IsGenericType) {
-					IEnumerable<Type> types = type.TryGetGenericParameterConstraints() ?? (IEnumerable<Type>)current_types;
-					foreach (Type t in types) {
+					foreach (Type t in current_types) {
 						Type type_gen = type.MakeGenericType(t);
 						string type_gen_name = type_gen.GetTypeName();
 
@@ -723,17 +756,23 @@ namespace FastPlay.Editor {
 							path = "References/" + path;
 						}
 						List<string> tags = new List<string>();
-						if (type.IsSubclassOf(typeof(EventNode))) {
-							tags.Add("EventNode");
+						TagsAttribute tags_flag = type_gen.GetAttribute<TagsAttribute>(false);
+						if (tags_flag == null) {
+							if (type.IsSubclassOf(typeof(EventNode))) {
+								tags.Add("EventNode");
+							}
+							if (type.IsSubclassOf(typeof(ActionNode))) {
+								tags.Add("ActionNode");
+							}
+							if (type.IsSubclassOf(typeof(ValueNode))) {
+								tags.Add("ValueNode");
+							}
+							if (type_gen.IsGenericType) {
+								tags = tags.Concat(type_gen.GetGenericArguments().Select(gen_arg => gen_arg.GetTypeName(false, true))).ToList();
+							}
 						}
-						if (type.IsSubclassOf(typeof(ActionNode))) {
-							tags.Add("ActionNode");
-						}
-						if (type.IsSubclassOf(typeof(ValueNode))) {
-							tags.Add("ValueNode");
-						}
-						if (type_gen.IsGenericType) {
-							tags = tags.Concat(type_gen.GetGenericArguments().Select(gen_arg => gen_arg.GetTypeName(false, true))).ToList();
+						else {
+							tags = tags_flag.tags.ToList();
 						}
 						root_tree.AddChildByPath(new GUIContent(path, icon, type_descritpion), () => { AddNode(type_gen); }, tags.ToArray());
 					}
@@ -757,25 +796,33 @@ namespace FastPlay.Editor {
 						path = "References/" + path;
 					}
 					List<string> tags = new List<string>();
-					if (type.IsSubclassOf(typeof(EventNode))) {
-						tags.Add("EventNode");
+					TagsAttribute tags_flag = type.GetAttribute<TagsAttribute>(false);
+					if (tags_flag == null) {
+						if (type.IsSubclassOf(typeof(EventNode))) {
+							tags.Add("EventNode");
+						}
+						if (type.IsSubclassOf(typeof(ActionNode))) {
+							tags.Add("ActionNode");
+						}
+						if (type.IsSubclassOf(typeof(ValueNode))) {
+							tags.Add("ValueNode");
+						}
+						if (type.IsGenericType) {
+							tags = tags.Concat(type.GetGenericArguments().Select(gen_arg => gen_arg.GetTypeName(false, true))).ToList();
+						}
+						Type base_type = type;
+						while (!base_type.IsGenericType) {
+							if (base_type.BaseType == null) break;
+							base_type = base_type.BaseType;
+						}
+						if (base_type.IsGenericType) {
+							tags = tags.Concat(base_type.GetGenericArguments().Select(gen_arg => gen_arg.GetTypeName(false, true))).ToList();
+						}
 					}
-					if (type.IsSubclassOf(typeof(ActionNode))) {
-						tags.Add("ActionNode");
-					}
-					if (type.IsSubclassOf(typeof(ValueNode))) {
-						tags.Add("ValueNode");
-					}
-					Type base_type = type;
-					while (!base_type.IsGenericType) {
-						if (base_type.BaseType == null) break;
-						base_type = base_type.BaseType;
-					}
-					if (base_type.IsGenericType) {
-						tags = tags.Concat(base_type.GetGenericArguments().Select(gen_arg => gen_arg.GetTypeName(false, true))).ToList();
+					else {
+						tags = tags_flag.tags.ToList();
 					}
 					root_tree.AddChildByPath(new GUIContent(path, icon, type_descritpion), () => { AddNode(type); }, tags.ToArray());
-
 				}
 			}
 			//reflected nodes
@@ -796,8 +843,7 @@ namespace FastPlay.Editor {
 				}
 
 				if (type.IsGenericType) {
-					IEnumerable<Type> types = type.TryGetGenericParameterConstraints() ?? (IEnumerable<Type>)current_types;
-					foreach (Type t in types) {
+					foreach (Type t in current_types) {
 						Type type_gen = type.MakeGenericType(t);
 						string type_gen_name = type_gen.GetTypeName();
 
@@ -823,6 +869,10 @@ namespace FastPlay.Editor {
 
 						//Literal Nodes
 						if (!type_gen.IsStatic()) {
+							if (type_gen.IsValueType) {
+								Type const_node_type = typeof(ConstructorNode<>).MakeGenericType(type_gen);
+								type_tree.AddChildByPath(new GUIContent(string.Format("{0}/new {0}", type_gen_name), icon), () => { AddNode(const_node_type); }, "ConstructorNode");
+							}
 							Type literal_node_type = typeof(LiteralNode<>).MakeGenericType(type_gen);
 							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Literal {0}", type_gen_name), icon), () => { AddNode(literal_node_type); }, "LiteralNode");
 						}
@@ -840,10 +890,9 @@ namespace FastPlay.Editor {
 				else {
 					MethodInfo[] methods = type.GetMethods(METHOD_BIND_FLAGS).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
 					foreach (MethodInfo method in methods.Where(m => m.DeclaringType != type)) {
-						TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("Inherited/{0}", method.Name), icon, method.GetDescription()), null);
 						if (method.IsGenericMethod) {
-							IEnumerable<Type> method_param_types = method.GetParameters().Select(p => p.ParameterType);
-							foreach (Type t in method_param_types) {
+							TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("Inherited/{0}", method.Name), icon, method.GetDescription()), null);
+							foreach (Type t in current_types) {
 								MethodInfo method_gen = method.MakeGenericMethod(t);
 								List<string> tags = new List<string>();
 								tags.Add(method.IsStatic ? "Static" : "Instance");
@@ -865,9 +914,8 @@ namespace FastPlay.Editor {
 					}
 					foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
 						if (method.IsGenericMethod) {
-							IEnumerable<Type> method_param_types = method.GetParameters().Select(p => p.ParameterType);
 							TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("Properties/{0}", method.Name), icon, method.GetDescription()), null);
-							foreach (Type t in method_param_types) {
+							foreach (Type t in current_types) {
 								MethodInfo method_gen = method.MakeGenericMethod(t);
 								List<string> tags = new List<string>();
 								tags.Add(method.IsStatic ? "Static" : "Instance");
@@ -890,15 +938,18 @@ namespace FastPlay.Editor {
 
 					//Literal Nodes
 					if (!type.IsStatic()) {
+						if (type.IsValueType) {
+							Type const_node_type = typeof(ConstructorNode<>).MakeGenericType(type);
+							type_tree.AddChildByPath(new GUIContent(string.Format("new {0}", type_name), icon), () => { AddNode(const_node_type); }, "ConstructorNode");
+						}
 						Type literal_node_type = typeof(LiteralNode<>).MakeGenericType(type);
 						type_tree.AddChildByPath(new GUIContent(string.Format("Literal {0}", type_name), icon), () => { AddNode(literal_node_type); }, "LiteralNode");
 					}
 
 					foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)) {
 						if (method.IsGenericMethod) {
-							IEnumerable<Type> method_param_types = method.GetParameters().Select(p => p.ParameterType);
 							TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("{0}", method.Name), icon, method.GetDescription()), null);
-							foreach (Type t in method_param_types) {
+							foreach (Type t in current_types) {
 								MethodInfo method_gen = method.MakeGenericMethod(t);
 								List<string> tags = new List<string>();
 								tags.Add(method.IsStatic ? "Static" : "Instance");

@@ -71,7 +71,6 @@ namespace FastPlay.Runtime {
 			DoCollisionExit2D = null;
 			DoCollisionStay = null;
 			DoCollisionStay2D = null;
-			DoConnectedToServer = null;
 			DoControllerColliderHit = null;
 			DoDestroy = null;
 			DoFixedUpdate = null;
@@ -94,7 +93,6 @@ namespace FastPlay.Runtime {
 			DoRectTransformRemoved = null;
 			DoRenderImage = null;
 			DoRenderObject = null;
-			DoServerInitialized = null;
 			DoTransformChildrenChanged = null;
 			DoTransformParentChanged = null;
 			DoTriggerEnter = null;
@@ -108,6 +106,8 @@ namespace FastPlay.Runtime {
 			DoMouseUpAsButton = null;
 
 #if !(UNITY_2018 || UNITY_2018_OR_NEWER || UNITY_2018_2)
+			DoServerInitialized = null;
+			DoConnectedToServer = null;
 			DoDisconnectedFromMasterServer = null;
 			DoDisconnectedFromServer = null;
 			DoFailedToConnect = null;
@@ -250,8 +250,6 @@ namespace FastPlay.Runtime {
 
 		public event Action<Collision2D> DoCollisionStay2D;
 
-		public event Action DoConnectedToServer;
-
 		public event Action<ControllerColliderHit> DoControllerColliderHit;
 
 		public event Action DoGUI;
@@ -292,8 +290,6 @@ namespace FastPlay.Runtime {
 
 		public event Action DoRenderObject;
 
-		public event Action DoServerInitialized;
-
 		public event Action DoTransformChildrenChanged;
 
 		public event Action DoTransformParentChanged;
@@ -312,7 +308,12 @@ namespace FastPlay.Runtime {
 
 		public event Action DoWillRenderObject;
 
-#if !(UNITY_2018 || UNITY_2018_OR_NEWER || UNITY_2018_2)
+#if !(UNITY_2018_OR_NEWER || UNITY_2018 || UNITY_2018_2)
+
+		public event Action DoServerInitialized;
+
+		public event Action DoConnectedToServer;
+
 		public event Action<NetworkDisconnection> DoDisconnectedFromMasterServer;
 
 		public event Action<NetworkDisconnection> DoDisconnectedFromServer;
@@ -331,6 +332,25 @@ namespace FastPlay.Runtime {
 
 		public event Action<BitStream, NetworkMessageInfo> DoSerializeNetworkView;
 
+		public void OnServerInitialized() {
+#if UNITY_EDITOR
+			if (!Application.isPlaying) return;
+#endif
+			if (DoServerInitialized != null) {
+				SetThisCurrent();
+				DoServerInitialized();
+			}
+		}
+
+		public void OnConnectedToServer() {
+#if UNITY_EDITOR
+			if (!Application.isPlaying) return;
+#endif
+			if (DoConnectedToServer != null) {
+				SetThisCurrent();
+				DoConnectedToServer();
+			}
+		}
 
 		public void OnDisconnectedFromMasterServer(NetworkDisconnection info) {
 #if UNITY_EDITOR
@@ -587,16 +607,6 @@ namespace FastPlay.Runtime {
 			}
 		}
 
-		public void OnConnectedToServer() {
-#if UNITY_EDITOR
-			if (!Application.isPlaying) return;
-#endif
-			if (DoConnectedToServer != null) {
-				SetThisCurrent();
-				DoConnectedToServer();
-			}
-		}
-
 		public void OnControllerColliderHit(ControllerColliderHit hit) {
 #if UNITY_EDITOR
 			if (!Application.isPlaying) return;
@@ -796,16 +806,6 @@ namespace FastPlay.Runtime {
 			if (DoRenderObject != null) {
 				SetThisCurrent();
 				DoRenderObject();
-			}
-		}
-
-		public void OnServerInitialized() {
-#if UNITY_EDITOR
-			if (!Application.isPlaying) return;
-#endif
-			if (DoServerInitialized != null) {
-				SetThisCurrent();
-				DoServerInitialized();
 			}
 		}
 

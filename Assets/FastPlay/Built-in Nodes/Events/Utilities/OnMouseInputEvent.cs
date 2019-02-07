@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("Mouse Icon")]
+	[Icon("mouse_select_left")]
 	[Title("OnMouseInput")]
 	[Path("Events/Utilities/OnMouseInput")]
 	public class OnMouseInputEvent : EventNode, IUpdate, IRegisterPorts {

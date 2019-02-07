@@ -59,7 +59,7 @@ namespace OdinSerializer
                 this.RegisterReferenceID(value, reader);
 
                 // There aren't any OnDeserializing callbacks on arrays.
-                // Hence we don't invoke this.InvokeOnDeserializingCallbacks(value, reader, current_context);
+                // Hence we don't invoke this.InvokeOnDeserializingCallbacks(value, reader, context);
                 for (int i = 0; i < length; i++)
                 {
                     if (reader.PeekEntry(out name) == EntryType.EndOfArray)

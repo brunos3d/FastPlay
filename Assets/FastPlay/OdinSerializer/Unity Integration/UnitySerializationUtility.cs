@@ -375,7 +375,7 @@ namespace OdinSerializer
         /// <summary>
         /// Not yet documented.
         /// </summary>
-        public static void SerializeUnityObject(UnityEngine.Object unityObject, ref SerializationData data, bool serializeUnityFields = false, SerializationContext current_context = null)
+        public static void SerializeUnityObject(UnityEngine.Object unityObject, ref SerializationData data, bool serializeUnityFields = false, SerializationContext context = null)
         {
             if (unityObject == null)
             {
@@ -406,7 +406,7 @@ namespace OdinSerializer
                 bool pretendIsPlayer = Application.isPlaying && !UnityEditor.AssetDatabase.Contains(unityObject);
 
                 //
-                // Look through a stack trace to determine some things about the current serialization current_context.
+                // Look through a stack trace to determine some things about the current serialization context.
                 // For example, we check if we are currently building a player, or if we are currently recording prefab instance property modifications.
                 // This is pretty hacky, but as far as we can tell it's the only way to do it.
                 //
@@ -719,9 +719,9 @@ namespace OdinSerializer
                     {
                         serializationPolicy = policyOverride.SerializationPolicy ?? SerializationPolicies.Unity;
 
-                        if (current_context != null)
+                        if (context != null)
                         {
-                            current_context.Config.SerializationPolicy = serializationPolicy;
+                            context.Config.SerializationPolicy = serializationPolicy;
                         }
 
                         serializeUnityFields = policyOverride.OdinSerializesUnityFields;
@@ -738,7 +738,7 @@ namespace OdinSerializer
                         format = DataFormat.Binary;
                     }
 
-                    UnitySerializationUtility.SerializeUnityObject(unityObject, ref data.SerializedBytes, ref data.ReferencedUnityObjects, format, serializeUnityFields, current_context);
+                    UnitySerializationUtility.SerializeUnityObject(unityObject, ref data.SerializedBytes, ref data.ReferencedUnityObjects, format, serializeUnityFields, context);
                     data.SerializedFormat = format;
                 }
                 else
@@ -746,12 +746,19 @@ namespace OdinSerializer
                     if (format == DataFormat.Nodes)
                     {
                         // Special case for node format
-                        if (current_context == null)
+                        if (context == null)
                         {
                             using (var newContext = Cache<SerializationContext>.Claim())
                             using (var writer = new SerializationNodeDataWriter(newContext))
                             using (var resolver = Cache<UnityReferenceResolver>.Claim())
                             {
+                                if (data.SerializationNodes != null)
+                                {
+                                    // Reuse pre-expanded list to keep GC down
+                                    data.SerializationNodes.Clear();
+                                    writer.Nodes = data.SerializationNodes;
+                                }
+
                                 resolver.Value.SetReferencedUnityObjects(data.ReferencedUnityObjects);
 
                                 newContext.Value.Config.SerializationPolicy = serializationPolicy;
@@ -766,11 +773,18 @@ namespace OdinSerializer
                         }
                         else
                         {
-                            using (var writer = new SerializationNodeDataWriter(current_context))
+                            using (var writer = new SerializationNodeDataWriter(context))
                             using (var resolver = Cache<UnityReferenceResolver>.Claim())
                             {
+                                if (data.SerializationNodes != null)
+                                {
+                                    // Reuse pre-expanded list to keep GC down
+                                    data.SerializationNodes.Clear();
+                                    writer.Nodes = data.SerializationNodes;
+                                }
+
                                 resolver.Value.SetReferencedUnityObjects(data.ReferencedUnityObjects);
-                                current_context.IndexReferenceResolver = resolver.Value;
+                                context.IndexReferenceResolver = resolver.Value;
 
                                 UnitySerializationUtility.SerializeUnityObject(unityObject, writer, serializeUnityFields);
                                 data.SerializationNodes = writer.Nodes;
@@ -780,7 +794,7 @@ namespace OdinSerializer
                     }
                     else
                     {
-                        UnitySerializationUtility.SerializeUnityObject(unityObject, ref data.SerializedBytesString, ref data.ReferencedUnityObjects, format, serializeUnityFields, current_context);
+                        UnitySerializationUtility.SerializeUnityObject(unityObject, ref data.SerializedBytesString, ref data.ReferencedUnityObjects, format, serializeUnityFields, context);
                     }
 
                     data.SerializedFormat = format;
@@ -957,17 +971,17 @@ namespace OdinSerializer
         /// <summary>
         /// Not yet documented.
         /// </summary>
-        public static void SerializeUnityObject(UnityEngine.Object unityObject, ref string base64Bytes, ref List<UnityEngine.Object> referencedUnityObjects, DataFormat format, bool serializeUnityFields = false, SerializationContext current_context = null)
+        public static void SerializeUnityObject(UnityEngine.Object unityObject, ref string base64Bytes, ref List<UnityEngine.Object> referencedUnityObjects, DataFormat format, bool serializeUnityFields = false, SerializationContext context = null)
         {
             byte[] bytes = null;
-            SerializeUnityObject(unityObject, ref bytes, ref referencedUnityObjects, format, serializeUnityFields, current_context);
+            SerializeUnityObject(unityObject, ref bytes, ref referencedUnityObjects, format, serializeUnityFields, context);
             base64Bytes = Convert.ToBase64String(bytes);
         }
 
         /// <summary>
         /// Not yet documented.
         /// </summary>
-        public static void SerializeUnityObject(UnityEngine.Object unityObject, ref byte[] bytes, ref List<UnityEngine.Object> referencedUnityObjects, DataFormat format, bool serializeUnityFields = false, SerializationContext current_context = null)
+        public static void SerializeUnityObject(UnityEngine.Object unityObject, ref byte[] bytes, ref List<UnityEngine.Object> referencedUnityObjects, DataFormat format, bool serializeUnityFields = false, SerializationContext context = null)
         {
             if (unityObject == null)
             {
@@ -994,10 +1008,10 @@ namespace OdinSerializer
             {
                 resolver.Value.SetReferencedUnityObjects(referencedUnityObjects);
 
-                if (current_context != null)
+                if (context != null)
                 {
-                    current_context.IndexReferenceResolver = resolver.Value;
-                    SerializeUnityObject(unityObject, GetCachedUnityWriter(format, stream.Value.MemoryStream, current_context), serializeUnityFields);
+                    context.IndexReferenceResolver = resolver.Value;
+                    SerializeUnityObject(unityObject, GetCachedUnityWriter(format, stream.Value.MemoryStream, context), serializeUnityFields);
                 }
                 else
                 {
@@ -1127,17 +1141,17 @@ namespace OdinSerializer
         /// <summary>
         /// Not yet documented.
         /// </summary>
-        public static void DeserializeUnityObject(UnityEngine.Object unityObject, ref SerializationData data, DeserializationContext current_context = null)
+        public static void DeserializeUnityObject(UnityEngine.Object unityObject, ref SerializationData data, DeserializationContext context = null)
         {
             //#if UNITY_EDITOR
-            DeserializeUnityObject(unityObject, ref data, current_context, isPrefabData: false, prefabInstanceUnityObjects: null);
+            DeserializeUnityObject(unityObject, ref data, context, isPrefabData: false, prefabInstanceUnityObjects: null);
             //#else
-            //            UnitySerializationUtility.DeserializeUnityObject(unityObject, ref data.SerializedBytes, ref data.ReferencedUnityObjects, data.SerializedFormat, current_context);
+            //            UnitySerializationUtility.DeserializeUnityObject(unityObject, ref data.SerializedBytes, ref data.ReferencedUnityObjects, data.SerializedFormat, context);
             //            data = default(SerializationData); // Free all data for GC
             //#endif
         }
 
-        private static void DeserializeUnityObject(UnityEngine.Object unityObject, ref SerializationData data, DeserializationContext current_context, bool isPrefabData, List<UnityEngine.Object> prefabInstanceUnityObjects)
+        private static void DeserializeUnityObject(UnityEngine.Object unityObject, ref SerializationData data, DeserializationContext context, bool isPrefabData, List<UnityEngine.Object> prefabInstanceUnityObjects)
         {
             if (unityObject == null)
             {
@@ -1229,11 +1243,11 @@ namespace OdinSerializer
                     }
                     catch { }
 
-                    UnitySerializationUtility.DeserializeUnityObject(unityObject, ref data.SerializedBytes, ref data.ReferencedUnityObjects, formatGuess, current_context);
+                    UnitySerializationUtility.DeserializeUnityObject(unityObject, ref data.SerializedBytes, ref data.ReferencedUnityObjects, formatGuess, context);
                 }
                 else
                 {
-                    UnitySerializationUtility.DeserializeUnityObject(unityObject, ref data.SerializedBytes, ref data.ReferencedUnityObjects, data.SerializedFormat, current_context);
+                    UnitySerializationUtility.DeserializeUnityObject(unityObject, ref data.SerializedBytes, ref data.ReferencedUnityObjects, data.SerializedFormat, context);
                 }
 
                 // If there are any prefab modifications, we should *always* apply those
@@ -1245,12 +1259,12 @@ namespace OdinSerializer
 
                 try
                 {
-                    if (current_context == null)
+                    if (context == null)
                     {
                         cachedContext = Cache<DeserializationContext>.Claim();
-                        current_context = cachedContext;
+                        context = cachedContext;
 
-                        current_context.Config.SerializationPolicy = SerializationPolicies.Unity;
+                        context.Config.SerializationPolicy = SerializationPolicies.Unity;
 
                         /* If the config instance is not loaded (it should usually be, but in rare cases
                          * it's not), we must not ask for it, as we are not allowed to load from resources
@@ -1263,16 +1277,16 @@ namespace OdinSerializer
                         if (GlobalSerializationConfig.HasInstanceLoaded)
                         {
                             //Debug.Log("Deserializing " + unityObject.GetType().Name + " WITH loaded!");
-                            current_context.Config.DebugContext.ErrorHandlingPolicy = GlobalSerializationConfig.Instance.ErrorHandlingPolicy;
-                            current_context.Config.DebugContext.LoggingPolicy = GlobalSerializationConfig.Instance.LoggingPolicy;
-                            current_context.Config.DebugContext.Logger = GlobalSerializationConfig.Instance.Logger;
+                            context.Config.DebugContext.ErrorHandlingPolicy = GlobalSerializationConfig.Instance.ErrorHandlingPolicy;
+                            context.Config.DebugContext.LoggingPolicy = GlobalSerializationConfig.Instance.LoggingPolicy;
+                            context.Config.DebugContext.Logger = GlobalSerializationConfig.Instance.Logger;
                         }
                         else
                         {
                             //Debug.Log("Deserializing " + unityObject.GetType().Name + " WITHOUT loaded!");
-                            current_context.Config.DebugContext.ErrorHandlingPolicy = ErrorHandlingPolicy.Resilient;
-                            current_context.Config.DebugContext.LoggingPolicy = LoggingPolicy.LogErrors;
-                            current_context.Config.DebugContext.Logger = DefaultLoggers.UnityLogger;
+                            context.Config.DebugContext.ErrorHandlingPolicy = ErrorHandlingPolicy.Resilient;
+                            context.Config.DebugContext.LoggingPolicy = LoggingPolicy.LogErrors;
+                            context.Config.DebugContext.Logger = DefaultLoggers.UnityLogger;
                         }
                     }
 
@@ -1286,7 +1300,7 @@ namespace OdinSerializer
 
                             if (serializationPolicy != null)
                             {
-                                current_context.Config.SerializationPolicy = serializationPolicy;
+                                context.Config.SerializationPolicy = serializationPolicy;
                             }
                         }
 
@@ -1375,15 +1389,15 @@ namespace OdinSerializer
                                     //
                                     // This case occurs often during editor recompile reloads.
 
-                                    DeserializeUnityObject(unityObject, ref data, current_context, isPrefabData: true, prefabInstanceUnityObjects: data.ReferencedUnityObjects);
+                                    DeserializeUnityObject(unityObject, ref data, context, isPrefabData: true, prefabInstanceUnityObjects: data.ReferencedUnityObjects);
                                 }
                                 else
                                 {
                                     // Deserialize the current object with the prefab's data
-                                    DeserializeUnityObject(unityObject, ref prefabData, current_context, isPrefabData: true, prefabInstanceUnityObjects: data.ReferencedUnityObjects);
+                                    DeserializeUnityObject(unityObject, ref prefabData, context, isPrefabData: true, prefabInstanceUnityObjects: data.ReferencedUnityObjects);
                                 }
 
-                                // Then apply the prefab modifications using the deserialization current_context
+                                // Then apply the prefab modifications using the deserialization context
                                 ApplyPrefabModifications(unityObject, data.PrefabModifications, data.PrefabModificationsReferencedUnityObjects);
 
                                 return; // Buh bye
@@ -1402,11 +1416,11 @@ namespace OdinSerializer
                     if (data.SerializedFormat == DataFormat.Nodes)
                     {
                         // Special case for node format
-                        using (var reader = new SerializationNodeDataReader(current_context))
+                        using (var reader = new SerializationNodeDataReader(context))
                         using (var resolver = Cache<UnityReferenceResolver>.Claim())
                         {
                             resolver.Value.SetReferencedUnityObjects(unityObjects);
-                            current_context.IndexReferenceResolver = resolver.Value;
+                            context.IndexReferenceResolver = resolver.Value;
 
                             reader.Nodes = data.SerializationNodes;
 
@@ -1415,7 +1429,7 @@ namespace OdinSerializer
                     }
                     else
                     {
-                        UnitySerializationUtility.DeserializeUnityObject(unityObject, ref data.SerializedBytesString, ref unityObjects, data.SerializedFormat, current_context);
+                        UnitySerializationUtility.DeserializeUnityObject(unityObject, ref data.SerializedBytesString, ref unityObjects, data.SerializedFormat, context);
                     }
 
                     // We may have a prefab that has had changes applied to it; either way, apply the stored modifications.
@@ -1434,7 +1448,7 @@ namespace OdinSerializer
         /// <summary>
         /// Not yet documented.
         /// </summary>
-        public static void DeserializeUnityObject(UnityEngine.Object unityObject, ref string base64Bytes, ref List<UnityEngine.Object> referencedUnityObjects, DataFormat format, DeserializationContext current_context = null)
+        public static void DeserializeUnityObject(UnityEngine.Object unityObject, ref string base64Bytes, ref List<UnityEngine.Object> referencedUnityObjects, DataFormat format, DeserializationContext context = null)
         {
             if (string.IsNullOrEmpty(base64Bytes))
             {
@@ -1442,13 +1456,13 @@ namespace OdinSerializer
             }
 
             byte[] bytes = Convert.FromBase64String(base64Bytes);
-            DeserializeUnityObject(unityObject, ref bytes, ref referencedUnityObjects, format, current_context);
+            DeserializeUnityObject(unityObject, ref bytes, ref referencedUnityObjects, format, context);
         }
 
         /// <summary>
         /// Not yet documented.
         /// </summary>
-        public static void DeserializeUnityObject(UnityEngine.Object unityObject, ref byte[] bytes, ref List<UnityEngine.Object> referencedUnityObjects, DataFormat format, DeserializationContext current_context = null)
+        public static void DeserializeUnityObject(UnityEngine.Object unityObject, ref byte[] bytes, ref List<UnityEngine.Object> referencedUnityObjects, DataFormat format, DeserializationContext context = null)
         {
             if (unityObject == null)
             {
@@ -1483,10 +1497,10 @@ namespace OdinSerializer
 
                 resolver.Value.SetReferencedUnityObjects(referencedUnityObjects);
 
-                if (current_context != null)
+                if (context != null)
                 {
-                    current_context.IndexReferenceResolver = resolver.Value;
-                    DeserializeUnityObject(unityObject, GetCachedUnityReader(format, stream.Value.MemoryStream, current_context));
+                    context.IndexReferenceResolver = resolver.Value;
+                    DeserializeUnityObject(unityObject, GetCachedUnityReader(format, stream.Value.MemoryStream, context));
                 }
                 else
                 {
@@ -1580,15 +1594,16 @@ namespace OdinSerializer
 
                         try
                         {
-                            if (reader is SerializationNodeDataReader)
-                            {
-                                var nodes = (reader as SerializationNodeDataReader).Nodes;
-                                message += "    Nodes dump: \n\n" + string.Join("\n", nodes.Select(node => "    - Name: " + node.Name + "\n      Entry: " + node.Entry + "\n      Data: " + node.Data).ToArray());
-                            }
-                            else if (reader.Stream is MemoryStream)
-                            {
-                                message += "    Data stream dump (base64): " + ProperBitConverter.BytesToHexString((reader.Stream as MemoryStream).ToArray());
-                            }
+                            message += "    Data dump: " + reader.GetDataDump();
+                            //if (reader is SerializationNodeDataReader)
+                            //{
+                            //    var nodes = (reader as SerializationNodeDataReader).Nodes;
+                            //    message += "    Nodes dump: \n\n" + string.Join("\n", nodes.Select(node => "    - Name: " + node.Name + "\n      Entry: " + node.Entry + "\n      Data: " + node.Data).ToArray());
+                            //}
+                            //else if (reader.Stream is MemoryStream)
+                            //{
+                            //    message += "    Data stream dump (base64): " + ProperBitConverter.BytesToHexString((reader.Stream as MemoryStream).ToArray());
+                            //}
                         }
                         finally
                         {
@@ -1688,9 +1703,9 @@ namespace OdinSerializer
 
             List<string> result = new List<string>();
 
-            using (var current_context = Cache<SerializationContext>.Claim())
+            using (var context = Cache<SerializationContext>.Claim())
             using (var stream = CachedMemoryStream.Claim())
-            using (var writer = (JsonDataWriter)GetCachedUnityWriter(DataFormat.JSON, stream.Value.MemoryStream, current_context))
+            using (var writer = (JsonDataWriter)GetCachedUnityWriter(DataFormat.JSON, stream.Value.MemoryStream, context))
             using (var resolver = Cache<UnityReferenceResolver>.Claim())
             {
                 writer.PrepareNewSerializationSession();
@@ -1791,9 +1806,9 @@ namespace OdinSerializer
                 }
             }
 
-            using (var current_context = Cache<DeserializationContext>.Claim())
+            using (var context = Cache<DeserializationContext>.Claim())
             using (var streamCache = CachedMemoryStream.Claim(longestByteCount))
-            using (var reader = (JsonDataReader)GetCachedUnityReader(DataFormat.JSON, streamCache.Value.MemoryStream, current_context))
+            using (var reader = (JsonDataReader)GetCachedUnityReader(DataFormat.JSON, streamCache.Value.MemoryStream, context))
             using (var resolver = Cache<UnityReferenceResolver>.Claim())
             {
                 var stream = streamCache.Value.MemoryStream;
@@ -2143,37 +2158,53 @@ namespace OdinSerializer
             return result;
         }
 
-        private static IDataWriter GetCachedUnityWriter(DataFormat format, Stream stream, SerializationContext current_context)
+        private static IDataWriter GetCachedUnityWriter(DataFormat format, Stream stream, SerializationContext context)
         {
             IDataWriter writer;
 
             if (UnityWriters.TryGetValue(format, out writer) == false)
             {
-                writer = SerializationUtility.CreateWriter(stream, current_context, format);
+                writer = SerializationUtility.CreateWriter(stream, context, format);
                 UnityWriters.Add(format, writer);
             }
             else
             {
-                writer.Context = current_context;
-                writer.Stream = stream;
+                writer.Context = context;
+
+                if (writer is BinaryDataWriter)
+                {
+                    (writer as BinaryDataWriter).Stream = stream;
+                }
+                else if (writer is JsonDataWriter)
+                {
+                    (writer as JsonDataWriter).Stream = stream;
+                }
             }
 
             return writer;
         }
 
-        private static IDataReader GetCachedUnityReader(DataFormat format, Stream stream, DeserializationContext current_context)
+        private static IDataReader GetCachedUnityReader(DataFormat format, Stream stream, DeserializationContext context)
         {
             IDataReader reader;
 
             if (UnityReaders.TryGetValue(format, out reader) == false)
             {
-                reader = SerializationUtility.CreateReader(stream, current_context, format);
+                reader = SerializationUtility.CreateReader(stream, context, format);
                 UnityReaders.Add(format, reader);
             }
             else
             {
-                reader.Context = current_context;
-                reader.Stream = stream;
+                reader.Context = context;
+
+                if (reader is BinaryDataReader)
+                {
+                    (reader as BinaryDataReader).Stream = stream;
+                }
+                else if (reader is JsonDataReader)
+                {
+                    (reader as JsonDataReader).Stream = stream;
+                }
             }
 
             return reader;

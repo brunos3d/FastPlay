@@ -30,19 +30,19 @@ namespace OdinSerializer
     /// <seealso cref="IDataReader" />
     public abstract class BaseDataReader : BaseDataReaderWriter, IDataReader
     {
-        private DeserializationContext current_context;
+        private DeserializationContext context;
         private Stream stream;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseDataReader" /> class.
         /// </summary>
         /// <param name="stream">The base stream of the reader.</param>
-        /// <param name="current_context">The deserialization current_context to use.</param>
-        /// <exception cref="System.ArgumentNullException">The stream or current_context is null.</exception>
+        /// <param name="context">The deserialization context to use.</param>
+        /// <exception cref="System.ArgumentNullException">The stream or context is null.</exception>
         /// <exception cref="System.ArgumentException">Cannot read from stream.</exception>
-        protected BaseDataReader(Stream stream, DeserializationContext current_context)
+        protected BaseDataReader(Stream stream, DeserializationContext context)
         {
-            this.current_context = current_context;
+            this.context = context;
 
             if (stream != null)
             {
@@ -105,25 +105,25 @@ namespace OdinSerializer
         }
 
         /// <summary>
-        /// Gets the deserialization current_context.
+        /// Gets the deserialization context.
         /// </summary>
         /// <value>
-        /// The deserialization current_context.
+        /// The deserialization context.
         /// </value>
         public DeserializationContext Context
         {
             get
             {
-                if (this.current_context == null)
+                if (this.context == null)
                 {
-                    this.current_context = new DeserializationContext();
+                    this.context = new DeserializationContext();
                 }
 
-                return this.current_context;
+                return this.context;
             }
             set
             {
-                this.current_context = value;
+                this.context = value;
             }
         }
 
@@ -392,7 +392,7 @@ namespace OdinSerializer
         public abstract bool ReadNull();
 
         /// <summary>
-        /// Skips the next entry value, unless it is an <see cref="EntryType.EndOfNode"/> or an <see cref="EntryType.EndOfArray"/>. If the next entry value is an <see cref="EntryType.StartOfNode"/> or an <see cref="EntryType.StartOfArray"/>, all of its contents will be processed, deserialized and registered in the deserialization current_context, so that internal reference values are not lost to entries further down the stream.
+        /// Skips the next entry value, unless it is an <see cref="EntryType.EndOfNode"/> or an <see cref="EntryType.EndOfArray"/>. If the next entry value is an <see cref="EntryType.StartOfNode"/> or an <see cref="EntryType.StartOfArray"/>, all of its contents will be processed, deserialized and registered in the deserialization context, so that internal reference values are not lost to entries further down the stream.
         /// </summary>
         public virtual void SkipEntry()
         {
@@ -410,7 +410,7 @@ namespace OdinSerializer
                 {
                     if (type != null)
                     {
-                        // We have the necessary metadata to read this type, and register all of its reference values (perhaps including itself) in the serialization current_context
+                        // We have the necessary metadata to read this type, and register all of its reference values (perhaps including itself) in the serialization context
                         // Sadly, we have no choice but to risk boxing of structs here
                         // Luckily, this is a rare case
 
@@ -523,6 +523,11 @@ namespace OdinSerializer
         {
             this.ClearNodes();
         }
+
+        /// <summary>
+        /// Gets a dump of the data being read by the writer. The format of this dump varies, but should be useful for debugging purposes.
+        /// </summary>
+        public abstract string GetDataDump();
 
         /// <summary>
         /// Peeks the current entry.

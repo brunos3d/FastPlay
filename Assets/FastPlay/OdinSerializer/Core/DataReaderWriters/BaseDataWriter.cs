@@ -30,19 +30,19 @@ namespace OdinSerializer
     /// <seealso cref="IDataWriter" />
     public abstract class BaseDataWriter : BaseDataReaderWriter, IDataWriter
     {
-        private SerializationContext current_context;
+        private SerializationContext context;
         private Stream stream;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseDataWriter" /> class.
         /// </summary>
         /// <param name="stream">The base stream of the writer.</param>
-        /// <param name="current_context">The serialization current_context to use.</param>
-        /// <exception cref="System.ArgumentNullException">The stream or current_context is null.</exception>
+        /// <param name="context">The serialization context to use.</param>
+        /// <exception cref="System.ArgumentNullException">The stream or context is null.</exception>
         /// <exception cref="System.ArgumentException">Cannot write to the stream.</exception>
-        protected BaseDataWriter(Stream stream, SerializationContext current_context)
+        protected BaseDataWriter(Stream stream, SerializationContext context)
         {
-            this.current_context = current_context;
+            this.context = context;
 
             if (stream != null)
             {
@@ -81,25 +81,25 @@ namespace OdinSerializer
         }
 
         /// <summary>
-        /// Gets the serialization current_context.
+        /// Gets the serialization context.
         /// </summary>
         /// <value>
-        /// The serialization current_context.
+        /// The serialization context.
         /// </value>
         public SerializationContext Context
         {
             get
             {
-                if (this.current_context == null)
+                if (this.context == null)
                 {
-                    this.current_context = new SerializationContext();
+                    this.context = new SerializationContext();
                 }
 
-                return this.current_context;
+                return this.context;
             }
             set
             {
-                this.current_context = value;
+                this.context = value;
             }
         }
 
@@ -306,5 +306,10 @@ namespace OdinSerializer
         {
             this.ClearNodes();
         }
+
+        /// <summary>
+        /// Gets a dump of the data currently written by the writer. The format of this dump varies, but should be useful for debugging purposes.
+        /// </summary>
+        public abstract string GetDataDump();
     }
 }

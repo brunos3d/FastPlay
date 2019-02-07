@@ -3,11 +3,11 @@ using FastPlay.Editor;
 
 namespace FastPlay.Runtime {
 	[HideInList]
-	public class LiteralNode<T> : LiteralNode, IRegisterDefaultPorts {
+	public class LiteralNode<T> : Node, IValueNode, IRegisterDefaultPorts {
 
 		public InputValue<T> value;
 
-		public override Type valueType { get { return typeof(T); } }
+		public Type valueType { get { return typeof(T); } }
 
 		public LiteralNode() { }
 
@@ -17,12 +17,16 @@ namespace FastPlay.Runtime {
 			RegisterOutputValue<T>("Get", OnGetValue);
 		}
 
-		public override object GetValue() {
+		public object GetValue() {
 			return OnGetValue();
 		}
 
 		public virtual T OnGetValue() {
 			return this.value.value;
+		}
+
+		public void SetValue(object value) {
+			this.value.value = (T)value;
 		}
 	}
 }

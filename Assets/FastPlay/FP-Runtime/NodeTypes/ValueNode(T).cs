@@ -2,7 +2,7 @@ using System;
 
 namespace FastPlay.Runtime {
 	[HideInList]
-	public abstract class ValueNode<T> : ValueNode, IRegisterDefaultPorts {
+	public abstract class ValueNode<T> : ValueNode, IValueNode, IRegisterDefaultPorts {
 
 		[NonSerialized]
 		public InputValue<T> value_set;

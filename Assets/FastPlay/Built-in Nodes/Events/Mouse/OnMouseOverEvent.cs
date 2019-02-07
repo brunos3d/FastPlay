@@ -1,9 +1,6 @@
-using System;
-using UnityEngine;
-
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("OnMouseOverEventNode Icon")]
+	[Icon("mouse_over")]
 	[Title("OnMouseOver")]
 	[Path("Events/Mouse/OnMouseOver")]
 	[Summary("Called every frame while the mouse is over the GUIElement or Collider.")]

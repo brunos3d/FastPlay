@@ -1,9 +1,6 @@
-using System;
-using UnityEngine;
-
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("update_event_icon")]
+	[Icon("arrow_repeat")]
 	[Title("LateUpdate")]
 	[Path("Events/Lifecycle/LateUpdate")]
 	[Summary("LateUpdate is called every frame, if the Behaviour is enabled.")]

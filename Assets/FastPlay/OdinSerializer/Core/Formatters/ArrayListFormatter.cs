@@ -66,7 +66,7 @@ namespace OdinSerializer
                     this.RegisterReferenceID(value, reader);
 
                     // There aren't any OnDeserializing callbacks on array lists.
-                    // Hence we don't invoke this.InvokeOnDeserializingCallbacks(value, reader, current_context);
+                    // Hence we don't invoke this.InvokeOnDeserializingCallbacks(value, reader, context);
                     for (int i = 0; i < length; i++)
                     {
                         if (reader.PeekEntry(out name) == EntryType.EndOfArray)
@@ -80,7 +80,7 @@ namespace OdinSerializer
                         if (reader.IsInArrayNode == false)
                         {
                             // Something has gone wrong
-                            reader.Context.Config.DebugContext.LogError("Reading array went wrong at position " + reader.Stream.Position + ".");
+                            reader.Context.Config.DebugContext.LogError("Reading array went wrong. Data dump: " + reader.GetDataDump());
                             break;
                         }
                     }

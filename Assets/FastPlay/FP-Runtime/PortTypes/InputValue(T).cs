@@ -56,6 +56,10 @@ namespace FastPlay.Runtime {
 
 		}
 
+		public GetFilter GetFilterMode() {
+			return get_filter;
+		}
+
 		public object GetValue() {
 			return value;
 		}

@@ -1,6 +1,3 @@
-using System;
-using UnityEngine;
-
 namespace FastPlay.Runtime {
 	[BuiltInNode]
 	[Icon("AudioClip Icon")]

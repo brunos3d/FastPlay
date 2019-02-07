@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("delayed_update_event_node")]
+	[Icon("arrow_repeat_seconds")]
 	[Title("DelayedUpdate")]
 	[Path("Events/Utilities/DelayedUpdate")]
 	public class DelayedUpdateEvent : EventNode, IUpdate, IRegisterPorts {

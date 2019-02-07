@@ -123,7 +123,7 @@ namespace OdinSerializer
         /// Bind a type to a name.
         /// </summary>
         /// <param name="type">The type to bind.</param>
-        /// <param name="debugContext">The debug current_context to log to.</param>
+        /// <param name="debugContext">The debug context to log to.</param>
         /// <returns>
         /// The name that the type has been bound to.
         /// </returns>
@@ -198,7 +198,7 @@ namespace OdinSerializer
         /// Binds a name to type.
         /// </summary>
         /// <param name="typeName">The name of the type to bind.</param>
-        /// <param name="debugContext">The debug current_context to log to.</param>
+        /// <param name="debugContext">The debug context to log to.</param>
         /// <returns>
         /// The type that the name has been bound to, or null if the type could not be resolved.
         /// </returns>
@@ -257,7 +257,7 @@ namespace OdinSerializer
 
             ParseName(typeName, out typeStr, out assemblyStr);
 
-            if (assemblyStr != null && assemblyNameLookUp.ContainsKey(assemblyStr))
+            if (!string.IsNullOrEmpty(typeStr) && assemblyStr != null && assemblyNameLookUp.ContainsKey(assemblyStr))
             {
                 var assembly = assemblyNameLookUp[assemblyStr];
                 type = assembly.GetType(typeStr);

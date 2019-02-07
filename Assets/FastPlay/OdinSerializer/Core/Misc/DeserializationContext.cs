@@ -24,7 +24,7 @@ namespace OdinSerializer
     using Utilities;
 
     /// <summary>
-    /// The current_context of a given deserialization session. This class maintains all internal and external references during deserialization.
+    /// The context of a given deserialization session. This class maintains all internal and external references during deserialization.
     /// </summary>
     /// <seealso cref="ICacheNotificationReceiver" />
     public sealed class DeserializationContext : ICacheNotificationReceiver
@@ -33,6 +33,7 @@ namespace OdinSerializer
         private Dictionary<int, object> internalIdReferenceMap = new Dictionary<int, object>(128);
         private StreamingContext streamingContext;
         private IFormatterConverter formatterConverter;
+        private TwoWaySerializationBinder binder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeserializationContext"/> class.
@@ -45,9 +46,9 @@ namespace OdinSerializer
         /// <summary>
         /// Initializes a new instance of the <see cref="DeserializationContext"/> class.
         /// </summary>
-        /// <param name="current_context">The streaming current_context to use.</param>
-        public DeserializationContext(StreamingContext current_context)
-            : this(current_context, new FormatterConverter())
+        /// <param name="context">The streaming context to use.</param>
+        public DeserializationContext(StreamingContext context)
+            : this(context, new FormatterConverter())
         {
         }
 
@@ -63,20 +64,44 @@ namespace OdinSerializer
         /// <summary>
         /// Initializes a new instance of the <see cref="DeserializationContext"/> class.
         /// </summary>
-        /// <param name="current_context">The streaming current_context to use.</param>
+        /// <param name="context">The streaming context to use.</param>
         /// <param name="formatterConverter">The formatter converter to use.</param>
         /// <exception cref="System.ArgumentNullException">The formatterConverter parameter is null.</exception>
-        public DeserializationContext(StreamingContext current_context, FormatterConverter formatterConverter)
+        public DeserializationContext(StreamingContext context, FormatterConverter formatterConverter)
         {
             if (formatterConverter == null)
             {
                 throw new ArgumentNullException("formatterConverter");
             }
 
-            this.streamingContext = current_context;
+            this.streamingContext = context;
             this.formatterConverter = formatterConverter;
 
             this.Reset();
+        }
+
+        /// <summary>
+        /// Gets or sets the context's type binder.
+        /// </summary>
+        /// <value>
+        /// The context's serialization binder.
+        /// </value>
+        public TwoWaySerializationBinder Binder
+        {
+            get
+            {
+                if (this.binder == null)
+                {
+                    this.binder = DefaultSerializationBinder.Default;
+                }
+
+                return this.binder;
+            }
+
+            set
+            {
+                this.binder = value;
+            }
         }
 
         /// <summary>
@@ -104,10 +129,10 @@ namespace OdinSerializer
         public IExternalIndexReferenceResolver IndexReferenceResolver { get; set; }
 
         /// <summary>
-        /// Gets the streaming current_context.
+        /// Gets the streaming context.
         /// </summary>
         /// <value>
-        /// The streaming current_context.
+        /// The streaming context.
         /// </value>
         public StreamingContext StreamingContext { get { return this.streamingContext; } }
 
@@ -174,7 +199,7 @@ namespace OdinSerializer
         {
             if (this.IndexReferenceResolver == null)
             {
-                this.Config.DebugContext.LogWarning("Tried to resolve external reference by index (" + index + "), but no index reference resolver is assigned to the deserialization current_context. External reference has been lost.");
+                this.Config.DebugContext.LogWarning("Tried to resolve external reference by index (" + index + "), but no index reference resolver is assigned to the deserialization context. External reference has been lost.");
                 return null;
             }
 
@@ -198,7 +223,7 @@ namespace OdinSerializer
         {
             if (this.GuidReferenceResolver == null)
             {
-                this.Config.DebugContext.LogWarning("Tried to resolve external reference by guid (" + guid + "), but no guid reference resolver is assigned to the deserialization current_context. External reference has been lost.");
+                this.Config.DebugContext.LogWarning("Tried to resolve external reference by guid (" + guid + "), but no guid reference resolver is assigned to the deserialization context. External reference has been lost.");
                 return null;
             }
 
@@ -228,7 +253,7 @@ namespace OdinSerializer
         {
             if (this.StringReferenceResolver == null)
             {
-                this.Config.DebugContext.LogWarning("Tried to resolve external reference by string (" + id + "), but no string reference resolver is assigned to the deserialization current_context. External reference has been lost.");
+                this.Config.DebugContext.LogWarning("Tried to resolve external reference by string (" + id + "), but no string reference resolver is assigned to the deserialization context. External reference has been lost.");
                 return null;
             }
 
@@ -250,8 +275,8 @@ namespace OdinSerializer
         }
 
         /// <summary>
-        /// Resets the deserialization current_context completely to baseline status, as if its constructor has just been called.
-        /// This allows complete reuse of a deserialization current_context, with all of its internal reference buffers.
+        /// Resets the deserialization context completely to baseline status, as if its constructor has just been called.
+        /// This allows complete reuse of a deserialization context, with all of its internal reference buffers.
         /// </summary>
         public void Reset()
         {
@@ -264,6 +289,7 @@ namespace OdinSerializer
             this.IndexReferenceResolver = null;
             this.GuidReferenceResolver = null;
             this.StringReferenceResolver = null;
+            this.binder = null;
         }
 
         void ICacheNotificationReceiver.OnFreed()

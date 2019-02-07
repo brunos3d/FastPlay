@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("branch_node_icon")]
+	[Icon("arrow_divide")]
 	[Title("Branch")]
 	[Subtitle("Flow Control")]
 	[Path("Flow Control/Branch")]

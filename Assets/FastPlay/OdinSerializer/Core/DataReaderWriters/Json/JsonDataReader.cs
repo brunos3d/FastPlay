@@ -22,6 +22,7 @@ namespace OdinSerializer
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using System.Text;
 
     /// <summary>
     /// Reads json data from a stream that has been written by a <see cref="JsonDataWriter"/>.
@@ -45,8 +46,8 @@ namespace OdinSerializer
         /// Initializes a new instance of the <see cref="JsonDataReader" /> class.
         /// </summary>
         /// <param name="stream">The base stream of the reader.</param>
-        /// <param name="current_context">The deserialization current_context to use.</param>
-        public JsonDataReader(Stream stream, DeserializationContext current_context) : base(stream, current_context)
+        /// <param name="context">The deserialization context to use.</param>
+        public JsonDataReader(Stream stream, DeserializationContext context) : base(stream, context)
         {
             this.primitiveArrayReaders = new Dictionary<Type, Delegate>()
             {
@@ -194,7 +195,7 @@ namespace OdinSerializer
                             }
                         }
 
-                        type = this.Binder.BindToType(this.peekedEntryContent.Substring(typeNameStartIndex, this.peekedEntryContent.Length - (1 + typeNameStartIndex)), this.Context.Config.DebugContext);
+                        type = this.Context.Binder.BindToType(this.peekedEntryContent.Substring(typeNameStartIndex, this.peekedEntryContent.Length - (1 + typeNameStartIndex)), this.Context.Config.DebugContext);
 
                         if (typeID >= 0)
                         {
@@ -1179,6 +1180,25 @@ namespace OdinSerializer
             this.peekedEntryName = null;
             this.seenTypes.Clear();
             this.reader.Reset();
+        }
+
+        public override string GetDataDump()
+        {
+            if (!this.Stream.CanSeek)
+            {
+                return "Json data stream cannot seek; cannot dump data.";
+            }
+
+            var oldPosition = this.Stream.Position;
+
+            var bytes = new byte[this.Stream.Length];
+
+            this.Stream.Position = 0;
+            this.Stream.Read(bytes, 0, bytes.Length);
+
+            this.Stream.Position = oldPosition;
+
+            return "Json: " + Encoding.UTF8.GetString(bytes, 0, bytes.Length);
         }
 
         /// <summary>

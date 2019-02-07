@@ -107,6 +107,10 @@ namespace FastPlay.Runtime {
 			}
 		}
 
+		public const float ICON_SIZE = 35.0f;
+
+		public const float ICON_SIZE_OFFSET = 45.0f;
+
 		public const float MIN_SIZE_X = 100.0f;
 
 		public const float MIN_SIZE_Y = 60.0f;
@@ -515,16 +519,16 @@ namespace FastPlay.Runtime {
 			icon_rect.position = new Vector2(pos.x + 5.0f, pos.y + 5.0f);
 			if (has_subtitle) {
 				if (invert_title) {
-					title_rect.position = new Vector2(pos.x + 50.0f, pos.y + 23.0f);
-					subtitle_rect.position = new Vector2(pos.x + 50.0f, pos.y + 8.0f);
+					title_rect.position = new Vector2(pos.x + ICON_SIZE_OFFSET, pos.y + 23.0f);
+					subtitle_rect.position = new Vector2(pos.x + ICON_SIZE_OFFSET, pos.y + 6.0f);
 				}
 				else {
-					title_rect.position = new Vector2(pos.x + 50.0f, pos.y + 6.0f);
-					subtitle_rect.position = new Vector2(pos.x + 50.0f, pos.y + 28.0f);
+					title_rect.position = new Vector2(pos.x + ICON_SIZE_OFFSET, pos.y + 6.0f);
+					subtitle_rect.position = new Vector2(pos.x + ICON_SIZE_OFFSET, pos.y + 23.0f);
 				}
 			}
 			else {
-				title_rect.position = new Vector2(pos.x + 50.0f, pos.y + 15.0f);
+				title_rect.position = new Vector2(pos.x + ICON_SIZE_OFFSET, pos.y + 15.0f);
 			}
 		}
 
@@ -544,9 +548,9 @@ namespace FastPlay.Runtime {
 				size = new Vector2(GetWidth(), head_height + body_height);
 			}
 			else {
-				head_height = 50.0f;
+				head_height = ICON_SIZE_OFFSET;
 
-				body_height = FPMath.SnapValue(GetHeight());
+				body_height = GetHeight();
 
 				// Calculate Size...
 				size = new Vector2(GetWidth(), head_height + body_height);
@@ -568,31 +572,27 @@ namespace FastPlay.Runtime {
 		public void GenerateRects() {
 			head_rect = new Rect(position, new Vector2(size.x, head_height));
 			body_rect = new Rect(position.x, position.y + head_height, size.x, body_height);
-			subtitle_rect = new Rect(position.x + 50.0f, position.y + 28.0f, size.x - 50.0f, head_height - 28.0f);
+			subtitle_rect = new Rect(position.x + ICON_SIZE_OFFSET, position.y + 28.0f, size.x - ICON_SIZE_OFFSET, head_height - 28.0f);
 
 			if (has_subtitle) {
-				icon_rect = new Rect(position.x + 5.0f, position.y + 5.0f, 40.0f, 40.0f);
+				icon_rect = new Rect(position.x + 5.0f, position.y + 5.0f, ICON_SIZE, ICON_SIZE);
 				if (this is EventNode) {
-					title_rect = new Rect(position.x + 50.0f, position.y + 6.0f, size.x - 50.0f, 20.0f);
+					title_rect = new Rect(position.x + ICON_SIZE_OFFSET, position.y + 6.0f, size.x - ICON_SIZE_OFFSET, 20.0f);
 				}
 				else {
-					title_rect = new Rect(position.x + 50.0f, position.y + 23.0f, size.x - 50.0f, head_height - 23.0f);
-					subtitle_rect = new Rect(position.x + 50.0f, position.y + 8.0f, size.x - 50.0f, head_height - 28.0f);
+					title_rect = new Rect(position.x + ICON_SIZE_OFFSET, position.y + 23.0f, size.x - ICON_SIZE_OFFSET, head_height - 23.0f);
+					subtitle_rect = new Rect(position.x + ICON_SIZE_OFFSET, position.y + 8.0f, size.x - ICON_SIZE_OFFSET, head_height - 28.0f);
 				}
 			}
 			else {
-				icon_rect = new Rect(position.x + 5.0f, position.y + 5.0f, 40.0f, 40.0f);
-				title_rect = new Rect(position.x + 50.0f, position.y + 15.0f, size.x - 50.0f, 20.0f);
+				icon_rect = new Rect(position.x + 5.0f, position.y + 5.0f, ICON_SIZE, ICON_SIZE);
+				title_rect = new Rect(position.x + ICON_SIZE_OFFSET, position.y + 15.0f, size.x - ICON_SIZE_OFFSET, 20.0f);
 			}
 		}
 
 		public void GenerateContent() {
-			if (this is ValueNode) {
-				node_color = GUIReferrer.GetTypeColor(((ValueNode)this).valueType);
-			}
-			else if (this is LiteralNode) {
-				node_color = GUIReferrer.GetTypeColor(((LiteralNode)this).valueType);
-				this.title = (this as LiteralNode).valueType.GetTypeName(false, true);
+			if (this is IValueNode) {
+				node_color = GUIReferrer.GetTypeColor(((IValueNode)this).valueType);
 			}
 			else if (!((this is ReflectedNode))) {
 				node_color = GUIReferrer.GetTypeColor(type);
@@ -636,19 +636,17 @@ namespace FastPlay.Runtime {
 					this.icon = styles.error_icon;
 				}
 			}
-			if (this is ReflectedObjectNode) {
-				invert_title = true;
-				Type reflected_type = ((ReflectedObjectNode)this).cached_type;
-				if (this.subtitle.IsNullOrEmpty()) {
-					this.subtitle = "Reflected";
+			if (this is IValueNode) {
+				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(((IValueNode)this).valueType);
+			}
+			if (this.title.IsNullOrEmpty()) {
+				if (this is IValueNode) {
+					this.title = (this as IValueNode).valueType.GetTypeName(false, true);
 				}
-				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(reflected_type, false) ?? GUIReferrer.GetTypeIcon(typeof(MonoScript));
-
+				else {
+					this.title = this.name;
+				}
 			}
-			else if (this is LiteralNode) {
-				this.icon = this.icon ?? GUIReferrer.GetTypeIcon(((LiteralNode)this).valueType);
-			}
-			this.title = this.title.IsNullOrEmpty() ? this.name : this.title;
 			this.icon = this.icon ?? GUIReferrer.GetTypeIcon(type);
 			has_subtitle = !subtitle.IsNullOrEmpty();
 		}
@@ -666,7 +664,7 @@ namespace FastPlay.Runtime {
 					port_position = new Vector2(5.0f, 10.0f);
 				}
 				else {
-					port_position = new Vector2(5.0f, head_height + 12.0f + (20.0f * input));
+					port_position = new Vector2(5.0f, head_height + 10.0f + (20.0f * input));
 				}
 				points[port.id] = new Rect(port_position, PORT_SIZE);
 				if (port is ValuePort) {
@@ -686,7 +684,7 @@ namespace FastPlay.Runtime {
 					port_position = new Vector2(size.x - 23.0f, 10.0f);
 				}
 				else {
-					port_position = new Vector2(size.x - 23.0f, head_height + 12.0f + (20.0f * output));
+					port_position = new Vector2(size.x - 23.0f, head_height + 10.0f + (20.0f * output));
 				}
 				points[port.id] = new Rect(port_position, PORT_SIZE);
 				if (port is ValuePort) {
@@ -756,8 +754,8 @@ namespace FastPlay.Runtime {
 				float name_width = 50.0f + GUIUtils.GetTextWidth(this.title, styles.title_head);
 				float subtitle_width = 50.0f + GUIUtils.GetTextWidth(this.subtitle, styles.subtitle_head);
 				if (subtitle_width > 240.0f) {
-					head_height += (FPMath.SnapValue(subtitle_width) / 240.0f) * 15.0f;
-					head_height += this.subtitle.Split('\n').Length * 11.0f;
+					head_height += (FPMath.SnapValue(subtitle_width) / 240.0f) * 12.0f;
+					head_height += this.subtitle.Split('\n').Length * 10.0f;
 					subtitle_width = 240.0f;
 				}
 
@@ -773,8 +771,8 @@ namespace FastPlay.Runtime {
 			float height = 0.0f;
 
 			winner = Mathf.Max(winner, input, output);
-			height = 10.0f + winner * 20.0f;
-			return FPMath.SnapValue(height + 5.0f);
+			height = winner * 20.0f;
+			return height + 16.0f;
 		}
 
 		public static Vector2 MiddleOfConnection(Vector2 start, Vector2 end) {

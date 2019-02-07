@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("Debug Icon")]
+	[Icon("bug")]
 	[Title("LogText")]
 	[Subtitle("Action")]
 	[Path("Utilities/Actions/LogText")]

@@ -12,47 +12,52 @@ namespace FastPlay.Editor {
 		private static Dictionary<Type, Texture> icons = new Dictionary<Type, Texture>();
 
 		private static Dictionary<Type, string> paths = new Dictionary<Type, string>() {
-			{ typeof(EventNode), "Event Icon" },
-			{ typeof(MacroNode), "Macro Icon" },
-			{ typeof(Graph), "GraphAsset Icon" },
-			{ typeof(GraphAsset), "GraphAsset Icon" },
-			{ typeof(GraphController), "GraphAsset Icon" },
-			{ typeof(int), "Integer Icon" },
-			{ typeof(float), "Float Icon" },
-			{ typeof(bool), "Boolean Icon" },
-			{ typeof(string), "String Icon" },
-			{ typeof(object), "SystemObject Icon" },
-			{ typeof(Type), "SystemType Icon" },
-			{ typeof(Enum), "Enum Icon" },
-			{ typeof(Rect), "Rect Icon" },
-			{ typeof(Color), "Color Icon" },
-			{ typeof(Vector2), "Vector2 Icon" },
-			{ typeof(Vector3), "Vector3 Icon" },
-			{ typeof(Vector4), "Vector4 Icon" },
-			{ typeof(Quaternion), "Quaternion Icon" },
-			{ typeof(UnityObject), "UnityObject Icon" },
-			{ typeof(LayerMask), "LayerMask Icon" },
-			{ typeof(UnityEngine.ScriptableObject), "UnityScriptableObject Icon" },
-			{ typeof(Ray), "Ray Icon" },
-			{ typeof(Time), "Time Icon" },
-			{ typeof(Physics), "Physics Icon" },
-			{ typeof(Physics2D), "Physics2D Icon" },
-			{ typeof(Debug), "Debug Icon" },
-			{ typeof(Input), "Input Icon" },
-			{ typeof(PlayerPrefs), "PlayerPrefs Icon" },
-			{ typeof(Screen), "Screen Icon" },
-			{ typeof(Cursor), "Cursor Icon" },
-			{ typeof(Application), "Application Icon" },
-			{ typeof(GUI), "GUI Icon" },
-			{ typeof(GUILayout), "GUI Icon" },
+			{ typeof(EventNode), "event_icon" },
+			{ typeof(MacroNode), "script_bricks" },
+			{ typeof(Graph), "graph_asset_icon" },
+			{ typeof(GraphAsset), "graph_asset_icon" },
+			{ typeof(GraphController), "graph_asset_icon" },
+			{ typeof(int), "integer_icon" },
+			{ typeof(float), "float_icon" },
+			{ typeof(bool), "boolean_icon" },
+			{ typeof(string), "string_icon" },
+			{ typeof(object), "system_object_icon" },
+			{ typeof(Type), "class_module" },
+			{ typeof(Enum), "enum_icon" },
+			{ typeof(Rect), "canvas" },
+			{ typeof(Color), "color_wheel" },
+			{ typeof(Vector2), "vector2_icon" },
+			{ typeof(Vector3), "vector3_icon" },
+			{ typeof(Vector4), "vector4_icon" },
+			{ typeof(Quaternion), "measure" },
+			{ typeof(UnityObject), "unity_object_icon" },
+			{ typeof(LayerMask), "layers" },
+			{ typeof(UnityEngine.ScriptableObject), "unity_scriptable_object_icon" },
+			{ typeof(Ray), "ray_icon" },
+			{ typeof(Time), "time" },
+			{ typeof(Physics), "physics_icon" },
+			{ typeof(Physics2D), "physics2D_icon" },
+			{ typeof(Mathf), "math_functions" },
+			{ typeof(Debug), "bug" },
+			{ typeof(Input), "keyboard" },
+			{ typeof(PlayerPrefs), "diskette" },
+			{ typeof(Screen), "lcd_tv_test" },
+			{ typeof(Cursor), "cursor" },
+			{ typeof(Application), "application" },
+			{ typeof(GUI), "application_view_icons" },
+			{ typeof(GUILayout), "application_view_tile" },
+			{ typeof(WWW), "www_page" },
 
 	};
 
+		private static readonly Color DEFAULT_COLOR = new Color(0.3f, 0.3f, 0.3f);
+
 		private static Dictionary<Type, Color> colors = new Dictionary<Type, Color>() {
-			{ typeof(ActionPort), Color.white },
+			{ typeof(EventNode), new Color(30.0f / 255.0f, 120.0f / 255.0f, 54.0f / 255.0f) },
 			{ typeof(InputNode), new Color(1.0f, 76.0f / 255.0f, 76.0f / 255.0f) },
 			{ typeof(OutputNode), new Color(1.0f, 76.0f / 255.0f, 76.0f / 255.0f) },
-			{ typeof(EventNode), new Color(1.0f, 76.0f / 255.0f, 76.0f / 255.0f) },
+			{ typeof(ActionPort), Color.white },
+			/*
 			{ typeof(ActionNode), new Color(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f) },
 			{ typeof(void), new Color(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f) },
 			{ typeof(int), new Color(0.0f, 175 / 255.0f, 255.0f / 255.0f) },
@@ -70,12 +75,23 @@ namespace FastPlay.Editor {
 			{ typeof(UnityObject), Color.gray },
 			{ typeof(LayerMask), Color.gray },
 			{ typeof(Texture), new Color(0.0f / 255.0f, 232.0f / 255.0f, 87.0f / 255.0f) },
+			*/
 	};
+
+		public static string GetTypeIconName(Type type, bool return_default_icon = true) {
+			Texture t = GetTypeIcon(type, return_default_icon);
+			if (t != null) {
+				return t.name;
+			}
+			else {
+				return string.Empty;
+			}
+		}
 
 		public static Texture GetTypeIcon(Type type, bool return_default_icon = true) {
 			if (type == null) {
 				if (return_default_icon) {
-					return icons[typeof(Nullable)] = EditorUtils.FindAssetByName<Texture>("404_icon_not_found");
+					return icons[typeof(Nullable)] = EditorUtils.FindAssetByName<Texture>("http_status_not_found");
 				}
 				return null;
 			}
@@ -111,7 +127,7 @@ namespace FastPlay.Editor {
 				}
 			}
 			if (return_default_icon) {
-				return icons[type] = EditorUtils.FindAssetByName<Texture>("404_icon_not_found");
+				return icons[type] = EditorUtils.FindAssetByName<Texture>("http_status_not_found");
 			}
 			else {
 				return null;
@@ -121,7 +137,7 @@ namespace FastPlay.Editor {
 		public static Color GetTypeColor(Type type, bool return_default_color = true) {
 			if (type == null) {
 				if (return_default_color) {
-					return colors[type] = new Color(56.0f / 255.0f, 56.0f / 255.0f, 56.0f / 255.0f);
+					return colors[type] = DEFAULT_COLOR;
 				}
 				return Color.magenta;
 			}
@@ -140,7 +156,7 @@ namespace FastPlay.Editor {
 			//float b = UnityEngine.Random.Range(0.0f, 1.0f);
 			//return colors[type] = new Color(r, g, b, 1.0f);
 			if (return_default_color) {
-				return colors[type] = new Color(56.0f / 255.0f, 56.0f / 255.0f, 56.0f / 255.0f);
+				return colors[type] = DEFAULT_COLOR;
 			}
 			else {
 				return Color.magenta;

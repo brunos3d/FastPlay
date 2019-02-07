@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("physics2D_icon")]
 	[Title("OnTrigger2D")]
 	[Path("Events/Physics/OnTrigger2D")]
 	public class OnTrigger2DEvent : EventNode, IRegisterEvents, IRegisterPorts {

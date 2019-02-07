@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/FastPlay/Samples/Macro/login.unity
+- path: Assets/CubeJump.unity
   isLoaded: 1
   isActive: 1

@@ -1,8 +1,8 @@
-using System;
 using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("worldparticlecollider icon")]
 	[Title("OnParticleCollision")]
 	[Path("Events/Physics/OnParticleCollision")]
 	[Summary("OnParticleCollision is called when a particle hits a Collider.")]

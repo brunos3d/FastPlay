@@ -2,7 +2,7 @@ using System;
 
 namespace FastPlay.Runtime {
 	[HideInList]
-	public abstract partial class ValueNode : Node {
+	public abstract partial class ValueNode : Node, IValueNode {
 
 		[NonSerialized]
 		public OutputAction output;

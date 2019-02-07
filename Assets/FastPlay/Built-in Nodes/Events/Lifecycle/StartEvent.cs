@@ -1,9 +1,6 @@
-using System;
-using UnityEngine;
-
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("StartEventNode Icon")]
+	[Icon("tick")]
 	[Title("Start")]
 	[Path("Events/Lifecycle/Start")]
 	[Summary("Start is called on the frame when a script is enabled just before any of the Update methods are called the first time.")]

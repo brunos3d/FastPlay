@@ -56,7 +56,7 @@ namespace OdinSerializer
         private Queue<char> emergencyPlayback;
 
         /// <summary>
-        /// The current deserialization current_context used by the text reader.
+        /// The current deserialization context used by the text reader.
         /// </summary>
         public DeserializationContext Context { get; private set; }
 
@@ -64,19 +64,19 @@ namespace OdinSerializer
         /// Initializes a new instance of the <see cref="JsonTextReader" /> class.
         /// </summary>
         /// <param name="stream">The stream to parse from.</param>
-        /// <param name="current_context">The deserialization current_context to use.</param>
+        /// <param name="context">The deserialization context to use.</param>
         /// <exception cref="System.ArgumentNullException">The stream is null.</exception>
         /// <exception cref="System.ArgumentException">Cannot read from the stream.</exception>
-        public JsonTextReader(Stream stream, DeserializationContext current_context)
+        public JsonTextReader(Stream stream, DeserializationContext context)
         {
             if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
 
-            if (current_context == null)
+            if (context == null)
             {
-                throw new ArgumentNullException("current_context");
+                throw new ArgumentNullException("context");
             }
 
             if (stream.CanRead == false)
@@ -85,7 +85,7 @@ namespace OdinSerializer
             }
 
             this.reader = new StreamReader(stream);
-            this.Context = current_context;
+            this.Context = context;
         }
 
         /// <summary>

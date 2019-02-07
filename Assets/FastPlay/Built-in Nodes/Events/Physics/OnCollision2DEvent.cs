@@ -1,8 +1,8 @@
-using System;
 using UnityEngine;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("physics2D_icon")]
 	[Title("OnCollision2D")]
 	[Path("Events/Physics/OnCollision2D")]
 	public class OnCollision2DEvent : EventNode, IRegisterEvents, IRegisterPorts {

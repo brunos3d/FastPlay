@@ -319,7 +319,7 @@ namespace FastPlay {
 			if (type == null) return null;
 			string s;
 			if (keywords.TryGetValue(type, out s) && (!full_name || standard_types_prevail)) {
-				return s;
+				return s.Replace("&", string.Empty);
 			}
 			if (cache_type_names.TryGetValue(string.Format("{0}, {1} & {2}", type, full_name, standard_types_prevail), out s)) {
 				return s;
@@ -346,9 +346,12 @@ namespace FastPlay {
 				if (arg_string.Length > 0) {
 					value += "<" + arg_string + ">";
 				}
-				return cache_type_names[string.Format("{0}, {1} & {2}", type, full_name, standard_types_prevail)] = value;
+				return cache_type_names[string.Format("{0}, {1} & {2}", type, full_name, standard_types_prevail)] = value.Replace("&", string.Empty);
 			}
-			return cache_type_names[string.Format("{0}, {1} & {2}", type, full_name, standard_types_prevail)] = (full_name ? type.FullName : type.Name);
+			if ((full_name ? type.FullName : type.Name).IsNullOrEmpty()) {
+				return string.Empty;
+			}
+			return cache_type_names[string.Format("{0}, {1} & {2}", type, full_name, standard_types_prevail)] = (full_name ? type.FullName : type.Name).Replace("&", string.Empty);
 		}
 
 		/// <summary>

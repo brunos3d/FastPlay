@@ -1,9 +1,6 @@
-using System;
-using UnityEngine;
-
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("OnJointBreakEventNode Icon")]
+	[Icon("link_break")]
 	[Title("OnJointBreak")]
 	[Path("Events/Joint/OnJointBreak")]
 	[Summary("Called when a joint attached to the same game object broke.")]

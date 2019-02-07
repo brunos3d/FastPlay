@@ -132,7 +132,7 @@ namespace OdinSerializer
         protected abstract void Write(ref T value, IDataWriter writer);
 
         /// <summary>
-        /// Registers the given object reference in the deserialization current_context.
+        /// Registers the given object reference in the deserialization context.
         /// <para />
         /// NOTE that this method only does anything if <see cref="T"/> is not a value type.
         /// </summary>

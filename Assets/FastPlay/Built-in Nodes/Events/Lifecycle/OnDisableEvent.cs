@@ -1,9 +1,6 @@
-using System;
-using UnityEngine;
-
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("DisableEventNode Icon")]
+	[Icon("cross")]
 	[Title("OnDisable")]
 	[Path("Events/Lifecycle/OnDisable")]
 	[Summary("This function is called when the behaviour becomes disabled.")]

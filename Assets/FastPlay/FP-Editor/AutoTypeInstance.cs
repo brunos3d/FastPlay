@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 namespace FastPlay.Editor {
 	public class AutoTypeInstance : ScriptableObject {
@@ -60,7 +61,7 @@ namespace FastPlay.Editor {
 		void Update() {
 			try {
 				if (is_playing) {
-					if (tips[current_tip] == current_text) {
+					if (tips[current_tip] == (current_text ?? string.Empty).Replace("|", string.Empty)) {
 						time_to_change_elapsed += EditorTime.deltaTime;
 						if (time_to_change_elapsed >= wait_to_change) {
 							time_elapsed = 0.0f;
@@ -99,7 +100,7 @@ namespace FastPlay.Editor {
 			if (current_char >= text.Length) {
 				return text;
 			}
-			return text.Substring(0, current_char);
+			return text.Substring(0, current_char).Replace("|", string.Empty) + "|";
 		}
 	}
 }

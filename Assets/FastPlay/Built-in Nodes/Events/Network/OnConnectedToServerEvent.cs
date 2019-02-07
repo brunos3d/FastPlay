@@ -1,8 +1,7 @@
-using System;
-using UnityEngine;
-
+#if !(UNITY_2018_OR_NEWER || UNITY_2018 || UNITY_2018_2)
 namespace FastPlay.Runtime {
 	[BuiltInNode]
+	[Icon("connect")]
 	[Title("OnConnectedToServer")]
 	[Path("Events/Network/OnConnectedToServer")]
 	public class OnConnectedToServerEvent : EventNode, IRegisterEvents {
@@ -20,3 +19,4 @@ namespace FastPlay.Runtime {
 		}
 	}
 }
+#endif

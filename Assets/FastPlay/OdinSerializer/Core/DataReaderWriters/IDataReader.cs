@@ -45,8 +45,9 @@ namespace OdinSerializer
         /// <value>
         /// The base stream of the reader.
         /// </value>
+        [Obsolete("Data readers and writers don't necessarily have streams any longer, so this API has been made obsolete. Using this property may result in NotSupportedExceptions being thrown.", false)]
         Stream Stream { get; set; }
-
+        
         /// <summary>
         /// Gets a value indicating whether the reader is in an array node.
         /// </summary>
@@ -80,12 +81,17 @@ namespace OdinSerializer
         int CurrentNodeDepth { get; }
 
         /// <summary>
-        /// Gets the deserialization current_context.
+        /// Gets the deserialization context.
         /// </summary>
         /// <value>
-        /// The deserialization current_context.
+        /// The deserialization context.
         /// </value>
         DeserializationContext Context { get; set; }
+
+        /// <summary>
+        /// Gets a dump of the data being read by the writer. The format of this dump varies, but should be useful for debugging purposes.
+        /// </summary>
+        string GetDataDump();
 
         /// <summary>
         /// Tries to enter a node. This will succeed if the next entry is an <see cref="EntryType.StartOfNode"/>.
@@ -350,7 +356,7 @@ namespace OdinSerializer
         bool ReadNull();
 
         /// <summary>
-        /// Skips the next entry value, unless it is an <see cref="EntryType.EndOfNode"/> or an <see cref="EntryType.EndOfArray"/>. If the next entry value is an <see cref="EntryType.StartOfNode"/> or an <see cref="EntryType.StartOfArray"/>, all of its contents will be processed, deserialized and registered in the deserialization current_context, so that internal reference values are not lost to entries further down the stream.
+        /// Skips the next entry value, unless it is an <see cref="EntryType.EndOfNode"/> or an <see cref="EntryType.EndOfArray"/>. If the next entry value is an <see cref="EntryType.StartOfNode"/> or an <see cref="EntryType.StartOfArray"/>, all of its contents will be processed, deserialized and registered in the deserialization context, so that internal reference values are not lost to entries further down the stream.
         /// </summary>
         void SkipEntry();
 

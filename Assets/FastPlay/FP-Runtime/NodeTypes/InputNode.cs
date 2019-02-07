@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FastPlay.Runtime {
 	[BuiltInNode]
-	[Icon("InputNode Icon")]
+	[Icon("script_export")]
 	[Title("Input")]
 	[Path("Macros/Input")]
 	public class InputNode : Node, IRegisterDefaultPorts {

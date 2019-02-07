@@ -62,8 +62,8 @@ namespace OdinSerializer
         /// Initializes a new instance of the <see cref="BinaryDataReader" /> class.
         /// </summary>
         /// <param name="stream">The base stream of the reader.</param>
-        /// <param name="current_context">The deserialization current_context to use.</param>
-        public BinaryDataReader(Stream stream, DeserializationContext current_context) : base(stream, current_context)
+        /// <param name="context">The deserialization context to use.</param>
+        public BinaryDataReader(Stream stream, DeserializationContext context) : base(stream, context)
         {
         }
 
@@ -1519,6 +1519,25 @@ namespace OdinSerializer
             this.types.Clear();
         }
 
+        public override string GetDataDump()
+        {
+            if (!this.Stream.CanSeek)
+            {
+                return "Binary data stream cannot seek; cannot dump data.";
+            }
+
+            var oldPosition = this.Stream.Position;
+
+            var bytes = new byte[this.Stream.Length];
+
+            this.Stream.Position = 0;
+            this.Stream.Read(bytes, 0, bytes.Length);
+
+            this.Stream.Position = oldPosition;
+
+            return "Binary hex dump: " + ProperBitConverter.BytesToHexString(bytes);
+        }
+
         private string ReadStringValue()
         {
             int charSizeFlag = this.Stream.ReadByte();
@@ -1812,7 +1831,7 @@ namespace OdinSerializer
             {
                 int id = this.ReadIntValue();
                 string name = this.ReadStringValue();
-                type = this.Binder.BindToType(name, this.Context.Config.DebugContext);
+                type = this.Context.Binder.BindToType(name, this.Context.Config.DebugContext);
                 this.types.Add(id, type);
             }
             else if (entryType == BinaryEntryType.TypeID)
