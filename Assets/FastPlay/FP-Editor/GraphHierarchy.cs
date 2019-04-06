@@ -74,6 +74,9 @@ namespace FastPlay.Editor {
 										Selection.activeGameObject = target;
 										set_dirty = true;
 										current.Use();
+										if (Application.isPlaying) {
+											controller.OnControllerEnable();
+										}
 									}
 									DragAndDrop.PrepareStartDrag();
 								}

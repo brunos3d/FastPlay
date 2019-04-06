@@ -10,6 +10,8 @@ namespace FastPlay.Runtime {
 		public InputValue<List<T>> list;
 		public InputValue<T> item;
 
+		public ListAddItem() { }
+
 		public void OnRegisterPorts() {
 			list = RegisterInputValue<List<T>>("list");
 			item = RegisterInputValue<T>("item");

@@ -31,6 +31,8 @@ namespace FastPlay.Runtime {
 
 		bool is_validating;
 
+		public MacroNode() { }
+
 		public override void Validate() {
 			//stack overflow prevent
 			if (is_validating) return;

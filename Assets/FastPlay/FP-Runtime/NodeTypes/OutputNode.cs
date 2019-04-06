@@ -17,6 +17,8 @@ namespace FastPlay.Runtime {
 		[NonSerialized]
 		public Dictionary<int, IInputValue> input_values = new Dictionary<int, IInputValue>();
 
+		public OutputNode() { }
+
 		public override void OnGraphAdd() {
 			graph.Validate();
 		}

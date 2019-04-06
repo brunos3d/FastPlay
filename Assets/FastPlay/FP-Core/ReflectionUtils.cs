@@ -177,12 +177,8 @@ namespace FastPlay {
 		/// Returns a serializable name for the method
 		/// </summary>
 		public static string GetMethodInfoKey(MethodInfo method) {
-			string key = method.ReturnType.GetTypeName(true);
-			key += method.Name;
-			string args = string.Join("/", method.GetGenericArguments().Select(m => m.GetTypeName(true)).ToArray());
-			key += args;
-			string parameters = string.Join(",", method.GetParameters().Select(p => p.ParameterType.GetTypeName(true)).ToArray());
-			key += parameters;
+			string key = method.ToString();
+			cache_methods[key] = method;
 			return key;
 		}
 
@@ -224,34 +220,32 @@ namespace FastPlay {
 
 		// Extensions
 
-		public static Type[] TryGetGenericParameterConstraints(this Type type) {
-			try {
-				if (type.IsGenericType) {
-					return type.GetGenericParameterConstraints();
-				}
-			}
-			catch {
-				return null;
-			}
-			return null;
-		}
-
-		//T = string
-		//from_type = float
-		public static bool CanBeCastTo<T>(this Type from_type) {
-			object obj = Activator.CreateInstance(from_type);
-			try {
-				UnityEngine.Debug.Log("pass 1");
-				if (obj is T) {
+		public static bool CanMakeGenericTypeWith(this Type type, Type t) {
+			Type[] gen_args = type.GetGenericArguments();
+			if (!gen_args.IsNullOrEmpty()) {
+				Type[] gen_params = gen_args[0].GetGenericParameterConstraints();
+				if (gen_params.IsNullOrEmpty()) {
 					return true;
 				}
-				UnityEngine.Debug.Log("pass 2");
-				return true;
+				else {
+					return gen_params[0].IsAssignableFrom(t);
+				}
 			}
-			catch {
-				UnityEngine.Debug.Log("pass 3");
-				return typeof(T).IsAssignableFrom(from_type);
+			return false;
+		}
+
+		public static bool CanMakeGenericMethodWith(this MethodInfo method, Type t) {
+			Type[] gen_args = method.GetGenericArguments();
+			if (!gen_args.IsNullOrEmpty()) {
+				Type[] gen_params = gen_args[0].GetGenericParameterConstraints();
+				if (gen_params.IsNullOrEmpty()) {
+					return true;
+				}
+				else {
+					return gen_params[0].IsAssignableFrom(t);
+				}
 			}
+			return false;
 		}
 
 		/// <summary>

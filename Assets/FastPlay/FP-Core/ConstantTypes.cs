@@ -70,7 +70,6 @@ namespace FastPlay {
 		typeof(Vector2),
 		typeof(Vector3),
 		typeof(Vector4),
-		typeof(WWW),
 	};
 
 		public List<Type> current_types = new List<Type>();

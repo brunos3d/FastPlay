@@ -1,3 +1,4 @@
+using OdinSerializer;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,8 +12,7 @@ namespace FastPlay.Runtime {
 		[NonSerialized]
 		public bool is_enabled;
 
-		[NonSerialized]
-		public List<IUpdate> updatable_nodes = new List<IUpdate>();
+		public IEnumerable<IUpdate> updatable_nodes;
 
 		[SerializeField]
 		private List<Parameter> var_parameters = new List<Parameter>();
@@ -83,7 +83,7 @@ namespace FastPlay.Runtime {
 		public void Play() {
 			Initialize();
 
-			updatable_nodes = nodes.OfType<IUpdate>().ToList();
+			updatable_nodes = nodes.OfType<IUpdate>();
 			foreach (Node node in nodes) {
 				node.OnGraphPlay();
 			}

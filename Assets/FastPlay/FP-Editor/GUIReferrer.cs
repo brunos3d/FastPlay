@@ -46,7 +46,6 @@ namespace FastPlay.Editor {
 			{ typeof(Application), "application" },
 			{ typeof(GUI), "application_view_icons" },
 			{ typeof(GUILayout), "application_view_tile" },
-			{ typeof(WWW), "www_page" },
 
 	};
 
@@ -57,7 +56,6 @@ namespace FastPlay.Editor {
 			{ typeof(InputNode), new Color(1.0f, 76.0f / 255.0f, 76.0f / 255.0f) },
 			{ typeof(OutputNode), new Color(1.0f, 76.0f / 255.0f, 76.0f / 255.0f) },
 			{ typeof(ActionPort), Color.white },
-			/*
 			{ typeof(ActionNode), new Color(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f) },
 			{ typeof(void), new Color(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f) },
 			{ typeof(int), new Color(0.0f, 175 / 255.0f, 255.0f / 255.0f) },
@@ -75,7 +73,6 @@ namespace FastPlay.Editor {
 			{ typeof(UnityObject), Color.gray },
 			{ typeof(LayerMask), Color.gray },
 			{ typeof(Texture), new Color(0.0f / 255.0f, 232.0f / 255.0f, 87.0f / 255.0f) },
-			*/
 	};
 
 		public static string GetTypeIconName(Type type, bool return_default_icon = true) {

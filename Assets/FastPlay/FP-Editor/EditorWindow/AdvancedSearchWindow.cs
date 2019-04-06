@@ -55,13 +55,17 @@ namespace FastPlay.Editor {
 
 		private const float WINDOW_FOOT_OFFSET = 10.0f;
 
+		private const string PREFS_ENABLE_TAGS = "FastPlay: ASW EnableTags Toggle";
+
 		private const string PREFS_ELEMENT_SIZE_SLIDER = "FastPlay: ASW ElementSize Slider";
 
 		private const BindingFlags METHOD_BIND_FLAGS = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static;
 
 		private readonly Color FOCUS_COLOR = new Color(62.0f / 255.0f, 95.0f / 255.0f, 150.0f / 255.0f);
 
-		private readonly Color STRIP_COLOR = new Color(0.205f, 0.205f, 0.205f);
+		private readonly Color STRIP_COLOR_DARK = new Color(0.205f, 0.205f, 0.205f);
+
+		private readonly Color STRIP_COLOR_LIGHT = new Color(0.7f, 0.7f, 0.7f);
 
 		private readonly string[] TIPS = new string[] {
 			"FastPlay visual scripting...",
@@ -85,6 +89,8 @@ namespace FastPlay.Editor {
 		private bool select_all;
 
 		private bool drag_scroll;
+
+		private bool enable_already;
 
 		private bool enable_layout;
 
@@ -119,6 +125,15 @@ namespace FastPlay.Editor {
 		public TreeNode<Act> selected_node;
 
 		public readonly List<TreeNode<Act>> parents = new List<TreeNode<Act>>();
+
+		public bool enableTags {
+			get {
+				return EditorPrefs.GetBool(PREFS_ENABLE_TAGS, true);
+			}
+			set {
+				EditorPrefs.SetBool(PREFS_ENABLE_TAGS, value);
+			}
+		}
 
 		public float sliderValue {
 			get {
@@ -178,22 +193,25 @@ namespace FastPlay.Editor {
 
 
 		void OnEnable() {
-			//Unity bug fix
-			Undo.undoRedoPerformed += Close;
-			if (!GraphEditor.graph) {
-				Close();
-				return;
+			if (!enable_already) {
+				//Unity bug fix
+				Undo.undoRedoPerformed += Close;
+				if (!GraphEditor.graph) {
+					Close();
+					return;
+				}
+				if (styles == null) {
+					styles = new Styles();
+				}
+				element_list_height = sliderValue;
+				auto_type = FindObjectOfType<AutoTypeInstance>() ?? CreateInstance<AutoTypeInstance>();
+				auto_type.Init(6, 3.0f, false, TIPS);
+				need_refocus = true;
+				root_tree = new TreeNode<Act>(new GUIContent("Home"), null);
+				CreateTreeNode(root_tree);
+				GoToNode(root_tree, false);
+				enable_already = true;
 			}
-			if (styles == null) {
-				styles = new Styles();
-			}
-			element_list_height = sliderValue;
-			auto_type = FindObjectOfType<AutoTypeInstance>() ?? CreateInstance<AutoTypeInstance>();
-			auto_type.Init(6, 3.0f, false, TIPS);
-			need_refocus = true;
-			root_tree = new TreeNode<Act>(new GUIContent("Home"), null);
-			CreateTreeNode(root_tree);
-			GoToNode(root_tree, false);
 		}
 
 		void OnDisable() {
@@ -206,6 +224,9 @@ namespace FastPlay.Editor {
 			//Unity bug fix
 			if (focusedWindow != this || !GraphEditor.graph || EditorApplication.isCompiling) {
 				Close();
+			}
+			if (!enable_already) {
+				OnEnable();
 			}
 			if (styles.search_icon == null) {
 				return;
@@ -281,7 +302,7 @@ namespace FastPlay.Editor {
 				GUILayout.EndHorizontal();
 			}
 
-			int current_tree_count = current_tree.Count;
+			int current_tree_count = current_tree == null ? 0 : current_tree.Count;
 
 			enable_scroll = view_element_capacity < current_tree_count;
 
@@ -293,7 +314,11 @@ namespace FastPlay.Editor {
 			}
 			scroll_pos = Mathf.Clamp(scroll_pos, 0.0f, current_tree_count);
 
-			sliderValue = FPMath.SnapValue(GUI.HorizontalSlider(new Rect(position.width - 60.0f, 50.0f, 50.0f, 20.0f), sliderValue, 25, 50), 5);
+			if (GUI.Toggle(new Rect(position.width - 60.0f, 55.0f, 50.0f, 20.0f), enableTags, "Tags") != enableTags) {
+				enableTags = !enableTags;
+			}
+
+			sliderValue = FPMath.SnapValue(GUI.HorizontalSlider(new Rect(position.width - 60.0f, 40.0f, 50.0f, 20.0f), sliderValue, 25, 50), 5);
 
 			PreInputGUI();
 
@@ -310,7 +335,12 @@ namespace FastPlay.Editor {
 				Rect layout_rect = new Rect(1.0f, WINDOW_HEAD_HEIGHT + draw_index * element_list_height, position.width - (enable_scroll ? 19.0f : 2.0f), element_list_height);
 				if (id % 2 == 1) {
 					Rect strip_rect = new Rect(1.0f, WINDOW_HEAD_HEIGHT + draw_index * element_list_height, position.width - (enable_scroll ? 19.0f : 2.0f), element_list_height);
-					EditorGUI.DrawRect(strip_rect, STRIP_COLOR);
+					if (EditorGUIUtility.isProSkin) {
+						EditorGUI.DrawRect(strip_rect, STRIP_COLOR_DARK);
+					}
+					else {
+						EditorGUI.DrawRect(strip_rect, STRIP_COLOR_LIGHT);
+					}
 				}
 
 				//Draw Selection Box
@@ -322,17 +352,19 @@ namespace FastPlay.Editor {
 				}
 
 				if (enable_layout) {
-					//Draw Tag Buttons
-					GUILayout.BeginArea(new Rect(layout_rect.x, layout_rect.y + 5.0f, layout_rect.width, layout_rect.height));
-					GUILayout.BeginHorizontal();
-					GUILayout.FlexibleSpace();
-					foreach (string tag in node.tags) {
-						if (GUILayout.Button(tag, styles.tag_button, GUILayout.ExpandWidth(false))) {
-							search = "#tag:" + tag;
+					if (enableTags) {
+						//Draw Tag Buttons
+						GUILayout.BeginArea(new Rect(layout_rect.x, layout_rect.y + 5.0f, layout_rect.width, layout_rect.height));
+						GUILayout.BeginHorizontal();
+						GUILayout.FlexibleSpace();
+						foreach (string tag in node.tags) {
+							if (GUILayout.Button(tag, styles.tag_button, GUILayout.ExpandWidth(false))) {
+								search = "#tag:" + tag;
+							}
 						}
+						GUILayout.EndHorizontal();
+						GUILayout.EndArea();
 					}
-					GUILayout.EndHorizontal();
-					GUILayout.EndArea();
 				}
 
 				//Draw TreeNode Button
@@ -693,8 +725,10 @@ namespace FastPlay.Editor {
 			float width = 0.0f;
 			foreach (TreeNode<Act> node in current_tree) {
 				float tags_width = 0.0f;
-				foreach (string tag in node.tags) {
-					tags_width += GUIUtils.GetTextWidth(tag, styles.tag_button) + 5.0f;
+				if (enableTags) {
+					foreach (string tag in node.tags) {
+						tags_width += GUIUtils.GetTextWidth(tag, styles.tag_button) + 5.0f;
+					}
 				}
 				width = Mathf.Max(width, GUIUtils.GetTextWidth(node.content.text, styles.search_title_item) + 85.0f + tags_width);
 			}
@@ -733,7 +767,9 @@ namespace FastPlay.Editor {
 
 				if (type.IsGenericType) {
 					foreach (Type t in current_types) {
+						if (!type.CanMakeGenericTypeWith(t)) continue;
 						Type type_gen = type.MakeGenericType(t);
+
 						string type_gen_name = type_gen.GetTypeName();
 
 						icon = icons[type_gen] = GUIReferrer.GetTypeIcon(type_gen);
@@ -852,18 +888,20 @@ namespace FastPlay.Editor {
 						MethodInfo[] methods = type_gen.GetMethods(METHOD_BIND_FLAGS).Where(m => m.GetGenericArguments().Length <= 1).ToArray();
 						foreach (MethodInfo method in methods.Where(m => m.DeclaringType != type)) {
 							List<string> tags = new List<string>();
-							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
-
+							if (enableTags) {
+								tags.Add(method.IsStatic ? "Static" : "Instance");
+								tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
+							}
 							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Inherited/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 						foreach (MethodInfo method in methods.Where(m => m.IsSpecialName)) {
 							List<string> tags = new List<string>();
-							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
-
+							if (enableTags) {
+								tags.Add(method.IsStatic ? "Static" : "Instance");
+								tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
+							}
 							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/Properties/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 
@@ -879,10 +917,11 @@ namespace FastPlay.Editor {
 
 						foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type_gen)) {
 							List<string> tags = new List<string>();
-							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
-
+							if (enableTags) {
+								tags.Add(method.IsStatic ? "Static" : "Instance");
+								tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
+							}
 							type_tree.AddChildByPath(new GUIContent(string.Format("{0}/{1}", type_gen_name, method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 					}
@@ -893,22 +932,25 @@ namespace FastPlay.Editor {
 						if (method.IsGenericMethod) {
 							TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("Inherited/{0}", method.Name), icon, method.GetDescription()), null);
 							foreach (Type t in current_types) {
+								if (!method.CanMakeGenericMethodWith(t)) continue;
 								MethodInfo method_gen = method.MakeGenericMethod(t);
 								List<string> tags = new List<string>();
-								tags.Add(method.IsStatic ? "Static" : "Instance");
-								tags.Add("out " + method_gen.ReturnType.GetTypeName(false, true));
-								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
-
+								if (enableTags) {
+									tags.Add(method.IsStatic ? "Static" : "Instance");
+									tags.Add("out " + method_gen.ReturnType.GetTypeName(false, true));
+									tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
+								}
 								object[] args = new object[] { method_gen, t };
 								generic_node.AddChildByPath(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); }, tags.ToArray());
 							}
 						}
 						else {
 							List<string> tags = new List<string>();
-							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
-
+							if (enableTags) {
+								tags.Add(method.IsStatic ? "Static" : "Instance");
+								tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
+							}
 							type_tree.AddChildByPath(new GUIContent(string.Format("Inherited/{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 					}
@@ -916,22 +958,25 @@ namespace FastPlay.Editor {
 						if (method.IsGenericMethod) {
 							TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("Properties/{0}", method.Name), icon, method.GetDescription()), null);
 							foreach (Type t in current_types) {
+								if (!method.CanMakeGenericMethodWith(t)) continue;
 								MethodInfo method_gen = method.MakeGenericMethod(t);
 								List<string> tags = new List<string>();
-								tags.Add(method.IsStatic ? "Static" : "Instance");
-								tags.Add("out " + method_gen.ReturnType.GetTypeName(false, true));
-								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
-
+								if (enableTags) {
+									tags.Add(method.IsStatic ? "Static" : "Instance");
+									tags.Add("out " + method_gen.ReturnType.GetTypeName(false, true));
+									tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
+								}
 								object[] args = new object[] { method_gen, t };
 								generic_node.AddChildByPath(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); }, tags.ToArray());
 							}
 						}
 						else {
 							List<string> tags = new List<string>();
-							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
-
+							if (enableTags) {
+								tags.Add(method.IsStatic ? "Static" : "Instance");
+								tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
+							}
 							type_tree.AddChildByPath(new GUIContent(string.Format("Properties/{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 					}
@@ -948,25 +993,31 @@ namespace FastPlay.Editor {
 
 					foreach (MethodInfo method in methods.Where(m => m.IsSpecialName == false && m.DeclaringType == type)) {
 						if (method.IsGenericMethod) {
-							TreeNode<Act> generic_node = type_tree.AddChildByPath(new GUIContent(string.Format("{0}", method.Name), icon, method.GetDescription()), null);
+							TreeNode<Act> generic_node = null;
 							foreach (Type t in current_types) {
+								if (!method.CanMakeGenericMethodWith(t)) continue;
 								MethodInfo method_gen = method.MakeGenericMethod(t);
 								List<string> tags = new List<string>();
-								tags.Add(method.IsStatic ? "Static" : "Instance");
-								tags.Add("out " + method_gen.ReturnType.GetTypeName(false, true));
-								tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
-
+								if (enableTags) {
+									tags.Add(method.IsStatic ? "Static" : "Instance");
+									tags.Add("out " + method_gen.ReturnType.GetTypeName(false, true));
+									tags = tags.Concat(method_gen.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
+								}
+								if (generic_node == null) {
+									generic_node = type_tree.AddChildByPath(new GUIContent(method.Name, icon, method.GetDescription()), null);
+								}
 								object[] args = new object[] { method_gen, t };
 								generic_node.AddChild(new GUIContent(method_gen.Name, icon, method_gen.GetDescription()), () => { AddReflectedGenericNode(args); }, tags.ToArray());
 							}
 						}
 						else {
 							List<string> tags = new List<string>();
-							tags.Add(method.IsStatic ? "Static" : "Instance");
-							tags.Add("out " + method.ReturnType.GetTypeName(false, true));
-							tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
-
-							type_tree.AddChildByPath(new GUIContent(string.Format("{0}", method.Name), icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
+							if (enableTags) {
+								tags.Add(method.IsStatic ? "Static" : "Instance");
+								tags.Add("out " + method.ReturnType.GetTypeName(false, true));
+								tags = tags.Concat(method.GetParameters().Select(p => p.ParameterType).Select(param_t => "in " + param_t.GetTypeName(false, true))).ToList();
+							}
+							type_tree.AddChildByPath(new GUIContent(method.Name, icon, method.GetDescription()), () => { AddReflectedNode(method); }, tags.ToArray());
 						}
 					}
 				}

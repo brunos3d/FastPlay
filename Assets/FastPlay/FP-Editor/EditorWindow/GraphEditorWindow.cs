@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityObject = UnityEngine.Object;
 using FastPlay.Runtime;
+using System.Globalization;
 
 namespace FastPlay.Editor {
 	public class GraphEditorWindow : EditorWindow {
@@ -352,7 +353,7 @@ namespace FastPlay.Editor {
 			GUILayout.BeginVertical();
 			GUILayout.Space(2);
 
-			if (GUILayout.Toggle(GraphEditor.snapToGrid, new GUIContent(string.Empty, "Move nodes to the grid"), (GUIStyle)"GridToggle") != GraphEditor.snapToGrid) {
+			if (GUILayout.Toggle(GraphEditor.snapToGrid, new GUIContent(string.Empty, "Move nodes to the grid")) != GraphEditor.snapToGrid) {
 				GraphEditor.snapToGrid = !GraphEditor.snapToGrid;
 			}
 			GUILayout.EndVertical();
@@ -856,7 +857,7 @@ namespace FastPlay.Editor {
 			else {
 				GUI.Label(title_rect, new GUIContent("<color=#FF4C4CFF>NULL</color>"), styles.header);
 			}
-			GUI.Label(new Rect(position.width - 130.0f, 17.0f, 130.0f, 40.0f), new GUIContent(target_zoom.ToString("F1") + " | 1.0", "Zoom Factor"), styles.header);
+			GUI.Label(new Rect(position.width - 130.0f, 17.0f, 130.0f, 40.0f), new GUIContent(target_zoom.ToString("F1", CultureInfo.InvariantCulture) + " | 1.0", "Zoom Factor"), styles.header);
 		}
 
 		private void DrawScrollBackground() {

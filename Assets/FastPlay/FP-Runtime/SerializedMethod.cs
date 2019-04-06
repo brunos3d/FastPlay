@@ -29,7 +29,7 @@ namespace FastPlay.Runtime {
 		public SerializedMethod(MethodInfo method, params Type[] type_args) {
 			this.is_generic = !type_args.IsNullOrEmpty();
 			this.base_type_name = method.ReflectedType.AssemblyQualifiedName;
-			this.method_key = ReflectionUtils.GetMethodInfoKey(method);
+			this.method_key = ReflectionUtils.GetMethodInfoKey(method.GetGenericMethodDefinition());
 			this.method_info = method;
 			this.generic_args.Clear();
 			foreach (Type type in type_args) {

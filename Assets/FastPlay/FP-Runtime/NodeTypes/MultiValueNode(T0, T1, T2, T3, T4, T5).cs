@@ -22,6 +22,8 @@ namespace FastPlay.Runtime {
 			}
 		}
 
+		public MultiValueNode() { }
+
 		public void OnRegisterDefaultPorts() {
 			RegisterOutputValue<T0>(portNames[0], Get_0);
 			RegisterOutputValue<T1>(portNames[1], Get_1);

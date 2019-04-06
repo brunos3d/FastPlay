@@ -779,7 +779,7 @@ namespace FastPlay.Runtime {
 			return FPMath.CenterOfPoints(start, end);
 		}
 
-		public static void DrawConnection(Vector2 start, Vector2 end, Color gizmoColor, bool selected) {
+		public static void DrawConnection(Vector2 start, Vector2 end, Color gizmo_color, bool selected) {
 			float delta = Mathf.Abs(start.x - end.x) * 0.5f;
 			Vector2 right = new Vector2(delta, 0.0f);
 			Vector2 left = new Vector2(-delta, 0.0f);
@@ -808,7 +808,7 @@ namespace FastPlay.Runtime {
 						Vector2 st2 = (p2 + V2x0y2) + right;
 						DrawBezier(5.0f, (p1 + V2x0y2), (p2 + V2x0y2), st1, st2);
 					}
-					Handles.color = gizmoColor;
+					Handles.color = gizmo_color;
 					DrawBezier(3.0f, p1, p2, t1, t2);
 					return;
 				case ConnectorType.Line:
@@ -826,7 +826,7 @@ namespace FastPlay.Runtime {
 							Handles.DrawAAPolyLine(5.0f, 2, p1 + V2x0y2, p2 + V2x0y2);
 						}
 					}
-					Handles.color = gizmoColor;
+					Handles.color = gizmo_color;
 
 					for (int id = 0; id < 2; id++) {
 						Handles.DrawAAPolyLine(3.0f, 2, p1, p2);
@@ -853,7 +853,7 @@ namespace FastPlay.Runtime {
 							DrawCircuit(5.0f, p1 + V2x0y2, p2 + V2x0y2, t1 + V2x0y2, t2 + V2x0y2);
 						}
 					}
-					Handles.color = gizmoColor;
+					Handles.color = gizmo_color;
 					DrawCircuit(3.0f, p1, p2, t1, t2);
 					return;
 				default:

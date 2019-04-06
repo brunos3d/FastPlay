@@ -9,6 +9,8 @@ namespace FastPlay.Runtime {
 
 		public InputValue<string> variable_name;
 
+		public CurrentFindVariable() { }
+
 		public void OnRegisterPorts() {
 			variable_name = RegisterInputValue<string>("name");
 		}

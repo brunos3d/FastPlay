@@ -8,6 +8,8 @@ namespace FastPlay.Runtime {
 	[Path("Actions/Current/Transform")]
 	public class CurrentTransform : ValueNode<Transform> {
 
+		public CurrentTransform() { }
+
 		public override Transform OnGetValue() {
 			return Current.transform;
 		}

@@ -12,6 +12,8 @@ namespace FastPlay.Runtime {
 		public InputValue<List<T>> list;
 		public InputValue<int> index;
 
+		public ListGetItem() { }
+
 		public void OnRegisterPorts() {
 			list = RegisterInputValue<List<T>>("list");
 			index = RegisterInputValue<int>("index");

@@ -69,6 +69,8 @@ namespace FastPlay {
 			return children.Values.GetEnumerator();
 		}
 
+		public TreeNode() { }
+
 		public TreeNode(GUIContent content) {
 			this.content = content;
 			this.children = new Dictionary<string, TreeNode<T>>();

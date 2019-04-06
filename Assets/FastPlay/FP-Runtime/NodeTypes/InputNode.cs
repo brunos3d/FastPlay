@@ -17,6 +17,8 @@ namespace FastPlay.Runtime {
 		[NonSerialized]
 		public List<IOutputValue> output_values = new List<IOutputValue>();
 
+		public InputNode() { }
+
 		public override void OnGraphAdd() {
 			graph.Validate();
 		}

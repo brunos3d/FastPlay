@@ -13,6 +13,8 @@ namespace FastPlay.Runtime {
 
 		public InputValue<int> variable_key;
 
+		public ControllerGetVariable() { }
+
 		public void OnRegisterPorts() {
 			controller = RegisterInputValue<GraphController>("controller");
 			variable_key = RegisterInputValue<int>("key");
